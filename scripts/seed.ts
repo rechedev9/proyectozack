@@ -14,7 +14,7 @@
 
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import * as schema from '../src/db/schema/index';
+import * as schema from './src/db/schema/index';
 
 // Load .env.local manually (tsx doesn't auto-load it)
 import { readFileSync } from 'fs';

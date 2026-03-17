@@ -1,25 +1,41 @@
-*.Zone.Identifier
-.gstack/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Env files
-.env
-.env.local
-.env.*.local
-.env.production
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-# Next.js
-socialpro/.next/
-socialpro/out/
+# testing
+/coverage
 
-# Node
-socialpro/node_modules/
-node_modules/
+# next.js
+/.next/
+/out/
 
-# Build artifacts
-socialpro/tsconfig.tsbuildinfo
+# production
+/build
 
-# Resend CLI credentials
-.config/resend/
+# misc
+.DS_Store
+*.pem
 
-# Claude memory (local only)
-.claude/
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
