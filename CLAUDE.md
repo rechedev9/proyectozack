@@ -11,52 +11,107 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `/handoff`: read `docs/handoff.md` — dump state for next session.
 - `/pickup`: read `docs/pickup.md` — rehydrate context when starting.
 
+## Project Overview
+
+The production app lives in `socialpro/` — a Next.js 16 app being built for a gaming/esports talent agency (SocialPro). The migration plan and phase tracking live in `roadmap.md`. Read it before any work.
+
 ## Running the Project
 
-This is a standalone HTML file — no build process or dependencies needed.
-
 ```bash
-# Serve locally
-python3 -m http.server 8000
-# Then open http://localhost:8000
+cd socialpro
+npm run dev          # dev server (port 3000)
+npm run build        # production build
+npm run lint         # eslint
+npx tsc --noEmit     # type-check
+
+# Database
+cd socialpro
+npx drizzle-kit generate   # generate migration SQL
+npx drizzle-kit migrate    # run migrations against DATABASE_URL
+npx tsx scripts/seed.ts    # seed data (run after extract-images.mjs)
+node scripts/extract-images.mjs  # extract base64 images from HTML → public/images/
+
+# Tests
+npm test                    # unit (jest)
+npm run test:e2e            # playwright e2e
+npm run test:coverage
 ```
 
-The main file is `socialpro-final (10) (1).html` (note the spaces in the filename — quote it or escape when using shell commands).
+## Next.js App Architecture (`socialpro/`)
 
-## Architecture
+**Stack:** Next.js 16 · React 19 · TypeScript strict · Tailwind v4 · Drizzle ORM · Neon Postgres · Better Auth · Resend · shadcn/ui · Zod v4 · react-hook-form · @vercel/blob
 
-**Single-file SPA** (~1,231 lines) for a gaming/esports talent agency (SocialPro). All CSS, JavaScript, HTML, and data (including base64-encoded images) live in one file.
+**Required env vars** (`.env.local`):
+- `DATABASE_URL` — Neon connection string
+- `RESEND_API_KEY`
+- `BETTER_AUTH_SECRET`
+- `NEXT_PUBLIC_SITE_URL`
 
-**File layout (by line range):**
-- `1–35`: HTML head, font imports, CSS custom properties (design tokens)
-- `36–500`: Complete CSS (all components, animations, responsive layout)
-- `501–913`: HTML markup — sections and modal dialogs
-- `914–1231`: JavaScript — embedded data arrays + all UI functions
+### File Structure (target — being built out)
 
-## Data Structures (in JavaScript section)
+```
+socialpro/src/
+  app/
+    layout.tsx                   # Root: fonts, metadata, Nav, globals
+    page.tsx                     # Home: Server Component, Promise.all, revalidate=3600
+    globals.css
+    admin/
+      layout.tsx                 # Better Auth session guard
+      page.tsx, talents/, cases/, testimonials/
+    api/
+      contact/route.ts           # POST → DB insert + Resend email
+      auth/[...all]/route.ts     # Better Auth catch-all
+  components/
+    layout/                      # Nav.tsx (CLIENT), Footer.tsx (SERVER)
+    sections/                    # One file per page section
+    ui/                          # GradientText, SectionTag, SectionHeading, StatusBadge, SocialIcon
+  db/
+    index.ts                     # Neon + Drizzle singleton (edge-safe)
+    schema/                      # talents.ts, content.ts, cases.ts, submissions.ts → re-exported from index.ts
+  lib/
+    queries/                     # talents.ts, content.ts, cases.ts, portfolio.ts
+    env.ts                       # @t3-oss/env-nextjs schema
+    email.ts                     # Resend helpers
+    auth.ts                      # Better Auth config
+  types/index.ts                 # InferSelectModel exports
+```
 
-All data is hardcoded as JS variables:
-- `TALENTS` — 13 creator profiles (name, metrics, social handles, bio, Base64 photo)
-- `BRAND_LOGOS`, `COLLAB_PHOTOS`, `TEAM_PHOTOS`, `TALENT_PHOTOS` — Base64-encoded images
-- `TESTIMONIALS`, `COLLABS`, `TEAM`, `PF_ITEMS`, `CASE_DATA` — supporting content
+### Server vs Client Component Rule
 
-## Key JavaScript Functions
+- **SERVER:** anything that only reads data (no onClick/useState/useEffect/scroll events)
+- **CLIENT:** Nav, TalentGrid, TalentCard/Modal, ServicesSection (tabs), CaseCard/Modal, PortfolioGrid, ContactSection
+- **Data flow:** Server shell fetches all data → passes full array as prop to Client child → Client filters locally. No client-side DB calls ever.
 
-| Function | Purpose |
-|---|---|
-| `renderTalents(filter)` | Renders talent grid; accepts category string |
-| `filterT(f, el)` | Sets active filter and re-renders talent grid |
-| `openModal(idx)` | Opens talent detail modal by index into TALENTS |
-| `openCaseModal(key)` | Opens case study modal by key into CASE_DATA |
-| `renderPortfolio(filter)` | Renders portfolio items with tab filtering |
-| `setAud(id, el)` | Switches between service tabs |
-| `gs(c1, c2)` | Returns CSS gradient string |
-| `getSVG(type, color)` | Returns SVG icon markup string |
+### Database Schema Summary
 
-## CSS Design System
+See `roadmap.md` Phase 2 for exact column definitions. Tables:
+- `talents`, `talent_tags`, `talent_stats`, `talent_socials`
+- `testimonials`, `collaborators`, `team_members`, `brands`, `portfolio_items`
+- `case_studies`, `case_body`, `case_tags`, `case_creators`
+- `contact_submissions`
 
-Colors are defined as CSS variables at `:root`. Primary palette: orange `#f5632a` → pink `#e03070` → purple `#8b3aad` → blue `#5b9bd5`.
+Enums (`platform`: twitch|youtube|cs2; `status`: active|available|inactive; `portfolio type`: thumb|video|campaign) — must match exact strings in the HTML prototype JS.
 
-Component class naming: `.tc` (talent card), `.sc` (service card), `.cc` (case card), `.tst` (testimonial), `.mq` (marquee), `.btn-*` (button variants), `.modal-*` (modal parts).
+## CSS / Design System
 
-Layout uses CSS Grid with `auto-fill`/`minmax` and `clamp()` for fluid type — no explicit media queries.
+**Brand tokens** defined in `tailwind.config.ts` under `theme.extend.colors`:
+`sp-orange:#f5632a`, `sp-pink:#e03070`, `sp-dpink:#c42880`, `sp-purple:#8b3aad`, `sp-blue:#5b9bd5`, `sp-dark`, `sp-black`, `sp-muted`, `sp-border`, `sp-off`, `sp-bg2`.
+
+**Fonts:** `font-display` = Barlow Condensed 800–900 uppercase; `font-body` = Inter.
+
+**Gradient signature:** `bg-sp-grad` = `linear-gradient(135deg, #f5632a 0%, #e03070 35%, #c42880 62%, #8b3aad 100%)`. Use with restraint.
+
+Complex CSS (marquee, gradient text, modals) stays in `globals.css` — do not force-migrate to Tailwind utilities.
+
+## Design Context
+
+Full context in `.impeccable.md`. Summary:
+
+**Brand:** Premium · Sharp · Credible. Spanish market, international ambition. Anti-pattern: neon-on-black gamer aesthetic.
+
+**Principles:**
+1. Credibility over hype — gradient is signature, not decoration
+2. Creators are the product — foreground name, platform, numbers
+3. Dark hero + light interior sections — alternating rhythm is intentional
+4. Typography does the heavy lifting — Barlow Condensed IS the energy
+5. Motion earns attention — remove it if it makes no difference
