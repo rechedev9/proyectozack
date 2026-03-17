@@ -1,0 +1,578 @@
+/**
+ * seed.ts — populate all tables from source HTML data
+ * Run: npx tsx scripts/seed.ts
+ *
+ * Insert order respects FK constraints:
+ * 1. brands
+ * 2. talents → talent_tags, talent_stats, talent_socials
+ * 3. collaborators
+ * 4. team_members
+ * 5. testimonials
+ * 6. case_studies → case_body, case_tags, case_creators
+ * 7. portfolio_items
+ */
+
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import * as schema from '../src/db/schema/index';
+
+// Load .env.local manually (tsx doesn't auto-load it)
+import { readFileSync } from 'fs';
+import { join } from 'path';
+try {
+  const envPath = join(process.cwd(), '.env.local');
+  const envFile = readFileSync(envPath, 'utf8');
+  for (const line of envFile.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    if (eqIdx === -1) continue;
+    const key = trimmed.slice(0, eqIdx).trim();
+    const val = trimmed.slice(eqIdx + 1).trim();
+    if (key && val && !process.env[key]) {
+      process.env[key] = val;
+    }
+  }
+} catch {
+  // .env.local may not exist in CI
+}
+
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  console.error('DATABASE_URL is not set. Fill in .env.local first.');
+  process.exit(1);
+}
+
+const sql = neon(DATABASE_URL);
+const db = drizzle(sql, { schema });
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const BRANDS_DATA = [
+  { slug: '1win', displayName: '1WIN', logoUrl: '/images/brands/1win.png', sortOrder: 0 },
+  { slug: 'hellcase', displayName: 'HELLCASE', logoUrl: '/images/brands/hellcase.png', sortOrder: 1 },
+  { slug: 'pinup', displayName: 'PIN-UP', logoUrl: '/images/brands/pinup.png', sortOrder: 2 },
+  { slug: 'jugabet', displayName: 'JUGABET', logoUrl: '/images/brands/jugabet.png', sortOrder: 3 },
+  { slug: 'clashgg', displayName: 'CLASH.GG', logoUrl: '/images/brands/clashgg.jpg', sortOrder: 4 },
+  { slug: 'ggdrop', displayName: 'GGDROP', logoUrl: '/images/brands/ggdrop.png', sortOrder: 5 },
+  { slug: 'skinclub', displayName: 'SKIN.CLUB', logoUrl: '/images/brands/skinclub.png', sortOrder: 6 },
+  { slug: 'keydrop', displayName: 'KEYDROP', logoUrl: '/images/brands/keydrop.png', sortOrder: 7 },
+  { slug: 'melbet', displayName: 'MELBET', logoUrl: '/images/brands/melbet.png', sortOrder: 8 },
+  { slug: 'grandwin', displayName: 'GRANDWIN', logoUrl: '/images/brands/grandwin.png', sortOrder: 9 },
+  { slug: 'kick', displayName: 'KICK', logoUrl: '/images/brands/kick.png', sortOrder: 10 },
+  { slug: 'razer', displayName: 'RAZER', logoUrl: '/images/brands/razer.png', sortOrder: 11 },
+  { slug: 'emma', displayName: 'EMMA', logoUrl: '/images/brands/emma.png', sortOrder: 12 },
+  { slug: 'zerotwo', displayName: 'ZEROTWO', logoUrl: '/images/brands/zerotwo.png', sortOrder: 13 },
+];
+
+type TalentPlatform = 'twitch' | 'youtube';
+type TalentStatus = 'active' | 'available';
+
+interface TalentData {
+  slug: string;
+  name: string;
+  role: string;
+  game: string;
+  platform: TalentPlatform;
+  status: TalentStatus;
+  bio: string;
+  gradientC1: string;
+  gradientC2: string;
+  initials: string;
+  photoUrl: string;
+  tags: string[];
+  stats: Array<{ icon: string; value: string; label: string }>;
+  socials: Array<{ platform: string; handle: string; followersDisplay: string; profileUrl: string | null; hexColor: string }>;
+}
+
+const TALENTS_DATA: TalentData[] = [
+  {
+    slug: 'todocs2', name: 'TODOCS2', role: 'CS2 Pro Streamer', game: 'CS2',
+    platform: 'twitch', status: 'active',
+    bio: 'Uno de los streamers de CS2 más reconocidos de la escena hispana. Conocido por su nivel competitivo, sus directos de alto voltaje y una comunidad fiel que sigue cada partida.',
+    gradientC1: '#f5632a', gradientC2: '#e03070', initials: 'TC',
+    photoUrl: '/images/talents/todocs2.jpg',
+    tags: ['CS2', 'FPS Competitivo', 'Twitch', 'España'],
+    stats: [
+      { icon: '📺', value: '180K', label: 'Seguidores Twitch' },
+      { icon: '👀', value: '2.1M', label: 'Views/mes' },
+      { icon: '❤️', value: '8.4%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'twitch', handle: 'todocs2', followersDisplay: '180K', profileUrl: 'https://twitch.tv/todocs2', hexColor: '#9146FF' },
+      { platform: 'x', handle: '@todocs2', followersDisplay: '45K', profileUrl: 'https://twitter.com/todocs2', hexColor: '#000000' },
+      { platform: 'yt', handle: 'TODOCS2', followersDisplay: '95K', profileUrl: 'https://youtube.com/@todocs2', hexColor: '#FF0000' },
+      { platform: 'ig', handle: '@todocs2', followersDisplay: '28K', profileUrl: 'https://instagram.com/todocs2', hexColor: '#E1306C' },
+    ],
+  },
+  {
+    slug: 'deqiuv', name: 'DEQIUV', role: 'CS2 & Valorant Streamer', game: 'CS2 · Valorant',
+    platform: 'twitch', status: 'active',
+    bio: 'Streamer multijuego especializado en FPS competitivo. Combina alto nivel en CS2 y Valorant con entretenimiento que mantiene a su audiencia enganchada hora tras hora.',
+    gradientC1: '#e03070', gradientC2: '#8b3aad', initials: 'DQ',
+    photoUrl: '/images/talents/deqiuv.jpg',
+    tags: ['CS2', 'Valorant', 'FPS', 'Twitch'],
+    stats: [
+      { icon: '📺', value: '95K', label: 'Seguidores Twitch' },
+      { icon: '👀', value: '850K', label: 'Views/mes' },
+      { icon: '❤️', value: '7.2%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'twitch', handle: 'deqiuv', followersDisplay: '95K', profileUrl: 'https://twitch.tv/deqiuv', hexColor: '#9146FF' },
+      { platform: 'x', handle: '@deqiuv', followersDisplay: '22K', profileUrl: 'https://twitter.com/deqiuv', hexColor: '#000000' },
+      { platform: 'yt', handle: 'DEQIUV', followersDisplay: '40K', profileUrl: 'https://www.youtube.com/DEQIUV', hexColor: '#FF0000' },
+      { platform: 'tt', handle: '@deqiuv', followersDisplay: '18K', profileUrl: 'https://tiktok.com/@deqiuv', hexColor: '#010101' },
+    ],
+  },
+  {
+    slug: 'adams', name: 'ADAMS', role: 'YouTuber & Gaming Creator', game: 'FPS · Gaming',
+    platform: 'youtube', status: 'active',
+    bio: 'Creador de contenido gaming orientado a YouTube con narrativa única y edición de alta calidad. Produce reviews, gameplays y entretenimiento que conecta con la audiencia hispana.',
+    gradientC1: '#8b3aad', gradientC2: '#5b9bd5', initials: 'AD',
+    photoUrl: '/images/talents/adams.jpg',
+    tags: ['YouTube', 'Gaming', 'FPS', 'Contenido'],
+    stats: [
+      { icon: '▶️', value: '220K', label: 'Suscriptores YouTube' },
+      { icon: '👀', value: '1.4M', label: 'Views/mes' },
+      { icon: '❤️', value: '6.8%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'yt', handle: 'ADAMS', followersDisplay: '220K', profileUrl: 'https://youtube.com/@AdamsCS2', hexColor: '#FF0000' },
+      { platform: 'ig', handle: '@adams_gaming', followersDisplay: '55K', profileUrl: 'https://instagram.com/adams_gaming', hexColor: '#E1306C' },
+      { platform: 'x', handle: '@adams_gaming', followersDisplay: '30K', profileUrl: 'https://twitter.com/adams_gaming', hexColor: '#000000' },
+      { platform: 'tt', handle: '@adams', followersDisplay: '42K', profileUrl: 'https://tiktok.com/@adams', hexColor: '#010101' },
+    ],
+  },
+  {
+    slug: 'mecha', name: 'MECHA ALVAREZ', role: 'CS2 Esports Streamer', game: 'CS2 · Esports',
+    platform: 'twitch', status: 'active',
+    bio: 'Figura consolidada de la escena CS2 española. Con historial competitivo a sus espaldas, combina análisis táctico con directos llenos de intensidad.',
+    gradientC1: '#5b9bd5', gradientC2: '#e03070', initials: 'MA',
+    photoUrl: '/images/talents/mecha.jpg',
+    tags: ['CS2', 'Esports', 'Competitivo', 'Twitch'],
+    stats: [
+      { icon: '📺', value: '75K', label: 'Seguidores Twitch' },
+      { icon: '👀', value: '620K', label: 'Views/mes' },
+      { icon: '❤️', value: '9.1%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'twitch', handle: 'mechaalvarez', followersDisplay: '75K', profileUrl: 'https://twitch.tv/mechaalvarez', hexColor: '#9146FF' },
+      { platform: 'x', handle: '@mechaalvarez', followersDisplay: '18K', profileUrl: 'https://twitter.com/mechaalvarez', hexColor: '#000000' },
+      { platform: 'yt', handle: 'Mecha Alvarez', followersDisplay: '25K', profileUrl: 'https://youtube.com/@mechaalvarez', hexColor: '#FF0000' },
+      { platform: 'ig', handle: '@mechaalvarez', followersDisplay: '12K', profileUrl: 'https://instagram.com/mechaalvarez', hexColor: '#E1306C' },
+    ],
+  },
+  {
+    slug: 'huasopeek', name: 'HUASOPEEK', role: 'Valorant & CS2 Streamer', game: 'Valorant · CS2',
+    platform: 'twitch', status: 'active',
+    bio: 'Streamer latinoamericano referente en Valorant y CS2. Su carisma y habilidad le han ganado una comunidad muy leal activa en los mercados LatAm y español.',
+    gradientC1: '#f5632a', gradientC2: '#c42880', initials: 'HP',
+    photoUrl: '/images/talents/huasopeek.jpg',
+    tags: ['Valorant', 'CS2', 'LatAm', 'Twitch'],
+    stats: [
+      { icon: '📺', value: '120K', label: 'Seguidores Twitch' },
+      { icon: '👀', value: '980K', label: 'Views/mes' },
+      { icon: '❤️', value: '7.8%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'twitch', handle: 'huasopeek', followersDisplay: '120K', profileUrl: 'https://twitch.tv/huasopeek', hexColor: '#9146FF' },
+      { platform: 'x', handle: '@huasopeek', followersDisplay: '35K', profileUrl: 'https://twitter.com/huasopeek', hexColor: '#000000' },
+      { platform: 'yt', handle: 'HuasoPeek', followersDisplay: '60K', profileUrl: 'https://youtube.com/@huasopeek', hexColor: '#FF0000' },
+      { platform: 'tt', handle: '@huasopeek', followersDisplay: '25K', profileUrl: 'https://tiktok.com/@huasopeek', hexColor: '#010101' },
+    ],
+  },
+  {
+    slug: 'rinna', name: 'RINNA', role: 'Content Creator', game: 'Content Creator',
+    platform: 'youtube', status: 'active',
+    bio: 'Creadora de contenido con enfoque fresco dentro del universo gaming. Conecta especialmente con audiencias jóvenes a través de un estilo cercano y auténtico.',
+    gradientC1: '#e03070', gradientC2: '#c42880', initials: 'RI',
+    photoUrl: '/images/talents/rinna.jpg',
+    tags: ['Gaming', 'Lifestyle', 'YouTube', 'Twitch'],
+    stats: [
+      { icon: '▶️', value: '85K', label: 'Suscriptores YouTube' },
+      { icon: '📺', value: '40K', label: 'Seguidores Twitch' },
+      { icon: '❤️', value: '11.2%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'yt', handle: 'RINNA', followersDisplay: '85K', profileUrl: 'https://youtube.com/@rinna', hexColor: '#FF0000' },
+      { platform: 'twitch', handle: 'rinna', followersDisplay: '40K', profileUrl: 'https://twitch.tv/rinna', hexColor: '#9146FF' },
+      { platform: 'ig', handle: '@rinna', followersDisplay: '48K', profileUrl: 'https://instagram.com/rinna', hexColor: '#E1306C' },
+      { platform: 'tt', handle: '@rinna', followersDisplay: '92K', profileUrl: 'https://tiktok.com/@rinna', hexColor: '#010101' },
+    ],
+  },
+  {
+    slug: 'martinez', name: 'MARTINEZ', role: 'Esports & Variety Streamer', game: 'Esports · Variety',
+    platform: 'twitch', status: 'active',
+    bio: 'Streamer versátil con raíces en el esports competitivo. Alterna contenido de alto nivel con variety gaming para atraer público amplio dentro de la escena hispana.',
+    gradientC1: '#e03070', gradientC2: '#f5632a', initials: 'MZ',
+    photoUrl: '/images/talents/martinez.jpg',
+    tags: ['Esports', 'Variety', 'Twitch', 'Competitivo'],
+    stats: [
+      { icon: '📺', value: '65K', label: 'Seguidores Twitch' },
+      { icon: '👀', value: '510K', label: 'Views/mes' },
+      { icon: '❤️', value: '8.9%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'twitch', handle: 'martinezsaa', followersDisplay: '65K', profileUrl: 'https://twitch.tv/martinezsaa', hexColor: '#9146FF' },
+      { platform: 'x', handle: '@martinezsaa', followersDisplay: '20K', profileUrl: 'https://twitter.com/martinezsaa', hexColor: '#000000' },
+      { platform: 'yt', handle: 'Martinez', followersDisplay: '30K', profileUrl: 'https://youtube.com/@martinezsaa', hexColor: '#FF0000' },
+      { platform: 'ig', handle: '@martinezsaa', followersDisplay: '15K', profileUrl: 'https://instagram.com/martinezsaa', hexColor: '#E1306C' },
+    ],
+  },
+  {
+    slug: 'vityshow', name: 'Vityshow', role: 'Gaming Streamer', game: 'Gaming',
+    platform: 'twitch', status: 'available',
+    bio: 'Streamer de gaming con personalidad energética y estilo de contenido entretenido. Disponible para colaboraciones. Contacta con SocialPro para más información.',
+    gradientC1: '#f5632a', gradientC2: '#8b3aad', initials: 'VS',
+    photoUrl: '/images/talents/vityshow.jpg',
+    tags: ['Gaming', 'Twitch', 'Disponible'],
+    stats: [
+      { icon: '📺', value: '35K', label: 'Seguidores Twitch' },
+      { icon: '👀', value: '280K', label: 'Views/mes' },
+      { icon: '❤️', value: '10.3%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'twitch', handle: 'vityshow', followersDisplay: '35K', profileUrl: 'https://twitch.tv/vityshow', hexColor: '#9146FF' },
+      { platform: 'x', handle: '@vityshow', followersDisplay: '8K', profileUrl: 'https://twitter.com/vityshow', hexColor: '#000000' },
+      { platform: 'yt', handle: 'Vityshow', followersDisplay: '15K', profileUrl: 'https://youtube.com/@vityshow', hexColor: '#FF0000' },
+      { platform: 'ig', handle: '@vityshow', followersDisplay: '9K', profileUrl: 'https://instagram.com/vityshow', hexColor: '#E1306C' },
+    ],
+  },
+  {
+    slug: 'sofffi', name: 'SOFFFI', role: 'CS2 Content Creator', game: 'CS2',
+    platform: 'twitch', status: 'active',
+    bio: 'Creadora de contenido CS2 con comunidad activa y fiel. Combina habilidad competitiva con entretenimiento desde la perspectiva femenina en la escena FPS hispana.',
+    gradientC1: '#5b9bd5', gradientC2: '#c42880', initials: 'SF',
+    photoUrl: '/images/talents/sofffi.jpg',
+    tags: ['CS2', 'FPS', 'Twitch'],
+    stats: [
+      { icon: '📺', value: '40K', label: 'Seguidores Twitch' },
+      { icon: '👀', value: '320K', label: 'Views/mes' },
+      { icon: '❤️', value: '9.5%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'twitch', handle: 'sofffi', followersDisplay: '40K', profileUrl: 'https://twitch.tv/sofffi', hexColor: '#9146FF' },
+      { platform: 'x', handle: '@sofffi', followersDisplay: '12K', profileUrl: 'https://twitter.com/sofffi', hexColor: '#000000' },
+      { platform: 'ig', handle: '@sofffi', followersDisplay: '22K', profileUrl: 'https://instagram.com/sofffi', hexColor: '#E1306C' },
+      { platform: 'tt', handle: '@sofffi', followersDisplay: '15K', profileUrl: 'https://tiktok.com/@sofffi', hexColor: '#010101' },
+    ],
+  },
+  {
+    slug: 'naow', name: 'NAOW', role: 'Gaming Content Creator', game: 'Gaming · Variety',
+    platform: 'youtube', status: 'active',
+    bio: 'Iván González, creador de contenido gaming con visión propia y estilo directo. Construye audiencia real con consistencia y personalidad que destaca en la escena hispana.',
+    gradientC1: '#f5632a', gradientC2: '#5b9bd5', initials: 'NW',
+    photoUrl: '/images/talents/naow.jpg',
+    tags: ['Gaming', 'YouTube', 'Variety'],
+    stats: [
+      { icon: '▶️', value: '55K', label: 'Suscriptores YouTube' },
+      { icon: '📺', value: '30K', label: 'Seguidores Twitch' },
+      { icon: '❤️', value: '8.7%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'yt', handle: 'Naow', followersDisplay: '55K', profileUrl: 'https://youtube.com/@naow', hexColor: '#FF0000' },
+      { platform: 'twitch', handle: 'naow', followersDisplay: '30K', profileUrl: 'https://twitch.tv/naow', hexColor: '#9146FF' },
+      { platform: 'ig', handle: '@naow', followersDisplay: '18K', profileUrl: 'https://instagram.com/naow', hexColor: '#E1306C' },
+      { platform: 'tt', handle: '@naow', followersDisplay: '20K', profileUrl: 'https://tiktok.com/@naow', hexColor: '#010101' },
+    ],
+  },
+  {
+    slug: 'yamisanchezz', name: 'YAMISANCHEZZ', role: 'CS2 Content Creator', game: 'CS2',
+    platform: 'twitch', status: 'active',
+    bio: 'Yami Sánchez, creadora de contenido CS2 con presencia real en la escena competitiva hispana. Estilo energético y nivel que la posicionan como referente femenina en FPS.',
+    gradientC1: '#e03070', gradientC2: '#8b3aad', initials: 'YS',
+    photoUrl: '/images/talents/yamisanchezz.jpg',
+    tags: ['CS2', 'FPS', 'Twitch'],
+    stats: [
+      { icon: '📺', value: '50K', label: 'Seguidores Twitch' },
+      { icon: '👀', value: '410K', label: 'Views/mes' },
+      { icon: '❤️', value: '10.1%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'twitch', handle: 'yamisanchezz', followersDisplay: '50K', profileUrl: 'https://twitch.tv/yamisanchezz', hexColor: '#9146FF' },
+      { platform: 'x', handle: '@yamisanchezz', followersDisplay: '25K', profileUrl: 'https://twitter.com/yamisanchezz', hexColor: '#000000' },
+      { platform: 'ig', handle: '@yamisanchezz', followersDisplay: '35K', profileUrl: 'https://instagram.com/yamisanchezz', hexColor: '#E1306C' },
+      { platform: 'tt', handle: '@yamisanchezz', followersDisplay: '28K', profileUrl: 'https://tiktok.com/@yamisanchezz', hexColor: '#010101' },
+    ],
+  },
+  {
+    slug: 'annablue', name: 'ANNA BLUE', role: 'Variety Streamer', game: 'Variety',
+    platform: 'twitch', status: 'active',
+    bio: 'Streamer variety con comunidad fiel. Entretenimiento, gaming casual y colaboraciones con marcas de iGaming y lifestyle.',
+    gradientC1: '#8b3aad', gradientC2: '#5b9bd5', initials: 'AB',
+    photoUrl: '/images/talents/annablue.jpg',
+    tags: ['Variety', 'Twitch', 'iGaming', 'LatAm'],
+    stats: [
+      { icon: '🟣', value: '55K', label: 'Twitch' },
+      { icon: '✖', value: '20K', label: 'Twitter' },
+      { icon: '📸', value: '35K', label: 'Instagram' },
+      { icon: '▶', value: '25K', label: 'YouTube' },
+    ],
+    socials: [
+      { platform: 'twitch', handle: 'annablue', followersDisplay: '55K', profileUrl: 'https://twitch.tv/annablue', hexColor: '#9146FF' },
+      { platform: 'twitter', handle: 'annablue', followersDisplay: '20K', profileUrl: 'https://twitter.com/annablue', hexColor: '#1DA1F2' },
+      { platform: 'instagram', handle: 'annablue', followersDisplay: '35K', profileUrl: 'https://instagram.com/annablue', hexColor: '#E1306C' },
+      { platform: 'youtube', handle: 'annablue', followersDisplay: '25K', profileUrl: 'https://youtube.com/@annablue', hexColor: '#FF0000' },
+    ],
+  },
+  {
+    slug: 'eruby', name: 'ERUBY', role: 'CS2 Content Creator', game: 'CS2',
+    platform: 'youtube', status: 'active',
+    bio: 'Creador de contenido especializado en CS2. Highlights, tutoriales y colaboraciones con marcas de skins y plataformas gaming.',
+    gradientC1: '#e03070', gradientC2: '#f5632a', initials: 'ER',
+    photoUrl: '/images/talents/eruby.jpg',
+    tags: ['CS2', 'YouTube', 'Skins', 'Gaming'],
+    stats: [
+      { icon: '▶', value: '45K', label: 'YouTube' },
+      { icon: '🟣', value: '18K', label: 'Twitch' },
+      { icon: '✖', value: '22K', label: 'Twitter' },
+      { icon: '📸', value: '28K', label: 'Instagram' },
+    ],
+    socials: [
+      { platform: 'youtube', handle: 'eruby', followersDisplay: '45K', profileUrl: 'https://youtube.com/@eruby', hexColor: '#FF0000' },
+      { platform: 'twitch', handle: 'eruby', followersDisplay: '18K', profileUrl: 'https://twitch.tv/eruby', hexColor: '#9146FF' },
+      { platform: 'twitter', handle: 'eruby', followersDisplay: '22K', profileUrl: 'https://twitter.com/eruby', hexColor: '#1DA1F2' },
+      { platform: 'instagram', handle: 'eruby', followersDisplay: '28K', profileUrl: 'https://instagram.com/eruby', hexColor: '#E1306C' },
+    ],
+  },
+];
+
+const COLLABORATORS_DATA = [
+  {
+    slug: 'andrechini', name: 'Andrechini', description: 'Streamer & Content Creator',
+    badge: 'Twitch · YouTube', photoUrl: '/images/collabs/andrechini.jpg',
+    gradientC1: '#e03070', gradientC2: '#c42880', initials: 'AN', sortOrder: 0,
+  },
+  {
+    slug: 'imantado', name: 'Imantado', description: 'Gaming & Variety Streamer',
+    badge: 'Twitch · CS2', photoUrl: '/images/collabs/imantado.jpg',
+    gradientC1: '#f5632a', gradientC2: '#8b3aad', initials: 'IM', sortOrder: 1,
+  },
+  {
+    slug: 'imicaelax', name: 'Imicaelax', description: 'Content Creator',
+    badge: 'YouTube · Twitch', photoUrl: '/images/collabs/imicaelax.jpg',
+    gradientC1: '#8b3aad', gradientC2: '#5b9bd5', initials: 'IC', sortOrder: 2,
+  },
+];
+
+const TEAM_DATA = [
+  {
+    slug: 'alfonso', name: 'Alfonso "Zack" Arias', role: 'Co-Founder & Marketing Influencer',
+    bio: 'Ex-pro player CS, streamer. +7 años en gambling. Especializado en talentos y YouTube management.',
+    photoUrl: null, gradientC1: '#f5632a', gradientC2: '#e03070', initials: 'AF', sortOrder: 0,
+  },
+  {
+    slug: 'keko', name: 'Pablo "Kekō" Camacho', role: 'Founder & Marketing Influencer',
+    bio: '+14 años en esports/gaming. Ex pro player CS:GO. Especialista en iGaming y desarrollo de negocio.',
+    photoUrl: null, gradientC1: '#8b3aad', gradientC2: '#5b9bd5', initials: 'KK', sortOrder: 1,
+  },
+  {
+    slug: 'giuliano', name: 'Giuliano', role: 'Talent Manager LATAM',
+    bio: 'Experto en casino y casas de apuestas. Centrado en acuerdos iGaming para el mercado LATAM. +5 años de experiencia.',
+    photoUrl: null, gradientC1: '#e03070', gradientC2: '#c42880', initials: 'GI', sortOrder: 2,
+  },
+  {
+    slug: 'cm', name: 'Community Manager', role: 'Community & Social Media',
+    bio: 'Gestión de comunidades, contenido social y crecimiento orgánico.',
+    photoUrl: null, gradientC1: '#5b9bd5', gradientC2: '#8b3aad', initials: 'CM', sortOrder: 3,
+  },
+];
+
+const TESTIMONIALS_DATA = [
+  {
+    quote: 'SocialPro duplicó nuestros FTDs en el primer mes. Su conocimiento del compliance en iGaming es excepcional.',
+    authorName: 'Carlos M.', authorRole: 'Head of Marketing, Casino Online',
+    gradientC1: '#f5632a', gradientC2: '#e03070', sortOrder: 0,
+  },
+  {
+    quote: 'La calidad de edición y las miniaturas que producen han triplicado el CTR de nuestros vídeos.',
+    authorName: 'DEQIUV', authorRole: 'Streamer CS2/Valorant',
+    gradientC1: '#8b3aad', gradientC2: '#5b9bd5', sortOrder: 1,
+  },
+  {
+    quote: 'La expansión a LatAm con creadores locales fue perfecta. Entendieron que necesítabamos audiencia real.',
+    authorName: 'Andrés P.', authorRole: 'Brand Manager, Plataforma Skins',
+    gradientC1: '#e03070', gradientC2: '#c42880', sortOrder: 2,
+  },
+];
+
+interface CaseData {
+  slug: string;
+  brandName: string;
+  title: string;
+  logoUrl: string | null;
+  sortOrder: number;
+  body: string[];
+  tags: string[];
+  creators: string[];
+}
+
+const CASES_DATA: CaseData[] = [
+  {
+    slug: 'razer', brandName: 'RAZER',
+    title: 'SocialPro × RAZER: Activación con creadores del ecosistema gaming',
+    logoUrl: '/images/cases/razer.jpg', sortOrder: 0,
+    body: [
+      'SocialPro ha colaborado con RAZER, una de las marcas líderes a nivel mundial en periféricos gaming, en una activación con distintos creadores de contenido del ecosistema gaming y de streaming.',
+      'La campaña contó con la participación de múltiples perfiles del sector, quienes integraron periféricos de la marca en sus setups y contenido habitual, reforzando la presencia de RAZER dentro de sus comunidades.',
+      'Varios creadores recibieron sillas gaming, ratones, teclados y cascos, que fueron mostrados en directo durante sus streams y publicados en redes sociales. La activación se amplió con historias en Instagram y vídeos en TikTok.',
+      'Este tipo de acciones permiten a las marcas conectar de forma natural con audiencias gaming activas, mostrando los productos en el entorno donde realmente se utilizan: el setup diario de los creadores.',
+    ],
+    tags: ['Gaming Hardware', 'Twitch', 'YouTube', 'Instagram', 'TikTok', 'Periféricos', 'Multicanal', '13 creadores'],
+    creators: ['IreneRAWR', 'Deqiuv', 'Anna Blue', 'Rinna', 'The Real Fer', 'Goked', 'Naow', 'Vityshow', 'Todocs2', 'Eruby', 'Joanpau', 'Dess', 'D3stri'],
+  },
+  {
+    slug: 'onewin', brandName: '1WIN',
+    title: '1WIN × SocialPro: 100+ Influencers en Instagram',
+    logoUrl: null, sortOrder: 1,
+    body: [
+      'Campaña activa desde mediados de 2025. Activación en Instagram con más de 100 influencers del ecosistema gaming e iGaming.',
+      'Con perfiles como Manolito de Zona Gemelos entre otros, la campaña sigue activa y en constante expansión.',
+    ],
+    tags: ['iGaming', 'Instagram', '100+ influencers', 'Activa 2025', 'España', 'LatAm'],
+    creators: ['Manolito de Zona Gemelos', 'y muchos más del ecosistema gaming'],
+  },
+  {
+    slug: 'skinsmonkey', brandName: 'SKINSMONKEY',
+    title: 'SkinsMonkey × SocialPro: +200.000€ en CS2 Skins Marketplace',
+    logoUrl: null, sortOrder: 2,
+    body: [
+      'Desde inicios de 2025, SocialPro ha gestionado la presencia de SkinsMonkey con 13 creadores especializados en CS2 en YouTube.',
+      'Más de 200.000€ trackeados en trading de skins directamente a través de los códigos de SocialPro. Tasas de conversión muy superiores a la media del sector.',
+    ],
+    tags: ['CS2 Skins', 'YouTube', 'Trading', '13 creadores', '200K€+', 'Marketplace'],
+    creators: ['13 creadores especializados en CS2'],
+  },
+];
+
+const PORTFOLIO_DATA = [
+  { type: 'thumb' as const, creatorName: 'MARTINEZ', title: 'Martinez & S1mple in FACEIT', imageUrl: '/images/portfolio/0.jpg', views: '18.5K CTR', date: 'Feb 2026', url: 'https://www.youtube.com/watch?v=vynaNvKPjMk', sortOrder: 0 },
+  { type: 'thumb' as const, creatorName: 'HUASOPEEK', title: 'Campeones ACE SA Masters', imageUrl: '/images/portfolio/1.jpg', views: '21.2K CTR', date: 'Mar 2026', url: 'https://www.youtube.com/watch?v=Tz7kApOOg88', sortOrder: 1 },
+  { type: 'thumb' as const, creatorName: 'MARTINEZ', title: 'Con dav1deus y nikom en Dust2', imageUrl: '/images/portfolio/2.jpg', views: '14.8K CTR', date: 'Ene 2026', url: 'https://www.youtube.com/watch?v=iOd736G7Izw', sortOrder: 2 },
+  { type: 'thumb' as const, creatorName: 'MARTINEZ', title: 'MARTINEZ vs. MAIL09', imageUrl: '/images/portfolio/3.jpg', views: '16.3K CTR', date: 'Feb 2026', url: 'https://www.youtube.com/watch?v=vynaNvKPjMk', sortOrder: 3 },
+  { type: 'thumb' as const, creatorName: 'MARTINEZ', title: 'MARTINEZ vs. KYOUSUKE en FACEIT', imageUrl: '/images/portfolio/4.jpg', views: '19.7K CTR', date: 'Mar 2026', url: 'https://www.youtube.com/watch?v=vynaNvKPjMk', sortOrder: 4 },
+  { type: 'campaign' as const, creatorName: 'MARTINEZ x SkinsMonkey', title: 'Sorteo AWP Printstream — Código MARTINEZ', imageUrl: '/images/portfolio/5.jpg', views: '1.4M alcance', date: 'Feb 2026', url: '', sortOrder: 5 },
+];
+
+// ─── SEED ────────────────────────────────────────────────────────────────────
+
+async function seed(): Promise<void> {
+  console.log('Starting seed...\n');
+
+  // 1. Brands
+  console.log('Inserting brands...');
+  await db.insert(schema.brands).values(BRANDS_DATA).onConflictDoNothing();
+  console.log(`  ${BRANDS_DATA.length} brands`);
+
+  // 2. Talents + child tables
+  console.log('Inserting talents...');
+  for (let i = 0; i < TALENTS_DATA.length; i++) {
+    const t = TALENTS_DATA[i];
+    const { tags, stats, socials, ...talentRow } = t;
+
+    const [inserted] = await db
+      .insert(schema.talents)
+      .values({ ...talentRow, sortOrder: i })
+      .onConflictDoNothing()
+      .returning({ id: schema.talents.id });
+
+    if (!inserted) {
+      console.log(`  skipped (already exists): ${t.slug}`);
+      continue;
+    }
+    const talentId = inserted.id;
+
+    if (tags.length) {
+      await db.insert(schema.talentTags).values(
+        tags.map((tag) => ({ talentId, tag }))
+      ).onConflictDoNothing();
+    }
+
+    if (stats.length) {
+      await db.insert(schema.talentStats).values(
+        stats.map((s, idx) => ({ talentId, icon: s.icon, value: s.value, label: s.label, sortOrder: idx }))
+      ).onConflictDoNothing();
+    }
+
+    if (socials.length) {
+      await db.insert(schema.talentSocials).values(
+        socials.map((s, idx) => ({
+          talentId,
+          platform: s.platform,
+          handle: s.handle,
+          followersDisplay: s.followersDisplay,
+          profileUrl: s.profileUrl,
+          hexColor: s.hexColor,
+          sortOrder: idx,
+        }))
+      ).onConflictDoNothing();
+    }
+
+    console.log(`  inserted: ${t.slug}`);
+  }
+
+  // 3. Collaborators
+  console.log('Inserting collaborators...');
+  await db.insert(schema.collaborators).values(COLLABORATORS_DATA).onConflictDoNothing();
+  console.log(`  ${COLLABORATORS_DATA.length} collaborators`);
+
+  // 4. Team members
+  console.log('Inserting team members...');
+  await db.insert(schema.teamMembers).values(
+    TEAM_DATA.map((m) => ({ ...m, photoUrl: m.photoUrl ?? undefined }))
+  ).onConflictDoNothing();
+  console.log(`  ${TEAM_DATA.length} team members`);
+
+  // 5. Testimonials
+  console.log('Inserting testimonials...');
+  await db.insert(schema.testimonials).values(TESTIMONIALS_DATA).onConflictDoNothing();
+  console.log(`  ${TESTIMONIALS_DATA.length} testimonials`);
+
+  // 6. Case studies + child tables
+  console.log('Inserting case studies...');
+  for (const c of CASES_DATA) {
+    const { body, tags, creators, ...caseRow } = c;
+
+    const [inserted] = await db
+      .insert(schema.caseStudies)
+      .values({ ...caseRow, logoUrl: caseRow.logoUrl ?? undefined })
+      .onConflictDoNothing()
+      .returning({ id: schema.caseStudies.id });
+
+    if (!inserted) {
+      console.log(`  skipped (already exists): ${c.slug}`);
+      continue;
+    }
+    const caseId = inserted.id;
+
+    if (body.length) {
+      await db.insert(schema.caseBody).values(
+        body.map((paragraph, idx) => ({ caseId, paragraph, sortOrder: idx }))
+      ).onConflictDoNothing();
+    }
+    if (tags.length) {
+      await db.insert(schema.caseTags).values(
+        tags.map((tag) => ({ caseId, tag }))
+      ).onConflictDoNothing();
+    }
+    if (creators.length) {
+      await db.insert(schema.caseCreators).values(
+        creators.map((creatorName) => ({ caseId, creatorName }))
+      ).onConflictDoNothing();
+    }
+
+    console.log(`  inserted: ${c.slug}`);
+  }
+
+  // 7. Portfolio items
+  console.log('Inserting portfolio items...');
+  await db.insert(schema.portfolioItems).values(PORTFOLIO_DATA).onConflictDoNothing();
+  console.log(`  ${PORTFOLIO_DATA.length} portfolio items`);
+
+  console.log('\nSeed complete!');
+}
+
+seed().catch((err) => {
+  console.error('Seed failed:', err);
+  process.exit(1);
+});
