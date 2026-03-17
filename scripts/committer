@@ -54,6 +54,10 @@ fi
 
 files=("$@")
 
+# Generate committer token so the git-policy shim allows git add/commit from this script
+export _COMMITTER_TOKEN
+_COMMITTER_TOKEN="$(dd if=/dev/urandom bs=32 count=1 2>/dev/null | base64 | tr -d '\n')"
+
 # Guard: block "." — defeats the safety purpose
 for file in "${files[@]}"; do
   if [ "$file" = "." ]; then
