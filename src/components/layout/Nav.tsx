@@ -29,7 +29,7 @@ export function Nav() {
             <li key={l.href}>
               <a
                 href={l.href}
-                className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors"
+                className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-3"
               >
                 {l.label}
               </a>
@@ -69,7 +69,7 @@ export function Nav() {
             <a
               key={l.href}
               href={l.href}
-              className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors"
+              className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-2"
               onClick={() => setOpen(false)}
             >
               {l.label}

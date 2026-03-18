@@ -36,6 +36,7 @@ export function TalentModal({ talent, onClose }: TalentModalProps) {
               src={talent.photoUrl}
               alt={talent.name}
               fill
+              sizes="(max-width: 640px) 100vw, 600px"
               className="object-cover object-top"
             />
           )}

@@ -29,7 +29,7 @@ export function TeamGrid({ team }: TeamGridProps) {
               >
                 <div className="relative h-40" style={{ background: grad }}>
                   {member.photoUrl ? (
-                    <Image src={member.photoUrl} alt={member.name} fill className="object-cover" />
+                    <Image src={member.photoUrl} alt={member.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover" />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <span className="font-display text-5xl font-black text-white/80">{member.initials}</span>
