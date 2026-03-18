@@ -6,8 +6,9 @@ import Link from 'next/link';
 const NAV_LINKS = [
   { href: '#talentos', label: 'Talentos' },
   { href: '#servicios', label: 'Servicios' },
-  { href: '#casos', label: 'Casos' },
-  { href: '#equipo', label: 'Equipo' },
+  { href: '#portfolio', label: 'Portfolio' },
+  { href: '#casos', label: 'Casos de Éxito' },
+  { href: '#nosotros', label: 'Nosotros' },
   { href: '#contacto', label: 'Contacto' },
 ];
 
@@ -18,7 +19,7 @@ export function Nav() {
     <nav className="fixed top-0 left-0 right-0 z-40 bg-sp-black/90 backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         {/* Logo */}
-        <Link href="/" className="font-display text-2xl font-black uppercase tracking-widest gradient-text">
+        <Link href="/" className="font-display text-2xl font-black uppercase tracking-widest text-white">
           SocialPro
         </Link>
 
@@ -42,7 +43,7 @@ export function Nav() {
           className="hidden md:inline-flex items-center gap-2 bg-sp-grad bg-image-sp-grad px-5 py-2 rounded-full text-sm font-bold text-white"
           style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
         >
-          Trabajar con SocialPro
+          TRABAJEMOS JUNTOS
         </a>
 
         {/* Mobile burger */}
@@ -80,7 +81,7 @@ export function Nav() {
             style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
             onClick={() => setOpen(false)}
           >
-            Trabajar con SocialPro
+            TRABAJEMOS JUNTOS
           </a>
         </div>
       )}

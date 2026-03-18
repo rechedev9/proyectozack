@@ -17,6 +17,7 @@ import { AboutSection } from '@/components/sections/AboutSection';
 import { TeamGrid } from '@/components/sections/TeamGrid';
 import { ContactSection } from '@/components/sections/ContactSection';
 import { CtaSection } from '@/components/sections/CtaSection';
+import { FaqSection } from '@/components/sections/FaqSection';
 
 // Revalidate every hour (ISR)
 export const revalidate = 3600;
@@ -48,6 +49,7 @@ export default async function HomePage() {
       <AboutSection />
       <TeamGrid team={team} />
       <CtaSection />
+      <FaqSection />
       <ContactSection />
     </>
   );

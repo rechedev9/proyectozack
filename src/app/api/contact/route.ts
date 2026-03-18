@@ -23,9 +23,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   await db.insert(contactSubmissions).values({
     name: data.name,
     email: data.email,
+    phone: data.phone,
     type: data.type,
     company: data.company,
     message: data.message,
+    budget: data.budget,
+    timeline: data.timeline,
+    audience: data.audience,
+    platform: data.platform,
+    viewers: data.viewers,
+    monetization: data.monetization,
   });
 
   // Send email (failure doesn't affect 200 response)

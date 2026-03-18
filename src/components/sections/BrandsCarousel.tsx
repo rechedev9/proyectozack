@@ -22,7 +22,7 @@ export function BrandsCarousel({ brands }: BrandsCarouselProps) {
           {items.map((brand, i) => (
             <div
               key={`${brand.slug}-${i}`}
-              className="mx-8 w-28 h-16 flex items-center justify-center shrink-0 grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100"
+              className="mx-8 w-28 h-16 flex items-center justify-center shrink-0 transition-all opacity-80 hover:opacity-100"
             >
               {brand.logoUrl ? (
                 <Image
