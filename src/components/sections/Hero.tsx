@@ -1,6 +1,6 @@
 export function Hero() {
   return (
-    <section className="relative bg-sp-black text-white overflow-hidden min-h-screen flex flex-col">
+    <section className="relative bg-sp-black text-white overflow-hidden h-dvh flex flex-col">
 
       {/* Subtle grid overlay */}
       <div
@@ -26,8 +26,8 @@ export function Hero() {
         />
       </div>
 
-      {/* Main content */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 w-full flex-1 flex flex-col">
+      {/* Main content — justify-end pins content to bottom of viewport */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 w-full flex-1 flex flex-col justify-end pb-10">
 
         {/* Geographic sub-label */}
         <span className="inline-block text-[10px] font-semibold uppercase tracking-[0.2em] text-sp-orange mb-6">
@@ -35,7 +35,7 @@ export function Hero() {
         </span>
 
         {/* Headline */}
-        <h1 className="font-display text-[4.5rem] sm:text-[6rem] md:text-[7.5rem] lg:text-[9rem] font-black uppercase leading-[0.9] mb-auto">
+        <h1 className="font-display text-[4.5rem] sm:text-[6rem] md:text-[7.5rem] lg:text-[9rem] font-black uppercase leading-[0.9] mb-8">
           <span className="text-white">CONECTAMOS</span>
           <br />
           <span
@@ -53,9 +53,9 @@ export function Hero() {
         </h1>
 
         {/* Bottom row: paragraph + CTAs on left, stats on right */}
-        <div className="flex items-end justify-between gap-8 pb-10">
+        <div className="flex items-end justify-between gap-8">
           <div>
-            <p className="text-sm text-sp-muted2 max-w-sm mb-6 leading-relaxed">
+            <p className="text-sm text-sp-muted2 max-w-sm mb-5 leading-relaxed">
               13+ años dentro del ecosistema gaming &amp; esports.
               Representamos a los mejores streamers y ejecutamos
               campañas de iGaming que convierten.

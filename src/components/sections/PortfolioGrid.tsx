@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import type { PortfolioItem } from '@/types';
 import { FilterTabs } from '@/components/ui/FilterTabs';
@@ -17,10 +17,22 @@ const FILTERS = [
 
 type FilterKey = (typeof FILTERS)[number]['key'];
 
+/** Deduplicate items by imageUrl so the same image never appears twice */
+function dedupeByImage(items: PortfolioItem[]): PortfolioItem[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    if (!item.imageUrl) return true;
+    if (seen.has(item.imageUrl)) return false;
+    seen.add(item.imageUrl);
+    return true;
+  });
+}
+
 export function PortfolioGrid({ items }: PortfolioGridProps) {
   const [filter, setFilter] = useState<FilterKey>('all');
 
-  const visible = filter === 'all' ? items : items.filter((i) => i.type === filter);
+  const uniqueItems = useMemo(() => dedupeByImage(items), [items]);
+  const visible = filter === 'all' ? uniqueItems : uniqueItems.filter((i) => i.type === filter);
 
   return (
     <>
