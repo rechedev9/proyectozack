@@ -4,7 +4,7 @@ import { GradientText } from '@/components/ui/GradientText';
 
 export function AboutSection() {
   return (
-    <section className="py-24 bg-white">
+    <section id="nosotros" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-16 items-center">
         <div>
           <SectionTag>Sobre SocialPro</SectionTag>
