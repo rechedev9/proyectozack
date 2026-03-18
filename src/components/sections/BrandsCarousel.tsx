@@ -30,8 +30,8 @@ export function BrandsCarousel({ brands }: BrandsCarouselProps) {
                   alt={brand.displayName}
                   width={112}
                   height={48}
-                  className="object-contain max-h-12"
-                  style={{ height: 'auto' }}
+                  className="object-contain"
+                  style={{ width: 'auto', height: 'auto', maxHeight: '48px' }}
                 />
               ) : (
                 <span className="text-xs font-bold text-sp-muted uppercase">{brand.displayName}</span>
