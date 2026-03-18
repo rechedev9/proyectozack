@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import * as m from 'motion/react-client';
+import { AnimatePresence } from 'motion/react';
+import { useScroll, useMotionValueEvent } from 'motion/react';
 
 const NAV_LINKS = [
   { href: '#talentos', label: 'Talentos' },
@@ -14,9 +17,28 @@ const NAV_LINKS = [
 
 export function Nav() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const { scrollY, scrollYProgress } = useScroll();
+
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    setScrolled(latest > 50);
+  });
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 bg-sp-black/90 backdrop-blur-md border-b border-white/10">
+    <nav
+      className={`fixed top-0 left-0 right-0 z-40 backdrop-blur-md border-b transition-colors duration-300 ${
+        scrolled ? 'bg-sp-black/95 border-white/10' : 'bg-transparent border-transparent'
+      }`}
+    >
+      {/* Scroll progress bar */}
+      <m.div
+        className="absolute bottom-0 left-0 right-0 h-[2px] origin-left"
+        style={{
+          background: 'linear-gradient(90deg,#f5632a 0%,#e03070 50%,#8b3aad 100%)',
+          scaleX: scrollYProgress,
+        }}
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         {/* Logo */}
         <Link href="/" className="font-display text-2xl font-black uppercase tracking-widest text-white">
@@ -38,13 +60,15 @@ export function Nav() {
         </ul>
 
         {/* CTA */}
-        <a
+        <m.a
           href="#contacto"
-          className="hidden md:inline-flex items-center gap-2 bg-sp-grad bg-image-sp-grad px-5 py-2 rounded-full text-sm font-bold text-white"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className="hidden md:inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold text-white"
           style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
         >
           TRABAJEMOS JUNTOS
-        </a>
+        </m.a>
 
         {/* Mobile burger */}
         <button
@@ -63,28 +87,42 @@ export function Nav() {
       </div>
 
       {/* Mobile menu */}
-      {open && (
-        <div className="md:hidden bg-sp-black border-t border-white/10 px-4 py-4 flex flex-col gap-4">
-          {NAV_LINKS.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-2"
+      <AnimatePresence>
+        {open && (
+          <m.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="md:hidden bg-sp-black border-t border-white/10 px-4 py-4 flex flex-col gap-4"
+          >
+            {NAV_LINKS.map((l, i) => (
+              <m.a
+                key={l.href}
+                href={l.href}
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2, ease: 'easeOut', delay: i * 0.04 }}
+                className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-2"
+                onClick={() => setOpen(false)}
+              >
+                {l.label}
+              </m.a>
+            ))}
+            <m.a
+              href="#contacto"
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2, ease: 'easeOut', delay: NAV_LINKS.length * 0.04 }}
+              className="text-sm font-bold text-white text-center py-2 rounded-full"
+              style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
               onClick={() => setOpen(false)}
             >
-              {l.label}
-            </a>
-          ))}
-          <a
-            href="#contacto"
-            className="text-sm font-bold text-white text-center py-2 rounded-full"
-            style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
-            onClick={() => setOpen(false)}
-          >
-            TRABAJEMOS JUNTOS
-          </a>
-        </div>
-      )}
+              TRABAJEMOS JUNTOS
+            </m.a>
+          </m.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

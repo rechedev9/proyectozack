@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import * as m from 'motion/react-client';
+import { AnimatePresence } from 'motion/react';
 import type { TalentWithRelations } from '@/types';
 import { FilterTabs } from '@/components/ui/FilterTabs';
 import { TalentCard } from './TalentCard';
@@ -31,13 +33,23 @@ export function TalentGrid({ talents }: TalentGridProps) {
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {visible.map((talent) => (
-          <TalentCard
-            key={talent.id}
-            talent={talent}
-            onOpen={() => setSelected(talent)}
-          />
-        ))}
+        <AnimatePresence mode="popLayout">
+          {visible.map((talent) => (
+            <m.div
+              key={talent.id}
+              layout
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              <TalentCard
+                talent={talent}
+                onOpen={() => setSelected(talent)}
+              />
+            </m.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {/* Modal */}

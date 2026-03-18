@@ -1,3 +1,6 @@
+'use client';
+
+import * as m from 'motion/react-client';
 import { GradientText } from '@/components/ui/GradientText';
 import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 
@@ -12,13 +15,15 @@ export function CtaSection() {
           <p className="text-sp-muted2 text-lg mb-10">
             Cuéntanos tu proyecto y te conectamos con el talento perfecto para tu marca.
           </p>
-          <a
+          <m.a
             href="#contacto"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
             className="inline-flex items-center justify-center px-10 py-4 rounded-full font-bold text-white text-base"
             style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
           >
             Contactar ahora →
-          </a>
+          </m.a>
         </FadeInOnScroll>
       </div>
     </section>

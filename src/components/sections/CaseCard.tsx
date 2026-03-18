@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import * as m from 'motion/react-client';
 import type { CaseStudyWithRelations } from '@/types';
 import { CaseModal } from './CaseModal';
 
@@ -14,7 +15,11 @@ export function CaseCard({ caseStudy }: CaseCardProps) {
 
   return (
     <>
-      <div className="rounded-2xl border border-sp-border bg-white overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
+      <m.div
+        whileHover={{ y: -4 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
+        className="rounded-2xl border border-sp-border bg-white overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
+      >
         {/* Colored header strip */}
         <div className="h-16 flex items-center justify-between px-5 bg-sp-dark">
           {/* Brand logo or name */}
@@ -68,15 +73,17 @@ export function CaseCard({ caseStudy }: CaseCardProps) {
           )}
 
           <div className="mt-auto">
-            <button
+            <m.button
               onClick={() => setOpen(true)}
+              whileHover={{ x: 4 }}
+              transition={{ duration: 0.2 }}
               className="text-xs font-semibold text-sp-orange hover:underline focus:outline-none"
             >
               Leer más →
-            </button>
+            </m.button>
           </div>
         </div>
-      </div>
+      </m.div>
 
       {open && <CaseModal caseStudy={caseStudy} onClose={() => setOpen(false)} />}
     </>

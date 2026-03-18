@@ -18,13 +18,23 @@ export function Hero() {
         }}
       />
 
-      {/* Gradient blobs */}
+      {/* Gradient blobs — slow floating animation */}
       <div className="absolute inset-0 pointer-events-none">
-        <div
+        <m.div
+          animate={{
+            x: [0, 30, -20, 0],
+            y: [0, -25, 15, 0],
+          }}
+          transition={{ duration: 20, ease: 'linear', repeat: Infinity }}
           className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full opacity-25"
           style={{ background: 'radial-gradient(circle, #f5632a, transparent 70%)' }}
         />
-        <div
+        <m.div
+          animate={{
+            x: [0, -25, 20, 0],
+            y: [0, 20, -30, 0],
+          }}
+          transition={{ duration: 25, ease: 'linear', repeat: Infinity }}
           className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full opacity-25"
           style={{ background: 'radial-gradient(circle, #c42880, transparent 70%)' }}
         />
@@ -90,19 +100,23 @@ export function Hero() {
               campañas de iGaming que convierten.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <a
+              <m.a
                 href="#contacto"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 className="inline-flex items-center justify-center px-7 py-3.5 rounded-full font-bold text-white text-sm"
                 style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
               >
                 ¿Eres una marca? Hablemos.
-              </a>
-              <a
+              </m.a>
+              <m.a
                 href="#talentos"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 className="inline-flex items-center justify-center px-7 py-3.5 rounded-full font-bold text-white text-sm border border-white/20 hover:border-white/40 transition-colors"
               >
                 Ver nuestros talentos
-              </a>
+              </m.a>
             </div>
           </m.div>
 
