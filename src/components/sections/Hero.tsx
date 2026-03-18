@@ -26,8 +26,8 @@ export function Hero() {
         />
       </div>
 
-      {/* Main content — justify-end pins content to bottom of viewport */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 w-full flex-1 flex flex-col justify-end pb-10">
+      {/* Main content — centered vertically with slight downward offset */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 w-full flex-1 flex flex-col justify-center pb-10">
 
         {/* Geographic sub-label */}
         <span className="inline-block text-[10px] font-semibold uppercase tracking-[0.2em] text-sp-orange mb-6">
