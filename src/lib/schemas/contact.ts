@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const contactBodySchema = z.object({
   name: z.string().min(2),
-  email: z.string().email(),
+  email: z.email(),
   phone: z.string().optional(),
   type: z.string().min(1),
   company: z.string().optional(),

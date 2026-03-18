@@ -13,7 +13,7 @@ import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Nombre requerido'),
-  email: z.string().email('Email inválido'),
+  email: z.email('Email inválido'),
   phone: z.string().optional(),
   type: z.string().min(1, 'Tipo requerido'),
   company: z.string().optional(),
