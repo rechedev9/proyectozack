@@ -2,6 +2,7 @@ import Image from 'next/image';
 import type { Brand } from '@/types';
 import { SectionTag } from '@/components/ui/SectionTag';
 import { SectionHeading } from '@/components/ui/SectionHeading';
+import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 
 interface BrandsCarouselProps {
   brands: Brand[];
@@ -12,10 +13,12 @@ export function BrandsCarousel({ brands }: BrandsCarouselProps) {
 
   return (
     <section className="py-20 bg-sp-off">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
-        <SectionTag>Marcas que confían en nosotros</SectionTag>
-        <SectionHeading>Partners & Brands</SectionHeading>
-      </div>
+      <FadeInOnScroll>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
+          <SectionTag>Marcas que confían en nosotros</SectionTag>
+          <SectionHeading>Partners & Brands</SectionHeading>
+        </div>
+      </FadeInOnScroll>
 
       <div className="overflow-hidden">
         <div className="marquee-track">

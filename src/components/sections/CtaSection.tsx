@@ -1,22 +1,25 @@
 import { GradientText } from '@/components/ui/GradientText';
+import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 
 export function CtaSection() {
   return (
     <section className="py-24 bg-sp-black text-white text-center">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="font-display text-5xl md:text-6xl font-black uppercase mb-6">
-          ¿Listo para <GradientText>empezar</GradientText>?
-        </h2>
-        <p className="text-sp-muted2 text-lg mb-10">
-          Cuéntanos tu proyecto y te conectamos con el talento perfecto para tu marca.
-        </p>
-        <a
-          href="#contacto"
-          className="inline-flex items-center justify-center px-10 py-4 rounded-full font-bold text-white text-base"
-          style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
-        >
-          Contactar ahora →
-        </a>
+        <FadeInOnScroll>
+          <h2 className="font-display text-5xl md:text-6xl font-black uppercase mb-6">
+            ¿Listo para <GradientText>empezar</GradientText>?
+          </h2>
+          <p className="text-sp-muted2 text-lg mb-10">
+            Cuéntanos tu proyecto y te conectamos con el talento perfecto para tu marca.
+          </p>
+          <a
+            href="#contacto"
+            className="inline-flex items-center justify-center px-10 py-4 rounded-full font-bold text-white text-base"
+            style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
+          >
+            Contactar ahora →
+          </a>
+        </FadeInOnScroll>
       </div>
     </section>
   );
