@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
+import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import type { ReactNode } from 'react';
 
@@ -29,23 +30,23 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
             { href: '/admin/cases', label: 'Casos' },
             { href: '/admin/testimonials', label: 'Testimonios' },
           ].map(({ href, label }) => (
-            <a
+            <Link
               key={href}
               href={href}
               className="block px-4 py-2.5 rounded-xl text-sm font-medium text-sp-muted2 hover:text-white hover:bg-white/10 transition-colors"
             >
               {label}
-            </a>
+            </Link>
           ))}
         </div>
         <div className="p-4 border-t border-white/10">
           <p className="text-xs text-sp-muted truncate">{session.user.email}</p>
-          <a
+          <Link
             href="/api/auth/sign-out"
             className="mt-2 block text-xs text-sp-muted2 hover:text-white transition-colors"
           >
             Cerrar sesión
-          </a>
+          </Link>
         </div>
       </nav>
 

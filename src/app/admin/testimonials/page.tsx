@@ -15,7 +15,7 @@ export default async function AdminTestimonialsPage() {
             className="flex items-start justify-between bg-white rounded-xl border border-sp-border px-5 py-4 gap-4"
           >
             <div className="flex-1">
-              <p className="text-sm text-sp-dark italic line-clamp-2">"{t.quote}"</p>
+              <p className="text-sm text-sp-dark italic line-clamp-2">&ldquo;{t.quote}&rdquo;</p>
               <p className="text-xs text-sp-muted mt-1 font-semibold">{t.authorName} — {t.authorRole}</p>
             </div>
             <form action={deleteTestimonialAction} className="shrink-0">
