@@ -1,0 +1,104 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { fetchYouTubeSubscriberCounts } from '@/lib/services/youtube';
+import { fetchTwitchFollowerCounts } from '@/lib/services/twitch';
+import { getTrackableSocials, insertSnapshot } from '@/lib/queries/analytics';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  // Verify cron secret (Vercel sends this automatically)
+  const authHeader = req.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Check required env vars
+  const hasYouTube = !!process.env.YOUTUBE_API_KEY;
+  const hasTwitch = !!process.env.TWITCH_CLIENT_ID && !!process.env.TWITCH_CLIENT_SECRET;
+
+  if (!hasYouTube && !hasTwitch) {
+    return NextResponse.json(
+      { error: 'No API keys configured. Set YOUTUBE_API_KEY and/or TWITCH_CLIENT_ID + TWITCH_CLIENT_SECRET.' },
+      { status: 500 },
+    );
+  }
+
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const socials = await getTrackableSocials();
+  const errors: string[] = [];
+  let youtubeCount = 0;
+  let twitchCount = 0;
+
+  // YouTube batch
+  if (hasYouTube) {
+    const ytSocials = socials.filter((s) => s.platform === 'youtube');
+    if (ytSocials.length > 0) {
+      try {
+        const channelIds = ytSocials.map((s) => s.platformId);
+        const stats = await fetchYouTubeSubscriberCounts(channelIds);
+
+        // Map channelId back to talentId
+        const channelToTalent = new Map(ytSocials.map((s) => [s.platformId, s.talentId]));
+
+        for (const stat of stats) {
+          const talentId = channelToTalent.get(stat.channelId);
+          if (talentId !== undefined) {
+            await insertSnapshot({
+              talentId,
+              platform: 'youtube',
+              metricType: 'subscribers',
+              value: stat.subscriberCount,
+              snapshotDate: today,
+            });
+            youtubeCount++;
+          }
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Unknown YouTube error';
+        errors.push(`YouTube: ${msg}`);
+        console.error('YouTube API error:', msg);
+      }
+    }
+  }
+
+  // Twitch batch
+  if (hasTwitch) {
+    const twitchSocials = socials.filter((s) => s.platform === 'twitch');
+    if (twitchSocials.length > 0) {
+      try {
+        const broadcasterIds = twitchSocials.map((s) => s.platformId);
+        const stats = await fetchTwitchFollowerCounts(broadcasterIds);
+
+        // Map broadcasterId back to talentId
+        const idToTalent = new Map(twitchSocials.map((s) => [s.platformId, s.talentId]));
+
+        for (const stat of stats) {
+          const talentId = idToTalent.get(stat.broadcasterId);
+          if (talentId !== undefined) {
+            await insertSnapshot({
+              talentId,
+              platform: 'twitch',
+              metricType: 'followers',
+              value: stat.followerCount,
+              snapshotDate: today,
+            });
+            twitchCount++;
+          }
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Unknown Twitch error';
+        errors.push(`Twitch: ${msg}`);
+        console.error('Twitch API error:', msg);
+      }
+    }
+  }
+
+  return NextResponse.json({
+    success: errors.length === 0,
+    youtube: youtubeCount,
+    twitch: twitchCount,
+    errors,
+    date: today,
+  });
+}
