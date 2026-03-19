@@ -16,7 +16,7 @@ export default async function BrandTalentFichaPage({ params }: PageProps) {
   const { slug } = await params;
   const session = await requireRole('brand', '/marcas/login');
   const talent = await getTalentBySlug(slug);
-  if (!talent) notFound();
+  if (!talent || talent.status !== 'active') notFound();
 
   const campaigns = await getTalentCampaignsForBrand(session.user.id, talent.id);
   const grad = gradientStyle(talent.gradientC1, talent.gradientC2);

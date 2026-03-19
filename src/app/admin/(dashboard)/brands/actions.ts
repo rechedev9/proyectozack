@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm';
 import { sendBrandInviteEmail } from '@/lib/email';
 import { env } from '@/lib/env';
 import { auth } from '@/lib/auth';
+import { requireRole } from '@/lib/auth-guard';
 
 interface InviteState {
   error?: string;
@@ -14,6 +15,9 @@ interface InviteState {
 }
 
 export async function inviteBrandAction(_prev: InviteState, formData: FormData): Promise<InviteState> {
+  // Auth gate — only admins can invite brands
+  await requireRole('admin', '/admin/login');
+
   const name = formData.get('name') as string;
   const email = formData.get('email') as string;
 

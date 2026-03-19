@@ -37,7 +37,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Talent not found' }, { status: 400 });
   }
 
-  // Check for duplicate proposal
+  // Check for duplicate proposal (application-level check for UX)
   const existing = await db
     .select({ id: talentProposals.id })
     .from(talentProposals)
@@ -52,14 +52,24 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Ya tienes una propuesta pendiente para este talento' }, { status: 409 });
   }
 
-  await db.insert(talentProposals).values({
-    brandUserId: session.user.id,
-    talentId: data.talentId,
-    campaignType: data.campaignType,
-    budgetRange: data.budgetRange,
-    timeline: data.timeline,
-    message: data.message,
-  });
+  // Insert with try/catch to handle race condition (concurrent duplicate)
+  try {
+    await db.insert(talentProposals).values({
+      brandUserId: session.user.id,
+      talentId: data.talentId,
+      campaignType: data.campaignType,
+      budgetRange: data.budgetRange,
+      timeline: data.timeline,
+      message: data.message,
+    });
+  } catch (err) {
+    // If concurrent request already inserted, return 409 instead of 500
+    const message = err instanceof Error ? err.message : '';
+    if (message.includes('unique') || message.includes('duplicate')) {
+      return NextResponse.json({ error: 'Ya tienes una propuesta pendiente para este talento' }, { status: 409 });
+    }
+    throw err;
+  }
 
   return NextResponse.json({ success: true }, { status: 201 });
 }
