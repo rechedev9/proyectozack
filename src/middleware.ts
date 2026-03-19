@@ -51,7 +51,9 @@ const RATE_LIMITS: { pattern: RegExp; limit: number; windowMs: number }[] = [
 ];
 
 function getClientIp(req: NextRequest): string {
+  // Prefer Vercel's trusted header (cannot be spoofed by clients)
   return (
+    req.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() ??
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     req.headers.get('x-real-ip') ??
     '127.0.0.1'

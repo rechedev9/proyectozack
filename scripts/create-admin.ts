@@ -27,9 +27,10 @@ async function main() {
   const DATABASE_URL = process.env.DATABASE_URL;
   if (!DATABASE_URL) { console.error('DATABASE_URL not set'); process.exit(1); }
 
-  const email = 'admin@socialpro.es';
-  const password = 'AdminKekoZack12345';
-  const name = 'Admin SocialPro';
+  const email = process.env.ADMIN_EMAIL ?? 'admin@socialpro.es';
+  const password = process.env.ADMIN_PASSWORD;
+  if (!password) { console.error('ADMIN_PASSWORD env var required'); process.exit(1); }
+  const name = process.env.ADMIN_NAME ?? 'Admin SocialPro';
 
   // Hash password using Better Auth's exact scrypt config
   const saltBytes = crypto.getRandomValues(new Uint8Array(16));

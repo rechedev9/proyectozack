@@ -50,10 +50,15 @@ export async function sendBrandInviteEmail(payload: {
   resetUrl: string;
 }): Promise<void> {
   const brandName = escapeHtml(payload.brandName);
-  // Only allow HTTPS URLs for the reset link
-  const resetUrl = payload.resetUrl.startsWith('https://') || payload.resetUrl.startsWith('http://localhost')
-    ? payload.resetUrl
-    : '#';
+  // Only allow URLs on the same domain to prevent phishing via open redirect
+  let resetUrl = '#';
+  try {
+    const parsed = new URL(payload.resetUrl);
+    const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000');
+    if (parsed.hostname === siteUrl.hostname) resetUrl = payload.resetUrl;
+  } catch {
+    // Malformed URL — fall through to '#'
+  }
 
   await resend.emails.send({
     from: 'SocialPro <noreply@socialpro.es>',

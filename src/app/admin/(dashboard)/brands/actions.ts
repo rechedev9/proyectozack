@@ -45,11 +45,13 @@ export async function inviteBrandAction(_prev: InviteState, formData: FormData):
     try {
       await sendBrandInviteEmail({ brandEmail: email, brandName: name, resetUrl: portalUrl });
     } catch (err) {
-      console.error('[admin] Brand invite email error:', err);
+      const emailMsg = err instanceof Error ? err.message : 'unknown';
+      console.error('[admin] Brand invite email error:', emailMsg);
       // Account created but email failed — admin can resend or share link manually
     }
   } catch (err) {
-    console.error('[admin] Brand creation error:', err);
+    const msg = err instanceof Error ? err.message : 'unknown';
+    console.error('[admin] Brand creation error:', msg);
     return { error: 'Error al crear la cuenta' };
   }
 
