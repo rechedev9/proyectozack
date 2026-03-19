@@ -1,7 +1,5 @@
-import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 import Link from 'next/link';
-import { auth } from '@/lib/auth';
+import { requireRole } from '@/lib/auth-guard';
 import type { ReactNode } from 'react';
 
 interface AdminLayoutProps {
@@ -9,11 +7,7 @@ interface AdminLayoutProps {
 }
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  if (!session) {
-    redirect('/admin/login');
-  }
+  const session = await requireRole('admin', '/admin/login');
 
   return (
     <div className="min-h-screen bg-sp-off flex">
