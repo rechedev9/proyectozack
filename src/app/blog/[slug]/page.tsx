@@ -61,7 +61,7 @@ export default async function BlogPostPage({ params }: PageProps) {
     description: post.excerpt,
     author: { '@type': 'Organization', name: 'SocialPro' },
     publisher: { '@type': 'Organization', name: 'SocialPro' },
-    datePublished: post.publishedAt?.toISOString() ?? '2025-01-01',
+    datePublished: post.publishedAt?.toISOString(),
     image: post.coverUrl || undefined,
   };
 
