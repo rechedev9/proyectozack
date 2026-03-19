@@ -3,6 +3,10 @@ import { db } from '@/lib/db';
 import { talents, talentTags, talentStats, talentSocials } from '@/db/schema';
 import type { TalentWithRelations } from '@/types';
 
+export async function getTalentSlugs(): Promise<{ slug: string }[]> {
+  return db.select({ slug: talents.slug }).from(talents);
+}
+
 export async function getTalents(platform?: 'twitch' | 'youtube'): Promise<TalentWithRelations[]> {
   const rows = await db.query.talents.findMany({
     where: platform ? eq(talents.platform, platform) : undefined,

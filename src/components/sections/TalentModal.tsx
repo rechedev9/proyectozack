@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import type { TalentWithRelations } from '@/types';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { SocialIcon } from '@/components/ui/SocialIcon';
@@ -113,6 +114,15 @@ export function TalentModal({ talent, onClose }: TalentModalProps) {
               </a>
             ))}
           </div>
+
+          {/* Profile link */}
+          <Link
+            href={`/talentos/${talent.slug}`}
+            onClick={onClose}
+            className="block text-center w-full py-3.5 rounded-full font-bold text-sm border-2 border-sp-border text-sp-dark hover:bg-sp-off transition-colors"
+          >
+            Ver perfil completo &rarr;
+          </Link>
 
           {/* CTA */}
           <a
