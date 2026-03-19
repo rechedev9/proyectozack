@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import * as m from 'motion/react-client';
 import { AnimatePresence } from 'motion/react';
 import { useScroll, useMotionValueEvent } from 'motion/react';
@@ -40,9 +41,21 @@ export function Nav() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        {/* Logo */}
-        <Link href="/" className="font-display text-2xl font-black uppercase tracking-widest text-white">
-          SocialPro
+        {/* Logo Integration */}
+        <Link href="/" className="relative group flex items-center gap-2">
+          <m.div 
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+          >
+            <Image 
+              src="/images/logos/3.png" 
+              alt="SocialPro Logo" 
+              width={160} 
+              height={40} 
+              className="h-9 w-auto object-contain transition-opacity duration-300 brightness-0 invert"
+              priority
+            />
+          </m.div>
         </Link>
 
         {/* Desktop links */}

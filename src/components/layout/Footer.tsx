@@ -1,29 +1,38 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 
 export function Footer() {
   return (
-    <footer className="bg-sp-black text-sp-muted2 border-t border-white/10">
+    <footer className="bg-sp-black text-sp-muted2 border-t border-white/5">
       <FadeInOnScroll>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid md:grid-cols-4 gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid md:grid-cols-4 gap-12">
           {/* Brand */}
-          <div>
-            <span className="font-display text-2xl font-black uppercase tracking-widest gradient-text block mb-3">
-              SocialPro
-            </span>
-            <p className="text-sm leading-relaxed mb-4">
-              Agencia de talentos gaming & esports. Conectamos creadores con marcas de iGaming, periféricos y más.
+          <div className="flex flex-col gap-6">
+            <Link href="/" className="inline-block">
+              <Image 
+                src="/images/logos/4.png" 
+                alt="SocialPro Logo" 
+                width={140} 
+                height={35} 
+                className="brightness-0 invert opacity-80 hover:opacity-100 transition-opacity"
+              />
+            </Link>
+            <p className="text-sm leading-relaxed">
+              Agencia de talentos gaming & esports de alto rendimiento. Conectamos creadores con marcas líderes en iGaming y tecnología.
             </p>
-            <p className="text-sm">
-              <a href="tel:+34604868426" className="hover:text-white transition-colors">
-                +34 604 868 426
-              </a>
-            </p>
-            <p className="text-sm mt-1">
-              <a href="mailto:marketing@socialpro.es" className="hover:text-white transition-colors">
-                marketing@socialpro.es
-              </a>
-            </p>
+            <div className="space-y-1">
+              <p className="text-sm">
+                <a href="tel:+34604868426" className="hover:text-white transition-colors">
+                  +34 604 868 426
+                </a>
+              </p>
+              <p className="text-sm">
+                <a href="mailto:marketing@socialpro.es" className="hover:text-white transition-colors">
+                  marketing@socialpro.es
+                </a>
+              </p>
+            </div>
           </div>
 
           {/* Navegación */}
