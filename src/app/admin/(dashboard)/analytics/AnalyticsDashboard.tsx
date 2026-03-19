@@ -231,7 +231,8 @@ export function AnalyticsDashboard({ snapshots, talents, trackedCount }: Analyti
       </div>
 
       {/* Controls Bar */}
-      <div className="flex flex-wrap items-center gap-4 mb-6">
+      <div className="flex flex-wrap items-center gap-3 mb-8 rounded-2xl bg-white border border-sp-border px-5 py-4">
+        <span className="text-xs font-semibold text-sp-muted uppercase tracking-wider mr-1">Period</span>
         <DateRangePicker
           value={dateRange}
           onChange={setDateRange}
@@ -239,7 +240,10 @@ export function AnalyticsDashboard({ snapshots, talents, trackedCount }: Analyti
           customTo={customTo}
           onCustomChange={(f, t) => { setCustomFrom(f); setCustomTo(t); }}
         />
+        <div className="w-px h-6 bg-sp-border mx-1 hidden sm:block" />
+        <span className="text-xs font-semibold text-sp-muted uppercase tracking-wider mr-1 hidden sm:inline">Platform</span>
         <PlatformFilter value={platformFilter} onChange={setPlatformFilter} />
+        <div className="w-px h-6 bg-sp-border mx-1 hidden sm:block" />
         <CreatorFilter
           creators={talents.map((t) => ({ id: t.id, name: t.name }))}
           selected={selectedCreators}
