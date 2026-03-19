@@ -17,7 +17,10 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="font-display text-4xl font-black uppercase text-sp-dark mb-8">Dashboard</h1>
+      <div className="mb-10">
+        <h1 className="font-display text-4xl font-black uppercase text-sp-dark">Dashboard</h1>
+        <div className="mt-2 h-1 w-16 rounded-full bg-gradient-to-r from-sp-orange to-sp-pink" />
+      </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map(({ label, value, href }) => (
           <a
