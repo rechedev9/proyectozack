@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    optimizePackageImports: ['motion'],
+    optimizePackageImports: ['motion', 'recharts'],
   },
 };
 
