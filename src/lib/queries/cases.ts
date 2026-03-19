@@ -3,6 +3,10 @@ import { db } from '@/lib/db';
 import { caseStudies } from '@/db/schema';
 import type { CaseStudyWithRelations } from '@/types';
 
+export async function getCaseSlugs(): Promise<{ slug: string }[]> {
+  return db.select({ slug: caseStudies.slug }).from(caseStudies);
+}
+
 export async function getCaseStudies(): Promise<CaseStudyWithRelations[]> {
   return db.query.caseStudies.findMany({
     with: {

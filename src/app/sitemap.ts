@@ -1,10 +1,10 @@
 import type { MetadataRoute } from 'next';
-import { getCaseStudies } from '@/lib/queries/cases';
+import { getCaseSlugs } from '@/lib/queries/cases';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const cases = await getCaseStudies();
+  const cases = await getCaseSlugs();
 
   const caseEntries: MetadataRoute.Sitemap = cases.map((c) => ({
     url: `${SITE_URL}/casos/${c.slug}`,

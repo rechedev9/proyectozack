@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getCaseStudies, getCaseBySlug } from '@/lib/queries/cases';
+import { getCaseSlugs, getCaseBySlug } from '@/lib/queries/cases';
 import { SectionTag } from '@/components/ui/SectionTag';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
@@ -14,7 +14,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const cases = await getCaseStudies();
+  const cases = await getCaseSlugs();
   return cases.map((c) => ({ slug: c.slug }));
 }
 
