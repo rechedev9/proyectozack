@@ -113,8 +113,7 @@ export function ServicesSection() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="rounded-3xl p-8 md:p-10 mb-10 text-white"
-            style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
+            className="rounded-3xl p-8 md:p-10 mb-10 text-white bg-sp-grad"
           >
             <h3 className="font-display text-2xl md:text-3xl font-black uppercase mb-6">{current.title}</h3>
             <ol className="space-y-3">

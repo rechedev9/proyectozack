@@ -8,14 +8,14 @@ export function Hero() {
     <section className="relative bg-sp-black text-white overflow-hidden min-h-dvh flex flex-col pt-16">
 
       {/* Deep Background Aura — slow pulsing animation */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none" style={{ contain: 'paint' }}>
         <m.div
           animate={{
             scale: [1, 1.1, 1],
             opacity: [0.15, 0.25, 0.15],
           }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full will-change-transform"
           style={{
             background: 'radial-gradient(circle, #e03070 0%, transparent 60%)',
             filter: 'blur(80px)',
@@ -27,7 +27,7 @@ export function Hero() {
             opacity: [0.1, 0.2, 0.1],
           }}
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -top-[10%] -right-[10%] w-[800px] h-[800px] rounded-full"
+          className="absolute -top-[10%] -right-[10%] w-[800px] h-[800px] rounded-full will-change-transform"
           style={{
             background: 'radial-gradient(circle, #f5632a 0%, transparent 70%)',
             filter: 'blur(100px)',
@@ -130,8 +130,7 @@ export function Hero() {
               href="#contacto"
               whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(224,48,112,0.3)' }}
               whileTap={{ scale: 0.95 }}
-              className="px-10 py-4 rounded-full font-bold text-white text-sm tracking-widest uppercase transition-shadow"
-              style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
+              className="px-10 py-4 rounded-full font-bold text-white text-sm tracking-widest uppercase transition-shadow bg-sp-grad"
             >
               Iniciar Propuesta
             </m.a>

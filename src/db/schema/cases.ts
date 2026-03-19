@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, integer } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, text, integer, index } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { talents } from './talents';
 
@@ -15,27 +15,35 @@ export const caseStudies = pgTable('case_studies', {
   roiMultiplier: varchar('roi_multiplier', { length: 20 }),
   heroImageUrl: varchar('hero_image_url', { length: 500 }),
   excerpt: text('excerpt'),
-});
+}, (t) => [
+  index('case_studies_slug_idx').on(t.slug),
+]);
 
 export const caseBody = pgTable('case_body', {
   id: serial('id').primaryKey(),
   caseId: integer('case_id').notNull().references(() => caseStudies.id, { onDelete: 'cascade' }),
   paragraph: text('paragraph').notNull(),
   sortOrder: integer('sort_order').notNull().default(0),
-});
+}, (t) => [
+  index('case_body_case_id_idx').on(t.caseId),
+]);
 
 export const caseTags = pgTable('case_tags', {
   id: serial('id').primaryKey(),
   caseId: integer('case_id').notNull().references(() => caseStudies.id, { onDelete: 'cascade' }),
   tag: varchar('tag', { length: 100 }).notNull(),
-});
+}, (t) => [
+  index('case_tags_case_id_idx').on(t.caseId),
+]);
 
 export const caseCreators = pgTable('case_creators', {
   id: serial('id').primaryKey(),
   caseId: integer('case_id').notNull().references(() => caseStudies.id, { onDelete: 'cascade' }),
   creatorName: varchar('creator_name', { length: 100 }).notNull(),
   talentId: integer('talent_id').references(() => talents.id, { onDelete: 'set null' }),
-});
+}, (t) => [
+  index('case_creators_case_id_idx').on(t.caseId),
+]);
 
 export const caseStudiesRelations = relations(caseStudies, ({ many }) => ({
   body: many(caseBody),

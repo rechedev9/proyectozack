@@ -1,5 +1,5 @@
 import { requireRole } from '@/lib/auth-guard';
-import { getTalents } from '@/lib/queries/talents';
+import { getTalentsByIds } from '@/lib/queries/talents';
 import Image from 'next/image';
 import { gradientStyle } from '@/lib/gradient';
 import Link from 'next/link';
@@ -27,9 +27,8 @@ export default async function BrandComparePage({ searchParams }: PageProps) {
     );
   }
 
-  // Fetch all talents by IDs with relations
-  const allTalents = await getTalents();
-  const selected = allTalents.filter((t) => idStrings.includes(t.id)).slice(0, 4);
+  // Fetch only the selected talents by IDs
+  const selected = (await getTalentsByIds(idStrings)).slice(0, 4);
 
   if (selected.length < 2) {
     return (

@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { eq, desc } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { posts } from '@/db/schema';
@@ -17,9 +18,9 @@ export async function getPosts(): Promise<Post[]> {
   });
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | undefined> {
+export const getPostBySlug = cache(async (slug: string): Promise<Post | undefined> => {
   const row = await db.query.posts.findFirst({
     where: eq(posts.slug, slug),
   });
   return row ?? undefined;
-}
+});

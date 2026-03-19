@@ -96,8 +96,7 @@ export function Nav() {
           href="#contacto"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="hidden md:inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase tracking-widest text-white"
-          style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
+          className="hidden md:inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase tracking-widest text-white bg-sp-grad"
         >
           Trabajemos juntos
         </m.a>
@@ -163,8 +162,7 @@ export function Nav() {
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.15, ease: 'easeOut', delay: NAV_LINKS.length * 0.04 }}
-              className="text-xs font-bold uppercase tracking-widest text-white text-center py-3"
-              style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
+              className="text-xs font-bold uppercase tracking-widest text-white text-center py-3 bg-sp-grad"
               onClick={() => setOpen(false)}
             >
               Trabajemos juntos

@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { caseStudies } from '@/db/schema';
@@ -18,7 +19,7 @@ export async function getCaseStudies(): Promise<CaseStudyWithRelations[]> {
   });
 }
 
-export async function getCaseBySlug(slug: string): Promise<CaseStudyWithRelations | undefined> {
+export const getCaseBySlug = cache(async (slug: string): Promise<CaseStudyWithRelations | undefined> => {
   const row = await db.query.caseStudies.findFirst({
     where: eq(caseStudies.slug, slug),
     with: {
@@ -28,4 +29,4 @@ export async function getCaseBySlug(slug: string): Promise<CaseStudyWithRelation
     },
   });
   return row ?? undefined;
-}
+});

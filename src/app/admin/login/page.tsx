@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function AdminLoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,10 +23,10 @@ export default function AdminLoginPage() {
       });
 
       if (res.ok) {
-        window.location.href = '/admin';
+        router.refresh();
+        router.push('/admin');
       } else {
-        const data = await res.json().catch(() => ({}));
-        setError((data as { message?: string }).message ?? 'Credenciales incorrectas');
+        setError('Credenciales incorrectas');
       }
     } catch {
       setError('Error de red');
@@ -68,8 +70,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-full font-bold text-white text-sm disabled:opacity-60"
-            style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
+            className="w-full py-3 rounded-full font-bold text-white text-sm disabled:opacity-60 bg-sp-grad"
           >
             {loading ? 'Entrando...' : 'Iniciar sesión'}
           </button>

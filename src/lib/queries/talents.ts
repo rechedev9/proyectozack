@@ -1,4 +1,5 @@
-import { eq, and, type SQL } from 'drizzle-orm';
+import { cache } from 'react';
+import { eq, and, inArray, type SQL } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { talents, talentTags, talentStats, talentSocials } from '@/db/schema';
 import type { TalentWithRelations } from '@/types';
@@ -48,7 +49,7 @@ export async function getTalents(filters?: TalentFilters): Promise<TalentWithRel
   return filtered;
 }
 
-export async function getTalentBySlug(slug: string): Promise<TalentWithRelations | undefined> {
+export const getTalentBySlug = cache(async (slug: string): Promise<TalentWithRelations | undefined> => {
   const row = await db.query.talents.findFirst({
     where: eq(talents.slug, slug),
     with: {
@@ -58,6 +59,18 @@ export async function getTalentBySlug(slug: string): Promise<TalentWithRelations
     },
   });
   return row ?? undefined;
+});
+
+export async function getTalentsByIds(ids: number[]): Promise<TalentWithRelations[]> {
+  if (ids.length === 0) return [];
+  return db.query.talents.findMany({
+    where: inArray(talents.id, ids),
+    with: {
+      tags: true,
+      stats: { orderBy: (s, { asc }) => [asc(s.sortOrder)] },
+      socials: { orderBy: (s, { asc }) => [asc(s.sortOrder)] },
+    },
+  });
 }
 
 // Re-export for convenience

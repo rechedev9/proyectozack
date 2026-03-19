@@ -333,8 +333,7 @@ export function ContactSection() {
                   <button
                     type="submit"
                     disabled={status === 'sending'}
-                    className="w-full py-3.5 rounded-full font-bold text-white text-sm disabled:opacity-60 focus:outline-none transition-transform hover:scale-[1.02] active:scale-[0.98]"
-                    style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
+                    className="w-full py-3.5 rounded-full font-bold text-white text-sm disabled:opacity-60 focus:outline-none transition-transform hover:scale-[1.02] active:scale-[0.98] bg-sp-grad"
                   >
                     {status === 'sending' ? 'Enviando...' : 'Enviar mensaje →'}
                   </button>

@@ -9,7 +9,8 @@ interface BrandsCarouselProps {
 }
 
 export function BrandsCarousel({ brands }: BrandsCarouselProps) {
-  const items = [...brands, ...brands]; // duplicate for marquee
+  // Duplicate for seamless marquee loop — computed once per prop change (server component)
+  const items = brands.concat(brands);
 
   return (
     <section className="py-20 bg-sp-off">
@@ -33,8 +34,7 @@ export function BrandsCarousel({ brands }: BrandsCarouselProps) {
                   alt={brand.displayName}
                   width={112}
                   height={48}
-                  className="object-contain"
-                  style={{ width: 'auto', height: 'auto', maxHeight: '48px' }}
+                  className="object-contain max-h-12 w-auto h-auto"
                 />
               ) : (
                 <span className="text-xs font-bold text-sp-muted uppercase">{brand.displayName}</span>

@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, integer, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, text, integer, pgEnum, index } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // platform: real values from source data are 'twitch' | 'youtube' only
@@ -20,13 +20,19 @@ export const talents = pgTable('talents', {
   initials: varchar('initials', { length: 4 }).notNull(),
   photoUrl: varchar('photo_url', { length: 500 }),
   sortOrder: integer('sort_order').notNull().default(0),
-});
+}, (t) => [
+  index('talents_slug_idx').on(t.slug),
+  index('talents_platform_idx').on(t.platform),
+  index('talents_status_idx').on(t.status),
+]);
 
 export const talentTags = pgTable('talent_tags', {
   id: serial('id').primaryKey(),
   talentId: integer('talent_id').notNull().references(() => talents.id, { onDelete: 'cascade' }),
   tag: varchar('tag', { length: 100 }).notNull(),
-});
+}, (t) => [
+  index('talent_tags_talent_id_idx').on(t.talentId),
+]);
 
 export const talentStats = pgTable('talent_stats', {
   id: serial('id').primaryKey(),
@@ -35,7 +41,9 @@ export const talentStats = pgTable('talent_stats', {
   value: varchar('value', { length: 50 }).notNull(),
   label: varchar('label', { length: 100 }).notNull(),
   sortOrder: integer('sort_order').notNull().default(0),
-});
+}, (t) => [
+  index('talent_stats_talent_id_idx').on(t.talentId),
+]);
 
 export const talentSocials = pgTable('talent_socials', {
   id: serial('id').primaryKey(),
@@ -46,7 +54,9 @@ export const talentSocials = pgTable('talent_socials', {
   profileUrl: text('profile_url'),
   hexColor: varchar('hex_color', { length: 7 }).notNull(),
   sortOrder: integer('sort_order').notNull().default(0),
-});
+}, (t) => [
+  index('talent_socials_talent_id_idx').on(t.talentId),
+]);
 
 export const talentsRelations = relations(talents, ({ many }) => ({
   tags: many(talentTags),

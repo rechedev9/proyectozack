@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, text, varchar, timestamp, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, serial, integer, text, varchar, timestamp, pgEnum, index } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { talents } from './talents';
 import { caseStudies } from './cases';
@@ -18,7 +18,10 @@ export const brandCampaigns = pgTable('brand_campaigns', {
   caseId: integer('case_id').references(() => caseStudies.id, { onDelete: 'set null' }),
   role: varchar('role', { length: 100 }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+}, (t) => [
+  index('brand_campaigns_brand_user_id_idx').on(t.brandUserId),
+  index('brand_campaigns_talent_id_idx').on(t.talentId),
+]);
 
 export const talentProposals = pgTable('talent_proposals', {
   id: serial('id').primaryKey(),
@@ -31,7 +34,10 @@ export const talentProposals = pgTable('talent_proposals', {
   status: proposalStatusEnum('status').notNull().default('pendiente'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-});
+}, (t) => [
+  index('talent_proposals_brand_user_id_idx').on(t.brandUserId),
+  index('talent_proposals_talent_id_idx').on(t.talentId),
+]);
 
 export const brandCampaignsRelations = relations(brandCampaigns, ({ one }) => ({
   brandUser: one(user, { fields: [brandCampaigns.brandUserId], references: [user.id] }),

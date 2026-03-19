@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function BrandLoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,10 +23,10 @@ export default function BrandLoginPage() {
       });
 
       if (res.ok) {
-        window.location.href = '/marcas';
+        router.refresh();
+        router.push('/marcas');
       } else {
-        const data = await res.json().catch(() => ({}));
-        setError((data as { message?: string }).message ?? 'Credenciales incorrectas');
+        setError('Credenciales incorrectas');
       }
     } catch {
       setError('Error de red');
