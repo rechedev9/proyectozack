@@ -10,8 +10,10 @@ interface AnalyticsProps {
  * GTM shell — renders only when a container ID is provided and consent is given.
  * Usage: <Analytics gtmId="GTM-XXXXXXX" />
  */
+const GTM_ID_RE = /^GTM-[A-Z0-9]{1,10}$/;
+
 export function Analytics({ gtmId }: AnalyticsProps) {
-  if (!gtmId) return null;
+  if (!gtmId || !GTM_ID_RE.test(gtmId)) return null;
 
   return (
     <>

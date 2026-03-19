@@ -12,20 +12,20 @@ import { GradientText } from '@/components/ui/GradientText';
 import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 
 const contactSchema = z.object({
-  name: z.string().min(2, 'Nombre requerido'),
-  email: z.email('Email inválido'),
-  phone: z.string().optional(),
-  type: z.string().min(1, 'Tipo requerido'),
-  company: z.string().optional(),
-  message: z.string().min(10, 'Mensaje demasiado corto'),
+  name: z.string().min(2, 'Nombre requerido').max(100),
+  email: z.email('Email inválido').max(200),
+  phone: z.string().max(30).optional(),
+  type: z.enum(['brand', 'talent', 'other'], { error: 'Tipo requerido' }),
+  company: z.string().max(100).optional(),
+  message: z.string().min(10, 'Mensaje demasiado corto').max(5000),
   // Brand-specific
-  budget: z.string().optional(),
-  timeline: z.string().optional(),
-  audience: z.string().optional(),
+  budget: z.string().max(20).optional(),
+  timeline: z.string().max(30).optional(),
+  audience: z.string().max(200).optional(),
   // Creator-specific
-  platform: z.string().optional(),
-  viewers: z.string().optional(),
-  monetization: z.string().optional(),
+  platform: z.string().max(30).optional(),
+  viewers: z.string().max(100).optional(),
+  monetization: z.string().max(200).optional(),
 });
 
 type ContactForm = z.infer<typeof contactSchema>;
