@@ -294,3 +294,106 @@ Keep complex CSS in `globals.css` — do not force-migrate to Tailwind utilities
 - `src/app/page.tsx` — integration point for all data fetching
 - `src/app/api/contact/route.ts` — only dynamic API endpoint
 - `scripts/extract-images.mjs` — one-time image extraction; must run before seed
+
+---
+
+## Growth Phases (Post-Launch) — Competitive Analysis Insights
+
+> Source: `research_report_20260319_socialpro_competitive.html` (52 fuentes, 2026-03-19)
+
+---
+
+### Growth A — Case Studies con Métricas ✅
+
+**Por qué:** 0/3 competidores tienen case studies funcionales. El 50% de marketers no puede demostrar ROI — documentar resultados es ventaja competitiva enorme.
+
+- [x] Expandir schema `case_studies` con campos de métricas: `reach`, `engagement_rate`, `conversions`, `roi_multiplier`, `hero_image_url`, `excerpt`
+- [x] Crear ruta dinámica `/casos/[slug]` con página completa (no solo modal)
+- [x] Diseñar layout de case study: hero con logo marca, métricas destacadas, body con párrafos, tags
+- [x] Poblar 3 case studies con datos cuantificables (RAZER, 1WIN, SKINSMONKEY)
+- [x] Añadir JSON-LD `Article` schema a cada página de caso
+- [x] Link desde CasesSection de home a las páginas individuales (CaseCard → Link)
+
+---
+
+### Growth B — Páginas Individuales de Talento ✅
+
+**Por qué:** Vizz y L3tcraft tienen páginas por creador que Google indexa. SocialPro solo tiene modal — URLs no compartibles, no indexables.
+
+- [x] Crear ruta `/talentos/[slug]` con SSR + ISR (revalidate 3600)
+- [x] Layout: hero con foto/gradiente, bio, stats, socials, tags
+- [x] JSON-LD `Person` schema por talento
+- [x] Mantener modal en home + link "Ver perfil completo" → `/talentos/[slug]`
+- [x] Sitemap dinámico incluyendo todas las rutas de talento
+
+---
+
+### Growth C — Blog / Contenido SEO ✅
+
+**Por qué:** Ninguna agencia gaming en España tiene estrategia SEO seria. Los términos long-tail tienen baja competencia y alta intención.
+
+- [x] Schema DB: tabla `posts` (id, slug, title, excerpt, body_md, cover_url, author, status, published_at, sort_order)
+- [x] Ruta `/blog` con grid de artículos
+- [x] Ruta `/blog/[slug]` con body desde DB + JSON-LD `BlogPosting`
+- [x] 3 artículos iniciales: tendencias gaming España, guía para creadores, análisis de campaña
+- [x] RSS feed `/blog/feed.xml`
+- [x] Meta tags OG dinámicos por post
+- [x] Nav y Footer actualizados con link a `/blog`
+
+---
+
+### Growth D — Landing Para Creadores ✅
+
+**Por qué:** Ningún competidor tiene funnel dedicado a captar talento. Diferenciar el formulario de contacto marca vs. creador.
+
+- [x] Crear `/para-creadores` — landing con propuesta de valor, proceso visual (4 pasos), beneficios
+- [x] Formulario dedicado (nombre, email, plataforma, handle, seguidores, mensaje)
+- [x] Guardar en tabla `creator_applications` (nuevo schema) + API route POST `/api/creator-apply`
+- [x] CTA desde Footer hacia esta página
+
+---
+
+### Growth E — Metodología / Resultados ✅
+
+**Por qué:** Responde al pain point del 50% de marketers que no puede demostrar ROI. Ningún competidor explica su proceso.
+
+- [x] Crear `/metodologia` — página con 4 fases (discovery, matching, ejecución, reporting)
+- [x] Sección de KPIs medidos (alcance, engagement, conversiones, ROI, sentiment, retention)
+- [x] Link desde Footer (Servicios → "Nuestra Metodología")
+- [x] Sitemap actualizado
+
+---
+
+### Growth F — Internacionalización LATAM ✅ (parcial)
+
+**Por qué:** 300M+ gamers, CAGR 9.12%, mismo idioma. No existe agencia hispanohablante premium con presencia España + LATAM.
+
+- [x] Incluir talento LATAM en roster: KEVO (Argentina) y LUNA (México)
+- [x] Hero y About ya mencionan LatAm, Footer tiene "Latinoamérica" en Mercados
+- [ ] Contenido blog sobre ecosistema gaming latinoamericano
+- [ ] Evaluar i18n ligero: español neutro como default, localización de moneda/región donde aplique
+- [ ] Meta tags `hreflang` si se crean variantes regionales
+
+---
+
+### Growth G — Dashboard Marcas MVP (mes 2-3)
+
+**Por qué:** Diferenciador tecnológico que ninguna agencia española ofrece. La infra Next.js ya lo soporta.
+
+- [ ] Portal `/marcas` protegido con auth (Better Auth roles)
+- [ ] Browse de talento con filtros: plataforma, nicho, rango de seguidores, ubicación
+- [ ] Ficha de talento con métricas, historial de campañas, disponibilidad
+- [ ] Formulario de interés / solicitud de propuesta por talento
+- [ ] Admin: gestión de acceso de marcas
+
+---
+
+### Growth H — Contenido SEO Recurrente (continuo)
+
+**Por qué:** El paisaje SEO español para agencias gaming está prácticamente vacío. First-mover advantage significativo y acumulativo.
+
+- [ ] Calendario editorial: 2-3 artículos/mes
+- [ ] Targeting long-tail: "cómo conseguir sponsor como streamer", "agencia gaming España", "marketing gaming LATAM"
+- [ ] Reportes de mercado trimestrales (reutilizar datos del análisis competitivo)
+- [ ] Guías para creadores (monetización, crecimiento, negociación)
+- [ ] Presencia en eventos clave: GAMERGY, SBC Summit LATAM
