@@ -67,6 +67,11 @@ export function Footer() {
               ].map((s) => (
                 <li key={s}>{s}</li>
               ))}
+              <li>
+                <Link href="/metodologia" className="hover:text-white transition-colors">
+                  Nuestra Metodología
+                </Link>
+              </li>
             </ul>
           </div>
 
