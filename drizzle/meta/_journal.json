@@ -15,6 +15,13 @@
       "when": 1773905531059,
       "tag": "0001_friendly_gravity",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773905678988,
+      "tag": "0002_clear_maelstrom",
+      "breakpoints": true
     }
   ]
 }

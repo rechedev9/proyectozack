@@ -35,6 +35,7 @@ export function Footer() {
                 { href: '#servicios', label: 'Servicios' },
                 { href: '#casos', label: 'Casos de Éxito' },
                 { href: '/blog', label: 'Blog' },
+                { href: '/para-creadores', label: 'Para Creadores' },
                 { href: '#nosotros', label: 'Nosotros' },
                 { href: '#contacto', label: 'Contacto' },
               ].map(({ href, label }) => (
