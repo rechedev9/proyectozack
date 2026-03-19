@@ -10,7 +10,7 @@ export default async function BrandPortalLayout({ children }: BrandPortalLayoutP
   const session = await requireRole('brand', '/marcas/login');
 
   return (
-    <div className="min-h-screen bg-sp-off flex">
+    <div className="min-h-screen bg-sp-off flex overflow-x-hidden">
       <PortalSidebar
         title="SocialPro"
         subtitle="Portal de Marcas"

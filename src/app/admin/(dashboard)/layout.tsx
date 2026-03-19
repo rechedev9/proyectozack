@@ -10,7 +10,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   const session = await requireRole('admin', '/admin/login');
 
   return (
-    <div className="min-h-screen bg-sp-off flex">
+    <div className="min-h-screen bg-sp-off flex overflow-x-hidden">
       <PortalSidebar
         title="SocialPro"
         subtitle="Admin Panel"
