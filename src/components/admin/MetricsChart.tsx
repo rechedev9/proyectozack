@@ -52,7 +52,9 @@ export function MetricsChart({ data, lines, height = 400, yAxisLabel }: MetricsC
             boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
           }}
         />
-        <Legend />
+        <Legend
+          wrapperStyle={{ fontSize: '11px', lineHeight: '18px', maxHeight: '54px', overflow: 'hidden' }}
+        />
         {lines.map((line) => (
           <Line
             key={line.key}
