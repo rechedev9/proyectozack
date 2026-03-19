@@ -22,10 +22,10 @@ export function DateRangePicker({ value, onChange, customFrom, customTo, onCusto
         <button
           key={p.value}
           onClick={() => onChange(p.value)}
-          className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+          className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
             value === p.value
-              ? 'bg-sp-dark text-white'
-              : 'bg-white border border-sp-border text-sp-muted hover:text-sp-dark'
+              ? 'bg-sp-dark text-white shadow-sm'
+              : 'text-sp-muted hover:text-sp-dark hover:bg-sp-off'
           }`}
         >
           {p.label}

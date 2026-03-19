@@ -37,7 +37,11 @@ export function CreatorFilter({ creators, selected, onChange }: CreatorFilterPro
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="px-4 py-2.5 rounded-lg text-sm font-medium bg-white border border-sp-border text-sp-muted hover:text-sp-dark transition-colors"
+        className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+          selected.length > 0
+            ? 'bg-sp-dark text-white shadow-sm'
+            : 'text-sp-muted hover:text-sp-dark hover:bg-sp-off'
+        }`}
       >
         {label}
       </button>
