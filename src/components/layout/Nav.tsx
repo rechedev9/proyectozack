@@ -27,52 +27,61 @@ export function Nav() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-40 backdrop-blur-md border-b transition-colors duration-300 ${
-        scrolled ? 'bg-sp-black/95 border-white/10' : 'bg-transparent border-transparent'
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        scrolled
+          ? 'bg-sp-black/98 backdrop-blur-md border-b border-white/10'
+          : 'bg-sp-black border-b border-white/5'
       }`}
     >
       {/* Scroll progress bar */}
       <m.div
-        className="absolute bottom-0 left-0 right-0 h-[2px] origin-left"
+        className="absolute bottom-0 left-0 right-0 h-[1px] origin-left"
         style={{
           background: 'linear-gradient(90deg,#f5632a 0%,#e03070 50%,#8b3aad 100%)',
           scaleX: scrollYProgress,
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        {/* Logo Integration */}
-        <Link href="/" className="relative group flex items-center gap-2">
-          <m.div 
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between h-16">
+        {/* Logo: ícono + wordmark en JSX */}
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <m.div
             whileHover={{ scale: 1.05 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+            className="flex items-center gap-2.5"
           >
-            <Image 
-              src="/images/logos/3.png" 
-              alt="SocialPro Logo" 
-              width={160} 
-              height={40} 
-              className="h-9 w-auto object-contain transition-opacity duration-300 brightness-0 invert"
+            <Image
+              src="/images/logos/2.png"
+              alt=""
+              width={28}
+              height={28}
+              className="h-7 w-auto object-contain"
               priority
             />
+            <span
+              className="font-display font-black uppercase tracking-tight text-white leading-none"
+              style={{ fontSize: '1.15rem', letterSpacing: '-0.02em' }}
+            >
+              SOCIAL<span className="text-sp-muted2 font-light">PRO</span>
+            </span>
           </m.div>
         </Link>
 
         {/* Desktop links */}
-        <ul className="hidden md:flex items-center gap-8">
+        <ul className="hidden md:flex items-center gap-7">
           {NAV_LINKS.map((l) => (
             <li key={l.href}>
               {l.href.startsWith('/') ? (
                 <Link
                   href={l.href}
-                  className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-3"
+                  className="text-xs font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors duration-200"
                 >
                   {l.label}
                 </Link>
               ) : (
                 <a
                   href={l.href}
-                  className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-3"
+                  className="text-xs font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors duration-200"
                 >
                   {l.label}
                 </a>
@@ -84,21 +93,21 @@ export function Nav() {
         {/* CTA */}
         <m.a
           href="#contacto"
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="hidden md:inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold text-white"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="hidden md:inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase tracking-widest text-white"
           style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
         >
-          TRABAJEMOS JUNTOS
+          Trabajemos juntos
         </m.a>
 
         {/* Mobile burger */}
         <button
-          className="md:hidden text-white p-2"
+          className="md:hidden text-white/70 hover:text-white transition-colors p-2"
           aria-label="Abrir menú"
           onClick={() => setOpen((v) => !v)}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             {open ? (
               <path d="M6 6l12 12M6 18L18 6" />
             ) : (
@@ -115,20 +124,20 @@ export function Nav() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="md:hidden bg-sp-black border-t border-white/10 px-4 py-4 flex flex-col gap-4"
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            className="md:hidden bg-sp-black border-t border-white/10 px-6 py-5 flex flex-col gap-5"
           >
             {NAV_LINKS.map((l, i) =>
               l.href.startsWith('/') ? (
                 <m.div
                   key={l.href}
-                  initial={{ opacity: 0, x: -12 }}
+                  initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2, ease: 'easeOut', delay: i * 0.04 }}
+                  transition={{ duration: 0.15, ease: 'easeOut', delay: i * 0.04 }}
                 >
                   <Link
                     href={l.href}
-                    className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-2 block"
+                    className="text-xs font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors block"
                     onClick={() => setOpen(false)}
                   >
                     {l.label}
@@ -138,10 +147,10 @@ export function Nav() {
                 <m.a
                   key={l.href}
                   href={l.href}
-                  initial={{ opacity: 0, x: -12 }}
+                  initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2, ease: 'easeOut', delay: i * 0.04 }}
-                  className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-2"
+                  transition={{ duration: 0.15, ease: 'easeOut', delay: i * 0.04 }}
+                  className="text-xs font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   {l.label}
@@ -150,14 +159,14 @@ export function Nav() {
             )}
             <m.a
               href="#contacto"
-              initial={{ opacity: 0, x: -12 }}
+              initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.2, ease: 'easeOut', delay: NAV_LINKS.length * 0.04 }}
-              className="text-sm font-bold text-white text-center py-2 rounded-full"
+              transition={{ duration: 0.15, ease: 'easeOut', delay: NAV_LINKS.length * 0.04 }}
+              className="text-xs font-bold uppercase tracking-widest text-white text-center py-3"
               style={{ background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)' }}
               onClick={() => setOpen(false)}
             >
-              TRABAJEMOS JUNTOS
+              Trabajemos juntos
             </m.a>
           </m.div>
         )}
