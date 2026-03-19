@@ -17,7 +17,9 @@ export function PortalSidebar({ title, subtitle, navItems, userEmail, logoutHref
   return (
     <nav className="w-56 bg-sp-black text-white flex flex-col shrink-0">
       <div className="p-6 border-b border-white/10">
-        <span className="font-display text-xl font-black uppercase gradient-text">{title}</span>
+        <Link href="/" className="font-display text-xl font-black uppercase gradient-text hover:opacity-80 transition-opacity">
+          {title}
+        </Link>
         <p className="text-xs text-sp-muted2 mt-1">{subtitle}</p>
       </div>
       <div className="flex-1 p-4 space-y-1">

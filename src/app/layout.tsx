@@ -3,6 +3,7 @@ import { Inter, Barlow_Condensed } from 'next/font/google';
 import './globals.css';
 import { Nav } from '@/components/layout/Nav';
 import { Footer } from '@/components/layout/Footer';
+import { PublicChrome } from '@/components/layout/PublicChrome';
 import { CookieConsent } from '@/components/layout/CookieConsent';
 
 const inter = Inter({
@@ -114,9 +115,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${barlowCondensed.variable} antialiased`}>
-        <Nav />
-        <main className="pt-16">{children}</main>
-        <Footer />
+        <PublicChrome nav={<Nav />} footer={<Footer />}>
+          {children}
+        </PublicChrome>
         <CookieConsent />
       </body>
     </html>
