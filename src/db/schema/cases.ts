@@ -8,6 +8,12 @@ export const caseStudies = pgTable('case_studies', {
   title: text('title').notNull(),
   logoUrl: varchar('logo_url', { length: 500 }),
   sortOrder: integer('sort_order').notNull().default(0),
+  reach: varchar('reach', { length: 50 }),
+  engagementRate: varchar('engagement_rate', { length: 20 }),
+  conversions: varchar('conversions', { length: 50 }),
+  roiMultiplier: varchar('roi_multiplier', { length: 20 }),
+  heroImageUrl: varchar('hero_image_url', { length: 500 }),
+  excerpt: text('excerpt'),
 });
 
 export const caseBody = pgTable('case_body', {
