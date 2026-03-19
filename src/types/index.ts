@@ -16,6 +16,7 @@ import type {
   posts,
   brandCampaigns,
   talentProposals,
+  talentMetricSnapshots,
 } from '@/db/schema';
 
 // ─── Base model types ────────────────────────────────────────────────────────
@@ -41,6 +42,7 @@ export type Post = InferSelectModel<typeof posts>;
 
 export type BrandCampaign = InferSelectModel<typeof brandCampaigns>;
 export type TalentProposal = InferSelectModel<typeof talentProposals>;
+export type TalentMetricSnapshot = InferSelectModel<typeof talentMetricSnapshots>;
 
 // ─── With-relations types ────────────────────────────────────────────────────
 

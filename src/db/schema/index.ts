@@ -6,3 +6,4 @@ export * from './posts';
 export * from './creatorApplications';
 export * from './auth';
 export * from './brands';
+export * from './analytics';

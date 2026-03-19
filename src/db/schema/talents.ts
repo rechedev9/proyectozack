@@ -53,6 +53,7 @@ export const talentSocials = pgTable('talent_socials', {
   followersDisplay: varchar('followers_display', { length: 20 }).notNull(),
   profileUrl: text('profile_url'),
   hexColor: varchar('hex_color', { length: 7 }).notNull(),
+  platformId: varchar('platform_id', { length: 200 }),
   sortOrder: integer('sort_order').notNull().default(0),
 }, (t) => [
   index('talent_socials_talent_id_idx').on(t.talentId),
