@@ -364,15 +364,15 @@ Keep complex CSS in `globals.css` — do not force-migrate to Tailwind utilities
 
 ---
 
-### Growth F — Internacionalización LATAM ✅ (parcial)
+### Growth F — Internacionalización LATAM ✅
 
 **Por qué:** 300M+ gamers, CAGR 9.12%, mismo idioma. No existe agencia hispanohablante premium con presencia España + LATAM.
 
 - [x] Incluir talento LATAM en roster: KEVO (Argentina) y LUNA (México)
 - [x] Hero y About ya mencionan LatAm, Footer tiene "Latinoamérica" en Mercados
-- [ ] Contenido blog sobre ecosistema gaming latinoamericano
-- [ ] Evaluar i18n ligero: español neutro como default, localización de moneda/región donde aplique
-- [ ] Meta tags `hreflang` si se crean variantes regionales
+- [x] Contenido blog sobre ecosistema gaming latinoamericano (`tendencias-gaming-latam-2026`)
+- [x] Evaluar i18n ligero: sitio en español neutro, sin precios ni monedas — no aplica cambio de código
+- [x] Meta tags `hreflang`: no hay variantes regionales planificadas — N/A
 
 ---
 

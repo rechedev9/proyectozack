@@ -583,6 +583,42 @@ La autenticidad gana. Los creadores que realmente usaban los productos generaron
     publishedAt: new Date('2025-03-10'),
     sortOrder: 2,
   },
+  {
+    slug: 'tendencias-gaming-latam-2026',
+    title: 'Tendencias Gaming LATAM 2026: Qué Está Pasando y Por Qué Importa',
+    excerpt: 'Latinoamérica tiene más de 300 millones de gamers, un CAGR del 9.12% y el mismo idioma que España. Analizamos qué está pasando en el ecosistema gaming hispanohablante y por qué las marcas que ignoran LATAM están dejando dinero sobre la mesa.',
+    bodyMd: `## El mercado que nadie puede ignorar
+
+Latinoamérica es el mercado gaming de más rápido crecimiento del mundo hispanohablante. Brasil lidera en volumen, pero México, Argentina y Colombia están generando ecosistemas de creadores de primer nivel que ya compiten globalmente. Con una base de más de 300 millones de gamers y una tasa de crecimiento anual del 9.12%, LATAM no es el futuro del gaming en español: es el presente.
+
+## Las plataformas que dominan en 2026
+
+Twitch y YouTube siguen siendo los grandes, pero con matices importantes respecto a España. En LATAM, Kick está creciendo a ritmo acelerado, especialmente en Argentina y México, donde la monetización en dólares es especialmente atractiva para los creadores. TikTok gaming también tiene un peso mayor que en Europa: clips de partidas, highlights y contenido vertical generan audiencias masivas en la región.
+
+## Los géneros que mueven audiencia
+
+Los títulos competitivos como CS2, Valorant y League of Legends siguen siendo los más seguidos. Pero hay un diferenciador clave en LATAM: los juegos de rol y aventura abierta tienen una penetración mucho mayor. FIFA (ahora EA Sports FC) y los battle royales como Free Fire —especialmente popular en segmentos de menor poder adquisitivo— completan el panorama. Free Fire, específicamente, es fenómeno masivo en México, Colombia y Brasil, con millones de jugadores que las agencias europeas aún no han sabido aprovechar.
+
+## Los creadores que están definiendo la escena
+
+Argentina está produciendo algunos de los talentos más interesantes del momento. El perfil argentino combina alto nivel técnico con personalidad y capacidad de entretenimiento que engancha. México aporta volumen: más creadores, más variedad de géneros y audiencias enormes. Colombia emerge con fuerza en Valorant y los títulos competitivos. En SocialPro ya contamos con KEVO (Argentina) y LUNA (México) en nuestro roster, exactamente por esta razón.
+
+## Por qué las marcas europeas siguen perdiendo esta oportunidad
+
+La barrera no es el idioma —es el mismo. Tampoco es la plataforma —son las mismas. El problema es que la mayoría de agencias europeas no tienen talento LATAM representado ni relaciones con los creadores de la región. Las marcas que quieren activar en LATAM necesitan una agencia que entienda ambos mercados, que tenga credibilidad en los dos contextos y que pueda ejecutar campañas que se sientan auténticas, no importadas.
+
+## Qué esperar en 2026
+
+Tres tendencias que definirán el gaming LATAM este año: primero, la profesionalización de los esports regionales, con más ligas locales y más dinero en premios. Segundo, el crecimiento del streaming en español como lingua franca —los creadores LATAM tienen cada vez más audiencia española y viceversa. Tercero, el auge de las marcas de iGaming adaptadas a la región, donde la regulación está evolucionando rápido y las oportunidades son enormes para quienes lleguen antes.
+
+## La ventaja del primer jugador
+
+No existe hoy ninguna agencia premium hispanohablante con presencia consolidada en España y LATAM simultáneamente. Esa ventana no va a estar abierta para siempre. Las marcas que activen ahora, con talento representado en ambos mercados y una agencia que entienda los dos contextos, tendrán una ventaja competitiva que será muy difícil de replicar en 18 meses.`,
+    author: 'SocialPro',
+    status: 'published' as const,
+    publishedAt: new Date('2026-03-19'),
+    sortOrder: 3,
+  },
 ];
 
 const PORTFOLIO_DATA = [
