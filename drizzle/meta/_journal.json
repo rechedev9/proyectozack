@@ -8,6 +8,13 @@
       "when": 1773904619301,
       "tag": "0000_jittery_lightspeed",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773905531059,
+      "tag": "0001_friendly_gravity",
+      "breakpoints": true
     }
   ]
 }

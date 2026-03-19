@@ -460,6 +460,93 @@ const CASES_DATA: CaseData[] = [
   },
 ];
 
+const POSTS_DATA = [
+  {
+    slug: 'tendencias-gaming-espana-2025',
+    title: 'Tendencias del Marketing Gaming en España 2025',
+    excerpt: 'El ecosistema gaming español evoluciona rápido. Analizamos las tendencias clave que están definiendo cómo las marcas conectan con audiencias gaming en 2025.',
+    bodyMd: `## El auge del marketing de influencers gaming
+
+El mercado español de influencer marketing gaming ha crecido un 34% respecto al año anterior. Las marcas ya no se limitan a banners estáticos: buscan integraciones orgánicas con creadores que realmente juegan y usan sus productos.
+
+## Twitch sigue dominando, pero YouTube crece
+
+Twitch mantiene su posición como plataforma líder para streaming en vivo, pero YouTube gaming está ganando terreno con contenido editado de alta calidad. Los creadores que dominan ambas plataformas tienen el mayor valor para las marcas.
+
+## iGaming: el vertical que más invierte
+
+Las plataformas de iGaming siguen siendo el principal inversor en marketing de influencers gaming en España. Con regulaciones cada vez más claras, las marcas buscan agencias que entiendan el compliance y puedan ejecutar campañas efectivas dentro del marco legal.
+
+## Métricas que importan en 2025
+
+Las vanity metrics ya no convencen. Las marcas quieren ver FTDs, engagement rate real, y conversiones trackeables. Las agencias que pueden demostrar ROI con datos concretos tienen ventaja competitiva enorme.
+
+## Conclusión
+
+El marketing gaming en España está madurando. Las marcas que inviertan en relaciones auténticas con creadores, cumplan con la regulación y midan resultados reales serán las que lideren el sector.`,
+    author: 'SocialPro',
+    status: 'published' as const,
+    publishedAt: new Date('2025-02-15'),
+    sortOrder: 0,
+  },
+  {
+    slug: 'guia-creadores-conseguir-sponsor',
+    title: 'Guía para Creadores: Cómo Conseguir tu Primer Sponsor',
+    excerpt: 'Si eres streamer o creador de contenido gaming y quieres monetizar tu audiencia con sponsors, esta guía te explica paso a paso cómo hacerlo.',
+    bodyMd: `## Antes de buscar sponsors: prepara tu media kit
+
+Un media kit profesional es tu carta de presentación. Debe incluir: estadísticas actualizadas (seguidores, views, engagement rate), demografía de tu audiencia, ejemplos de campañas anteriores, y tus tarifas orientativas.
+
+## Qué buscan las marcas en un creador
+
+Las marcas no solo miran seguidores. Buscan engagement rate alto, audiencia relevante para su producto, consistencia en la creación de contenido, y profesionalismo en la comunicación.
+
+## Dónde encontrar oportunidades
+
+Las agencias de talento como SocialPro conectan creadores con marcas de forma profesional. También puedes contactar directamente a marcas gaming que ya trabajan con creadores similares a ti.
+
+## Negocia con datos, no con sensaciones
+
+Cuando una marca te contacta, presenta datos concretos: tu CPM, engagement rate, casos de éxito anteriores. Los creadores que hablan el lenguaje de las marcas cierran mejores acuerdos.
+
+## Errores comunes que debes evitar
+
+No aceptes acuerdos sin contrato escrito. No promociones productos que no usarías. No infles tus estadísticas. La reputación en este sector se construye con transparencia y resultados reales.`,
+    author: 'SocialPro',
+    status: 'published' as const,
+    publishedAt: new Date('2025-03-01'),
+    sortOrder: 1,
+  },
+  {
+    slug: 'caso-exito-campana-gaming-hardware',
+    title: 'Anatomía de una Campaña Exitosa: Gaming Hardware × Creadores',
+    excerpt: 'Desglosamos cómo una campaña de periféricos gaming con 13 creadores generó 2.5M de alcance y un ROI de 3.2x en engagement.',
+    bodyMd: `## El briefing: periféricos gaming para audiencia española
+
+La marca buscaba aumentar awareness entre gamers españoles de 18-34 años. El presupuesto incluía producto (sillas, ratones, teclados, cascos) más compensación por contenido.
+
+## Selección de creadores: calidad sobre cantidad
+
+En lugar de activar 50 micro-influencers, seleccionamos 13 creadores con engagement rate superior al 5% y audiencia verificada en el nicho gaming español. Cada uno recibió un kit completo de productos.
+
+## Ejecución multicanal
+
+Los creadores integraron los productos de forma natural: unboxings en YouTube, uso en directo en Twitch, stories en Instagram y clips en TikTok. No se forzó ningún guion: cada creador adaptó el contenido a su estilo.
+
+## Resultados medibles
+
+La campaña generó más de 2.5M de impresiones, con un engagement rate promedio del 4.8%. 185K interacciones directas y un ROI de 3.2x sobre la inversión. Los productos aparecieron de forma recurrente en los streams semanas después de la campaña oficial.
+
+## Lecciones aprendidas
+
+La autenticidad gana. Los creadores que realmente usaban los productos generaron 3x más engagement que los que simplemente cumplían con el briefing mínimo. La selección de talento es el 80% del éxito de una campaña.`,
+    author: 'SocialPro',
+    status: 'published' as const,
+    publishedAt: new Date('2025-03-10'),
+    sortOrder: 2,
+  },
+];
+
 const PORTFOLIO_DATA = [
   { type: 'thumb' as const, creatorName: 'MARTINEZ', title: 'Martinez & S1mple in FACEIT', imageUrl: '/images/portfolio/0.jpg', views: '18.5K CTR', date: 'Feb 2026', url: 'https://www.youtube.com/watch?v=vynaNvKPjMk', sortOrder: 0 },
   { type: 'thumb' as const, creatorName: 'HUASOPEEK', title: 'Campeones ACE SA Masters', imageUrl: '/images/portfolio/1.jpg', views: '21.2K CTR', date: 'Mar 2026', url: 'https://www.youtube.com/watch?v=Tz7kApOOg88', sortOrder: 1 },
@@ -592,6 +679,16 @@ async function seed(): Promise<void> {
   console.log('Inserting portfolio items...');
   await db.insert(schema.portfolioItems).values(PORTFOLIO_DATA).onConflictDoNothing();
   console.log(`  ${PORTFOLIO_DATA.length} portfolio items`);
+
+  // 8. Blog posts
+  console.log('Inserting blog posts...');
+  for (const p of POSTS_DATA) {
+    await db
+      .insert(schema.posts)
+      .values(p)
+      .onConflictDoNothing();
+    console.log(`  inserted post: ${p.slug}`);
+  }
 
   console.log('\nSeed complete!');
 }

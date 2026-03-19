@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 
 export function Footer() {
@@ -32,15 +33,21 @@ export function Footer() {
               {[
                 { href: '#talentos', label: 'Talentos' },
                 { href: '#servicios', label: 'Servicios' },
-                { href: '#portfolio', label: 'Portfolio' },
                 { href: '#casos', label: 'Casos de Éxito' },
+                { href: '/blog', label: 'Blog' },
                 { href: '#nosotros', label: 'Nosotros' },
                 { href: '#contacto', label: 'Contacto' },
               ].map(({ href, label }) => (
                 <li key={href}>
-                  <a href={href} className="hover:text-white transition-colors">
-                    {label}
-                  </a>
+                  {href.startsWith('/') ? (
+                    <Link href={href} className="hover:text-white transition-colors">
+                      {label}
+                    </Link>
+                  ) : (
+                    <a href={href} className="hover:text-white transition-colors">
+                      {label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>

@@ -1,13 +1,15 @@
 import type { MetadataRoute } from 'next';
 import { getCaseSlugs } from '@/lib/queries/cases';
 import { getTalentSlugs } from '@/lib/queries/talents';
+import { getPostSlugs } from '@/lib/queries/posts';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [cases, talentSlugs] = await Promise.all([
+  const [cases, talentSlugs, postSlugs] = await Promise.all([
     getCaseSlugs(),
     getTalentSlugs(),
+    getPostSlugs(),
   ]);
 
   const caseEntries: MetadataRoute.Sitemap = cases.map((c) => ({
@@ -55,7 +57,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.9,
     },
+    {
+      url: `${SITE_URL}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
     ...caseEntries,
     ...talentEntries,
+    ...postSlugs.map((p) => ({
+      url: `${SITE_URL}/blog/${p.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
   ];
 }

@@ -14,6 +14,7 @@ import type {
   caseTags,
   caseCreators,
   contactSubmissions,
+  posts,
 } from '@/db/schema';
 
 // ─── Base model types ────────────────────────────────────────────────────────
@@ -35,6 +36,8 @@ export type CaseTag = InferSelectModel<typeof caseTags>;
 export type CaseCreator = InferSelectModel<typeof caseCreators>;
 
 export type ContactSubmission = InferSelectModel<typeof contactSubmissions>;
+
+export type Post = InferSelectModel<typeof posts>;
 
 // ─── With-relations types ────────────────────────────────────────────────────
 

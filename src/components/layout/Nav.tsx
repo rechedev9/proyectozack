@@ -9,8 +9,8 @@ import { useScroll, useMotionValueEvent } from 'motion/react';
 const NAV_LINKS = [
   { href: '#talentos', label: 'Talentos' },
   { href: '#servicios', label: 'Servicios' },
-  { href: '#portfolio', label: 'Portfolio' },
   { href: '#casos', label: 'Casos de Éxito' },
+  { href: '/blog', label: 'Blog' },
   { href: '#nosotros', label: 'Nosotros' },
   { href: '#contacto', label: 'Contacto' },
 ];
@@ -49,12 +49,21 @@ export function Nav() {
         <ul className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map((l) => (
             <li key={l.href}>
-              <a
-                href={l.href}
-                className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-3"
-              >
-                {l.label}
-              </a>
+              {l.href.startsWith('/') ? (
+                <Link
+                  href={l.href}
+                  className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-3"
+                >
+                  {l.label}
+                </Link>
+              ) : (
+                <a
+                  href={l.href}
+                  className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-3"
+                >
+                  {l.label}
+                </a>
+              )}
             </li>
           ))}
         </ul>
@@ -96,19 +105,36 @@ export function Nav() {
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="md:hidden bg-sp-black border-t border-white/10 px-4 py-4 flex flex-col gap-4"
           >
-            {NAV_LINKS.map((l, i) => (
-              <m.a
-                key={l.href}
-                href={l.href}
-                initial={{ opacity: 0, x: -12 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2, ease: 'easeOut', delay: i * 0.04 }}
-                className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-2"
-                onClick={() => setOpen(false)}
-              >
-                {l.label}
-              </m.a>
-            ))}
+            {NAV_LINKS.map((l, i) =>
+              l.href.startsWith('/') ? (
+                <m.div
+                  key={l.href}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.2, ease: 'easeOut', delay: i * 0.04 }}
+                >
+                  <Link
+                    href={l.href}
+                    className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-2 block"
+                    onClick={() => setOpen(false)}
+                  >
+                    {l.label}
+                  </Link>
+                </m.div>
+              ) : (
+                <m.a
+                  key={l.href}
+                  href={l.href}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.2, ease: 'easeOut', delay: i * 0.04 }}
+                  className="text-sm font-semibold text-sp-muted2 hover:text-white transition-colors py-2"
+                  onClick={() => setOpen(false)}
+                >
+                  {l.label}
+                </m.a>
+              )
+            )}
             <m.a
               href="#contacto"
               initial={{ opacity: 0, x: -12 }}
