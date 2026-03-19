@@ -220,10 +220,13 @@ export function AnalyticsDashboard({ snapshots, talents, trackedCount }: Analyti
 
   return (
     <div>
-      <h1 className="font-display text-4xl font-black uppercase text-sp-dark mb-8">Analytics</h1>
+      <div className="mb-10">
+        <h1 className="font-display text-4xl font-black uppercase text-sp-dark">Analytics</h1>
+        <div className="mt-2 h-1 w-16 rounded-full bg-gradient-to-r from-sp-orange to-sp-pink" />
+      </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <KpiCard label="Total Followers" value={kpis.totalFollowers} accent />
         <KpiCard label="Avg Growth Rate" value={kpis.avgGrowth} subtitle="this period" />
         <KpiCard label="Top Grower" value={kpis.topGrower} subtitle={kpis.topGrowerPlatform} />
@@ -301,14 +304,20 @@ export function AnalyticsDashboard({ snapshots, talents, trackedCount }: Analyti
       ) : (
         <div>
           {/* Overview Chart */}
-          <div className="rounded-2xl bg-white border border-sp-border p-6 mb-6">
-            <h2 className="font-display text-lg font-bold text-sp-dark mb-4">Growth Trends</h2>
+          <div className="rounded-2xl bg-white border border-sp-border p-6 mb-8">
+            <div className="flex items-center gap-3 mb-5">
+              <h2 className="font-display text-lg font-bold text-sp-dark">Growth Trends</h2>
+              <span className="text-xs text-sp-muted bg-sp-off px-2 py-0.5 rounded-full">{chartLines.length} series</span>
+            </div>
             <MetricsChart data={chartData} lines={chartLines} />
           </div>
 
           {/* Growth Table */}
-          <div className="rounded-2xl bg-white border border-sp-border p-4">
-            <h2 className="font-display text-lg font-bold text-sp-dark mb-4 px-2">Creator Growth</h2>
+          <div className="rounded-2xl bg-white border border-sp-border p-4 pb-2">
+            <div className="flex items-center gap-3 mb-4 px-2">
+              <h2 className="font-display text-lg font-bold text-sp-dark">Creator Growth</h2>
+              <span className="text-xs text-sp-muted bg-sp-off px-2 py-0.5 rounded-full">{growthRows.length} entries</span>
+            </div>
             <GrowthTable rows={growthRows} onCreatorClick={setDrillDownTalentId} />
           </div>
         </div>
