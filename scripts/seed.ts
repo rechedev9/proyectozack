@@ -7,8 +7,7 @@
  * 2. talents → talent_tags, talent_stats, talent_socials
  * 3. collaborators
  * 4. team_members
- * 5. testimonials
- * 6. case_studies → case_body, case_tags, case_creators
+ * 5. case_studies → case_body, case_tags, case_creators
  * 7. portfolio_items
  */
 
@@ -378,24 +377,6 @@ const TEAM_DATA = [
   },
 ];
 
-const TESTIMONIALS_DATA = [
-  {
-    quote: 'SocialPro duplicó nuestros FTDs en el primer mes. Su conocimiento del compliance en iGaming es excepcional.',
-    authorName: 'Carlos M.', authorRole: 'Head of Marketing, Casino Online',
-    gradientC1: '#f5632a', gradientC2: '#e03070', sortOrder: 0,
-  },
-  {
-    quote: 'La calidad de edición y las miniaturas que producen han triplicado el CTR de nuestros vídeos.',
-    authorName: 'DEQIUV', authorRole: 'Streamer CS2/Valorant',
-    gradientC1: '#8b3aad', gradientC2: '#5b9bd5', sortOrder: 1,
-  },
-  {
-    quote: 'La expansión a LatAm con creadores locales fue perfecta. Entendieron que necesítabamos audiencia real.',
-    authorName: 'Andrés P.', authorRole: 'Brand Manager, Plataforma Skins',
-    gradientC1: '#e03070', gradientC2: '#c42880', sortOrder: 2,
-  },
-];
-
 interface CaseData {
   slug: string;
   brandName: string;
@@ -661,12 +642,7 @@ async function seed(): Promise<void> {
   ).onConflictDoNothing();
   console.log(`  ${TEAM_DATA.length} team members`);
 
-  // 5. Testimonials
-  console.log('Inserting testimonials...');
-  await db.insert(schema.testimonials).values(TESTIMONIALS_DATA).onConflictDoNothing();
-  console.log(`  ${TESTIMONIALS_DATA.length} testimonials`);
-
-  // 6. Case studies + child tables
+  // 5. Case studies + child tables
   console.log('Inserting case studies...');
   for (const c of CASES_DATA) {
     const { body, tags, creators, ...caseRow } = c;

@@ -4,7 +4,6 @@ import type {
   talentTags,
   talentStats,
   talentSocials,
-  testimonials,
   collaborators,
   teamMembers,
   brands,
@@ -26,7 +25,6 @@ export type TalentTag = InferSelectModel<typeof talentTags>;
 export type TalentStat = InferSelectModel<typeof talentStats>;
 export type TalentSocial = InferSelectModel<typeof talentSocials>;
 
-export type Testimonial = InferSelectModel<typeof testimonials>;
 export type Collaborator = InferSelectModel<typeof collaborators>;
 export type TeamMember = InferSelectModel<typeof teamMembers>;
 export type Brand = InferSelectModel<typeof brands>;

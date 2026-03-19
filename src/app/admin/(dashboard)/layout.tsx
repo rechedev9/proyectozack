@@ -18,7 +18,6 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           { href: '/admin', label: 'Dashboard' },
           { href: '/admin/talents', label: 'Talentos' },
           { href: '/admin/cases', label: 'Casos' },
-          { href: '/admin/testimonials', label: 'Testimonios' },
           { href: '/admin/brands', label: 'Marcas' },
         ]}
         userEmail={session.user.email}

@@ -2,16 +2,6 @@ import { pgTable, serial, varchar, text, integer, pgEnum } from 'drizzle-orm/pg-
 
 export const portfolioTypeEnum = pgEnum('portfolio_type', ['thumb', 'video', 'campaign']);
 
-export const testimonials = pgTable('testimonials', {
-  id: serial('id').primaryKey(),
-  quote: text('quote').notNull(),
-  authorName: varchar('author_name', { length: 100 }).notNull(),
-  authorRole: varchar('author_role', { length: 150 }).notNull(),
-  gradientC1: varchar('gradient_c1', { length: 7 }).notNull(),
-  gradientC2: varchar('gradient_c2', { length: 7 }).notNull(),
-  sortOrder: integer('sort_order').notNull().default(0),
-});
-
 export const collaborators = pgTable('collaborators', {
   id: serial('id').primaryKey(),
   slug: varchar('slug', { length: 100 }).notNull().unique(),

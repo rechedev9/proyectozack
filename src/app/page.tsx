@@ -1,5 +1,5 @@
 import { getTalents } from '@/lib/queries/talents';
-import { getBrands, getCollaborators, getTeam, getTestimonials } from '@/lib/queries/content';
+import { getBrands, getCollaborators, getTeam } from '@/lib/queries/content';
 import { getCaseStudies } from '@/lib/queries/cases';
 import { getPortfolioItems } from '@/lib/queries/portfolio';
 
@@ -12,7 +12,6 @@ import { ServicesSection } from '@/components/sections/ServicesSection';
 import { MetricsSection } from '@/components/sections/MetricsSection';
 import { CasesSection } from '@/components/sections/CasesSection';
 import { PortfolioSection } from '@/components/sections/PortfolioSection';
-import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { AboutSection } from '@/components/sections/AboutSection';
 import { TeamGrid } from '@/components/sections/TeamGrid';
 import { ContactSection } from '@/components/sections/ContactSection';
@@ -23,13 +22,12 @@ import { FaqSection } from '@/components/sections/FaqSection';
 export const revalidate = 3600;
 
 export default async function HomePage() {
-  const [talents, brands, collaborators, team, testimonials, cases, portfolioItems] =
+  const [talents, brands, collaborators, team, cases, portfolioItems] =
     await Promise.all([
       getTalents(),
       getBrands(),
       getCollaborators(),
       getTeam(),
-      getTestimonials(),
       getCaseStudies(),
       getPortfolioItems(),
     ]);
@@ -45,7 +43,6 @@ export default async function HomePage() {
       <ServicesSection />
       <CasesSection cases={cases} />
       <PortfolioSection items={portfolioItems} />
-      <TestimonialsSection testimonials={testimonials} />
       <AboutSection />
       <TeamGrid team={team} />
       <CtaSection />

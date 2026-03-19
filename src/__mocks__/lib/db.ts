@@ -11,9 +11,6 @@ export const db = {
       findMany: jest.fn().mockResolvedValue([]),
       findFirst: jest.fn().mockResolvedValue(undefined),
     },
-    testimonials: {
-      findMany: jest.fn().mockResolvedValue([]),
-    },
     brands: {
       findMany: jest.fn().mockResolvedValue([]),
     },

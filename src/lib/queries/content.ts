@@ -1,10 +1,9 @@
 import { db } from '@/lib/db';
-import { brands, collaborators, teamMembers, testimonials } from '@/db/schema';
+import { brands, collaborators, teamMembers } from '@/db/schema';
 import type {
   Brand,
   Collaborator,
   TeamMember,
-  Testimonial,
 } from '@/types';
 
 export async function getBrands(): Promise<Brand[]> {
@@ -25,11 +24,5 @@ export async function getTeam(): Promise<TeamMember[]> {
   });
 }
 
-export async function getTestimonials(): Promise<Testimonial[]> {
-  return db.query.testimonials.findMany({
-    orderBy: (t, { asc }) => [asc(t.sortOrder)],
-  });
-}
-
 // Re-export for convenience
-export { brands, collaborators, teamMembers, testimonials };
+export { brands, collaborators, teamMembers };
