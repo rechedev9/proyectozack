@@ -64,7 +64,6 @@ export default async function CaseStudyPage({ params }: PageProps) {
     author: { '@type': 'Organization', name: 'SocialPro' },
     publisher: { '@type': 'Organization', name: 'SocialPro' },
     description: caseStudy.excerpt || caseStudy.body[0]?.paragraph || '',
-    datePublished: '2025-01-01',
   };
 
   return (

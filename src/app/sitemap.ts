@@ -14,14 +14,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const caseEntries: MetadataRoute.Sitemap = cases.map((c) => ({
     url: `${SITE_URL}/casos/${c.slug}`,
-    lastModified: new Date(),
     changeFrequency: 'monthly',
     priority: 0.7,
   }));
 
   const talentEntries: MetadataRoute.Sitemap = talentSlugs.map((t) => ({
     url: `${SITE_URL}/talentos/${t.slug}`,
-    lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.8,
   }));
@@ -29,49 +27,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     {
       url: SITE_URL,
-      lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
     },
     {
-      url: `${SITE_URL}/#talentos`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/#servicios`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/#casos`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${SITE_URL}/#contacto`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-    {
       url: `${SITE_URL}/metodologia`,
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     {
       url: `${SITE_URL}/para-creadores`,
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog`,
-      lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.7,
     },
@@ -79,7 +49,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...talentEntries,
     ...postSlugs.map((p) => ({
       url: `${SITE_URL}/blog/${p.slug}`,
-      lastModified: new Date(),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),
