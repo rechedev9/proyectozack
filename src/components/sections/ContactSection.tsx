@@ -139,7 +139,7 @@ export function ContactSection() {
                 <div className="space-y-2 text-sm text-sp-muted2">
                   <p>
                     <span className="text-white font-semibold">📞 </span>
-                    <a href="tel:+34604868426" className="hover:text-white transition-colors">
+                    <a href="https://wa.me/34604868426" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                       +34 604 868 426
                     </a>
                   </p>

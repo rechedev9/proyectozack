@@ -23,7 +23,7 @@ export function Footer() {
             </p>
             <div className="space-y-1">
               <p className="text-sm">
-                <a href="tel:+34604868426" className="hover:text-white transition-colors">
+                <a href="https://wa.me/34604868426" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                   +34 604 868 426
                 </a>
               </p>
