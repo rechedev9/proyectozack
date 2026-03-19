@@ -22,7 +22,8 @@ export function Nav() {
   const { scrollY, scrollYProgress } = useScroll();
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
-    setScrolled(latest > 50);
+    const isScrolled = latest > 50;
+    setScrolled((prev) => (prev !== isScrolled ? isScrolled : prev));
   });
 
   return (

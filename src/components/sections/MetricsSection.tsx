@@ -31,19 +31,21 @@ function AnimatedMetric({ metric, index }: { metric: Metric; index: number }) {
   const motionVal = useMotionValue(0);
   const displayRef = useRef<HTMLSpanElement>(null);
 
+  const { target, decimals, prefix, suffix } = metric;
+
   // Animate the number when in view — writes directly to DOM, no re-renders
   useEffect(() => {
     if (!isInView) return;
 
-    const controls = animate(motionVal, metric.target, {
+    const controls = animate(motionVal, target, {
       duration: 1.5,
       ease: [0.16, 1, 0.3, 1], // ease-out expo
     });
 
     const unsubscribe = motionVal.on('change', (v) => {
       if (displayRef.current) {
-        const formatted = metric.decimals > 0 ? v.toFixed(metric.decimals) : Math.round(v).toString();
-        displayRef.current.textContent = `${metric.prefix}${formatted}${metric.suffix}`;
+        const formatted = decimals > 0 ? v.toFixed(decimals) : Math.round(v).toString();
+        displayRef.current.textContent = `${prefix}${formatted}${suffix}`;
       }
     });
 
@@ -51,7 +53,7 @@ function AnimatedMetric({ metric, index }: { metric: Metric; index: number }) {
       controls.stop();
       unsubscribe();
     };
-  }, [isInView, motionVal, metric]);
+  }, [isInView, motionVal, target, decimals, prefix, suffix]);
 
   return (
     <m.div

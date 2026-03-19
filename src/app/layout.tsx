@@ -8,6 +8,7 @@ import { CookieConsent } from '@/components/layout/CookieConsent';
 const inter = Inter({
   variable: '--font-body',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
 });
 
 const barlowCondensed = Barlow_Condensed({

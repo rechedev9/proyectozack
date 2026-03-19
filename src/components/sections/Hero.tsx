@@ -50,11 +50,12 @@ export function Hero() {
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
             className="relative z-10"
           >
-            <Image 
-              src="/images/logos/2.png" 
-              alt="SocialPro Mark" 
-              width={100} 
-              height={100} 
+            <Image
+              src="/images/logos/2.png"
+              alt="SocialPro Mark"
+              width={100}
+              height={100}
+              priority
               className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-[0_0_25px_rgba(224,48,112,0.4)]"
             />
           </m.div>
