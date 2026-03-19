@@ -92,6 +92,11 @@ See `roadmap.md` Phase 2 for exact column definitions. Tables:
 
 Enums (`platform`: twitch|youtube|cs2; `status`: active|available|inactive; `portfolio type`: thumb|video|campaign) — must match exact strings in the HTML prototype JS.
 
+## Database Migrations
+- **Drizzle is the single source of truth.** Never create tables or alter columns via raw SQL, seed scripts, or the Neon console. All schema changes go through `npx drizzle-kit generate` → `npx drizzle-kit migrate`.
+- **Verify `__drizzle_migrations` exists** before assuming migrations are current. If it's missing, the DB was provisioned outside Drizzle and must be reconciled before any new migration work.
+- **After applying migrations manually** (to fix drift), always backfill the `__drizzle_migrations` table with the correct hashes so future `drizzle-kit migrate` runs are idempotent.
+
 ## CSS / Design System
 
 **Brand tokens** defined in `tailwind.config.ts` under `theme.extend.colors`:
