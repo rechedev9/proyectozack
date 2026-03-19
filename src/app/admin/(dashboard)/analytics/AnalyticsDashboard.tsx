@@ -224,7 +224,7 @@ export function AnalyticsDashboard({ snapshots, talents, trackedCount }: Analyti
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <KpiCard label="Total Followers" value={kpis.totalFollowers} />
+        <KpiCard label="Total Followers" value={kpis.totalFollowers} accent />
         <KpiCard label="Avg Growth Rate" value={kpis.avgGrowth} subtitle="this period" />
         <KpiCard label="Top Grower" value={kpis.topGrower} subtitle={kpis.topGrowerPlatform} />
         <KpiCard label="Creators Tracked" value={kpis.trackedCount} />
