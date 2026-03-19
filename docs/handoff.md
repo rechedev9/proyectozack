@@ -6,72 +6,97 @@ read_when:
   - Handing off to another agent
 ---
 
-# Handoff — 2026-03-19 (session 3, final)
+# Handoff — 2026-03-19 (session 5)
 
 ## 1. Scope / Status
 
+- **Task:** SEO + GEO (Generative Engine Optimization) improvement
+- **Phase:** Brainstorming — design not yet written
 - **Done this session:**
-  - Cleanup: verified talent count (15 correct), trashed orphaned CaseModal.tsx
-  - CEO review → Eng review → Design review for Growth G (all CLEARED)
-  - **Full implementation of Growth G (Marcas Dashboard MVP)** — 22 commits, merged to master, pushed
-    - Schema: `brand_campaigns`, `talent_proposals`, `proposal_status` enum, `case_creators.talent_id` FK
-    - Auth: `requireRole()` shared guard, role-based access (admin|brand), PortalSidebar
-    - Brand portal: `/marcas/login`, dashboard, talent catalog + FilterChips, talent ficha + ProposalModal, comparison view, proposals list
-    - Admin: `/admin/brands` with invite form (useActionState), brands table
-    - Queries: `getTalents(filters?)`, `getBrandCampaigns()`, `getBrandProposals()`, `getTalentCampaignsForBrand()`
-    - Email: `sendBrandInviteEmail()` via Resend
-    - Security fixes: auth gate on invite action, proposal race condition handling, inactive talent filter
-  - DB migrations applied to Neon, case_creators backfilled, admin role set
-  - TODOS.md created, implementation plan saved
-  - Feature branch merged to master via fast-forward, pushed
-- **Pending:** /document-release (roadmap.md update), /design-review on live site, test brand account creation
+  - Full SEO/GEO audit of the codebase (see findings below)
+  - Brainstorming started — 3 of ~6 clarifying questions answered
+- **Decisions locked:**
+  - Goal: Both SEO + GEO (traditional search + AI engine citations)
+  - Entity priority: Agency (A) > Talents (B) > Blog (D) > Cases (C)
+  - Geographic scope: Spain + LATAM equally (broad Spanish-speaking)
+- **Pending decision:** Does user have domain live + GSC? (question was asked, not answered)
 - **Blockers:** None
 
 ## 2. Working Tree
 
-- `## master...origin/master` — clean, all pushed
-- `docs/handoff.md` — this file (uncommitted)
+- `## master...origin/master` — appears in sync now (prev session had 2 ahead)
+- Modified: `docs/handoff.md` (this file)
+- Untracked:
+  - `docs/superpowers/plans/2026-03-19-dark-light-theme.md`
+  - `docs/superpowers/specs/`
 
 ## 3. Branch / PR
 
-- Branch: `master` (feature branch `feat/growth-g-marcas-dashboard` merged)
-- No PR (direct merge per user request)
-- Latest commit: `fdbfbb3` docs(handoff): dump session 3 state
+- Branch: `master`
+- No PR abierto
+- CI: N/A
 
 ## 4. Dev Server
 
-- Running on port 3000 (may be stale — `rm -f .next/dev/lock && npm run dev`)
+- Unknown — may need restart: `cd socialpro && npm run dev`
 
 ## 5. Tests
 
-- `npx tsc --noEmit` — 0 errors
-- `npm run lint` — 0 errors (1 pre-existing warning in extract-images.mjs)
-- `npm run build` — passes, 45 pages generated
-- No unit/e2e tests for brand portal (no test framework bootstrapped)
+- No tests run this session (brainstorming only, no code changes)
+- Last known: tsc, lint, build all passing
 
 ## 6. Database
 
-- All 4 migrations applied and tracked in `__drizzle_migrations`
-- 24 tables total + `proposal_status` enum
-- `case_creators.talent_id` backfilled (6/16 matched, rest are external creators)
-- Admin role = 'admin' for `admin@socialpro.es`
-- Neon project: `cold-surf-41083386`
+- No migrations pending
+- No schema changes
 
-## 7. Next Steps
+## 7. SEO/GEO Audit Summary (key findings)
 
-1. `/document-release` — sync roadmap.md (mark Growth G items as done), update CLAUDE.md
-2. Create first test brand account via `/admin/brands` — verify invite + login flow end-to-end
-3. `/design-review` — visual QA on live brand portal
-4. Change admin password from `admin12345` (TODOS.md P1)
-5. Add KEVO + LUNA photos (gradient fallback works)
-6. Growth H (SEO content) or Growth F completion (LATAM blog, i18n eval)
+**What exists (7/10 baseline):**
+- Root metadata + OG/Twitter in layout.tsx
+- Dynamic generateMetadata on /talentos/[slug], /casos/[slug], /blog/[slug]
+- Dynamic sitemap.ts with DB-driven slugs
+- robots.ts (allow /, disallow /admin/, /api/)
+- JSON-LD: Organization, WebSite, LocalBusiness (root), Person (talents), Article (cases), BlogPosting (blog)
+- RSS feed at /blog/feed.xml
+- next/image with alt text throughout
 
-## 8. Risks / Gotchas
+**Bugs found:**
+- Case studies have hardcoded `datePublished: '2025-01-01'` in JSON-LD (casos/[slug]/page.tsx:67)
+- Sitemap includes anchor links (/#talentos, /#servicios) — engines won't crawl these
+- Sitemap lastModified always `new Date()` instead of actual DB timestamps
+
+**Missing for SEO:**
+- No breadcrumb JSON-LD on dynamic pages
+- No FAQ schema (FaqSection component exists, no structured data)
+- Empty next.config.ts (no security headers, no redirects, no image config)
+- No canonical URLs explicit (metadataBase handles implicitly)
+- /marcas/ not disallowed in robots (auth-gated portal)
+- No metadata on /admin/login or /marcas/login
+
+**Missing for GEO:**
+- No GEO strategy at all — no entity-defining content, no authoritative Q&A, no citation-friendly structure
+- No "About" or "Methodology" page with clear entity statements for AI engines
+- Blog lacks topical clustering / internal linking strategy
+- No FAQ content optimized for AI snippet extraction
+
+## 8. Next Steps
+
+1. **Resume brainstorming** — pick up from GSC question, then ~2-3 more questions
+2. **Remaining questions to explore:**
+   - Domain/GSC status
+   - Keyword targets (what queries should SocialPro rank for?)
+   - Content strategy (new pages vs optimize existing?)
+   - Technical SEO budget (how much refactoring is acceptable?)
+3. **After brainstorming:** write spec → plan → implement
+4. **Still pending from prior sessions:**
+   - Change admin password from `admin12345`
+   - Add KEVO/LUNA photos
+   - Dark/light theme plan exists but unexecuted
+
+## 9. Risks / Gotchas
 
 - Admin password still `admin12345` — change before production
-- Brand invite emails link to `/marcas/login` — brand must use "forgot password" or admin shares temp credentials
-- Better Auth `forgetPassword` not verified enabled — may need `emailAndPassword.sendResetPassword` config
-- Migration 0003 SQL has CREATE TABLE for auth tables that already exist — if re-running, edit SQL
-- ProposalModal sends string form values, Zod validates server-side
-- Comparison page fetches ALL talents then filters client-side — fine at 15, watch at scale
-- No unique DB constraint on proposals — race condition handled at app level with try/catch
+- `docs/superpowers/plans/2026-03-19-dark-light-theme.md` untracked — prior plan, not executed
+- Migration 0003 SQL has CREATE TABLE for auth tables that already exist — don't re-run without editing
+- Comparison page loads all talents client-side — ok at 15, watch at scale
