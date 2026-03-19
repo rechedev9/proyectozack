@@ -335,6 +335,44 @@ const TALENTS_DATA: TalentData[] = [
       { platform: 'instagram', handle: 'eruby', followersDisplay: '28K', profileUrl: 'https://instagram.com/eruby', hexColor: '#E1306C' },
     ],
   },
+  {
+    slug: 'kevo', name: 'KEVO', role: 'CS2 Streamer LATAM', game: 'CS2',
+    platform: 'twitch' as TalentPlatform, status: 'active' as TalentStatus,
+    bio: 'Streamer argentino de CS2 con una de las comunidades más activas de Latinoamérica. Combina alto nivel competitivo con entretenimiento que conecta con audiencia hispana de ambos lados del Atlántico.',
+    gradientC1: '#f5632a', gradientC2: '#5b9bd5', initials: 'KV',
+    photoUrl: '/images/talents/kevo.jpg',
+    tags: ['CS2', 'LatAm', 'Twitch', 'Argentina'],
+    stats: [
+      { icon: '📺', value: '70K', label: 'Seguidores Twitch' },
+      { icon: '👀', value: '550K', label: 'Views/mes' },
+      { icon: '❤️', value: '9.3%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'twitch', handle: 'kevo', followersDisplay: '70K', profileUrl: 'https://twitch.tv/kevo', hexColor: '#9146FF' },
+      { platform: 'yt', handle: 'KEVO', followersDisplay: '35K', profileUrl: 'https://youtube.com/@kevo', hexColor: '#FF0000' },
+      { platform: 'ig', handle: '@kevo_gaming', followersDisplay: '20K', profileUrl: 'https://instagram.com/kevo_gaming', hexColor: '#E1306C' },
+      { platform: 'x', handle: '@kevo_cs2', followersDisplay: '15K', profileUrl: 'https://twitter.com/kevo_cs2', hexColor: '#000000' },
+    ],
+  },
+  {
+    slug: 'lunagg', name: 'LUNA', role: 'Content Creator LATAM', game: 'Variety · Gaming',
+    platform: 'youtube' as TalentPlatform, status: 'active' as TalentStatus,
+    bio: 'Creadora de contenido mexicana enfocada en gaming y lifestyle. Su audiencia joven y activa en México y Centroamérica la convierte en perfil clave para marcas que buscan penetración en mercado LATAM.',
+    gradientC1: '#e03070', gradientC2: '#8b3aad', initials: 'LN',
+    photoUrl: '/images/talents/lunagg.jpg',
+    tags: ['Gaming', 'Lifestyle', 'LatAm', 'México', 'YouTube'],
+    stats: [
+      { icon: '▶️', value: '90K', label: 'Suscriptores YouTube' },
+      { icon: '📺', value: '25K', label: 'Seguidores Twitch' },
+      { icon: '❤️', value: '10.5%', label: 'Engagement Rate' },
+    ],
+    socials: [
+      { platform: 'yt', handle: 'LUNA', followersDisplay: '90K', profileUrl: 'https://youtube.com/@lunagg', hexColor: '#FF0000' },
+      { platform: 'twitch', handle: 'lunagg', followersDisplay: '25K', profileUrl: 'https://twitch.tv/lunagg', hexColor: '#9146FF' },
+      { platform: 'tt', handle: '@lunagg', followersDisplay: '60K', profileUrl: 'https://tiktok.com/@lunagg', hexColor: '#010101' },
+      { platform: 'ig', handle: '@lunagg', followersDisplay: '45K', profileUrl: 'https://instagram.com/lunagg', hexColor: '#E1306C' },
+    ],
+  },
 ];
 
 const COLLABORATORS_DATA = [
