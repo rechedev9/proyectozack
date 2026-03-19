@@ -85,7 +85,7 @@ The `platformId` for Twitch stores the numeric broadcaster ID directly. When an 
 
 ### 5.1 Route
 
-`POST /api/cron/snapshot-metrics`
+`GET /api/cron/snapshot-metrics`
 
 ### 5.2 Trigger
 
