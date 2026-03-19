@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getCaseSlugs, getCaseBySlug } from '@/lib/queries/cases';
 import { SectionTag } from '@/components/ui/SectionTag';
+import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbs';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
 
@@ -57,6 +58,11 @@ export default async function CaseStudyPage({ params }: PageProps) {
     { label: 'ROI', value: caseStudy.roiMultiplier },
   ].filter((m) => m.value);
 
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Casos de Éxito', url: `${SITE_URL}/#casos` },
+    { name: caseStudy.brandName, url: `${SITE_URL}/casos/${slug}` },
+  ]);
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -71,6 +77,10 @@ export default async function CaseStudyPage({ params }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       {/* ── Hero (dark) ── */}

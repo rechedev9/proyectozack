@@ -7,6 +7,7 @@ import { SectionTag } from '@/components/ui/SectionTag';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { SocialIcon } from '@/components/ui/SocialIcon';
 import { gradientStyle } from '@/lib/gradient';
+import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbs';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
 
@@ -56,6 +57,11 @@ export default async function TalentPage({ params }: PageProps) {
 
   const grad = gradientStyle(talent.gradientC1, talent.gradientC2);
 
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Talentos', url: `${SITE_URL}/#talentos` },
+    { name: talent.name, url: `${SITE_URL}/talentos/${slug}` },
+  ]);
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -73,6 +79,10 @@ export default async function TalentPage({ params }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       {/* ── Hero (gradient + photo) ── */}
