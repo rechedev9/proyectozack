@@ -17,14 +17,14 @@ const presets = [
 
 export function DateRangePicker({ value, onChange, customFrom, customTo, onCustomChange }: DateRangePickerProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1">
       {presets.map((p) => (
         <button
           key={p.value}
           onClick={() => onChange(p.value)}
-          className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={`min-h-[36px] px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
             value === p.value
-              ? 'bg-sp-dark text-white shadow-sm'
+              ? 'bg-sp-dark text-white'
               : 'text-sp-muted hover:text-sp-dark hover:bg-sp-off'
           }`}
         >
@@ -32,19 +32,19 @@ export function DateRangePicker({ value, onChange, customFrom, customTo, onCusto
         </button>
       ))}
       {value === 'custom' && onCustomChange && (
-        <div className="flex items-center gap-1 ml-2">
+        <div className="flex items-center gap-1.5 ml-2">
           <input
             type="date"
             value={customFrom ?? ''}
             onChange={(e) => onCustomChange(e.target.value, customTo ?? '')}
-            className="px-2 py-1 rounded-lg border border-sp-border text-sm"
+            className="px-2.5 py-1.5 rounded-lg border border-sp-border text-[12px] text-sp-dark bg-transparent outline-none focus:border-sp-muted transition-colors"
           />
-          <span className="text-sp-muted text-sm">&rarr;</span>
+          <span className="text-sp-muted/50 text-xs">&mdash;</span>
           <input
             type="date"
             value={customTo ?? ''}
             onChange={(e) => onCustomChange(customFrom ?? '', e.target.value)}
-            className="px-2 py-1 rounded-lg border border-sp-border text-sm"
+            className="px-2.5 py-1.5 rounded-lg border border-sp-border text-[12px] text-sp-dark bg-transparent outline-none focus:border-sp-muted transition-colors"
           />
         </div>
       )}

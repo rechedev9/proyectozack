@@ -30,13 +30,13 @@ export function PortalSidebar({ title, subtitle, navItems, userEmail, logoutHref
   return (
     <>
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between bg-sp-black px-4 h-14 border-b border-white/10">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between bg-white px-4 h-14 border-b border-sp-border">
         <Link href="/" className="font-display text-lg font-black uppercase gradient-text">
           {title}
         </Link>
         <button
           onClick={() => setOpen(!open)}
-          className="text-white p-2"
+          className="text-sp-dark p-2"
           aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -59,22 +59,22 @@ export function PortalSidebar({ title, subtitle, navItems, userEmail, logoutHref
       {/* Backdrop */}
       {open && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-black/50"
+          className="md:hidden fixed inset-0 z-40 bg-black/20"
           onClick={() => setOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <nav className={`
-        fixed md:static z-50 top-0 left-0 h-full w-56 bg-sp-black text-white flex flex-col shrink-0
+        fixed md:static z-50 top-0 left-0 h-full w-56 bg-white border-r border-sp-border flex flex-col shrink-0
         transition-transform duration-200 ease-out
         ${open ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
       `}>
-        <div className="p-6 border-b border-white/10">
+        <div className="p-6 border-b border-sp-border/60">
           <Link href="/" className="font-display text-xl font-black uppercase gradient-text hover:opacity-80 transition-opacity">
             {title}
           </Link>
-          <p className="text-xs text-sp-muted2 mt-1">{subtitle}</p>
+          <p className="text-[11px] text-sp-muted mt-1">{subtitle}</p>
         </div>
         <div className="flex-1 p-3 space-y-0.5 mt-2">
           {navItems.map(({ href, label, icon }) => {
@@ -84,13 +84,13 @@ export function PortalSidebar({ title, subtitle, navItems, userEmail, logoutHref
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
                   active
-                    ? 'bg-white/10 text-white'
-                    : 'text-sp-muted2 hover:text-white hover:bg-white/5'
+                    ? 'bg-sp-off text-sp-dark'
+                    : 'text-sp-muted hover:text-sp-dark hover:bg-sp-off/60'
                 }`}
               >
-                {icon && <span className="w-5 h-5 shrink-0 opacity-70">{icon}</span>}
+                {icon && <span className="w-5 h-5 shrink-0 text-sp-muted">{icon}</span>}
                 {label}
                 {active && (
                   <span className="ml-auto w-1.5 h-1.5 rounded-full bg-sp-orange" />
@@ -99,11 +99,11 @@ export function PortalSidebar({ title, subtitle, navItems, userEmail, logoutHref
             );
           })}
         </div>
-        <div className="p-4 border-t border-white/10">
-          <p className="text-xs text-sp-muted truncate">{userEmail}</p>
+        <div className="p-4 border-t border-sp-border/60">
+          <p className="text-[11px] text-sp-muted truncate">{userEmail}</p>
           <Link
             href={logoutHref}
-            className="mt-2 block text-xs text-sp-muted2 hover:text-white transition-colors"
+            className="mt-1.5 block text-[11px] text-sp-muted hover:text-sp-dark transition-colors"
           >
             Cerrar sesión
           </Link>

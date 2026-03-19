@@ -1,25 +1,42 @@
 interface KpiCardProps {
   label: string;
   value: string;
+  change?: number | null; // percentage change
   subtitle?: string;
-  accent?: boolean;
+  color?: string; // accent color for top border
 }
 
-export function KpiCard({ label, value, subtitle, accent }: KpiCardProps) {
+export function KpiCard({ label, value, change, subtitle, color }: KpiCardProps) {
+  const hasChange = change !== null && change !== undefined;
+  const isPositive = hasChange && change > 0;
+  const isNegative = hasChange && change < 0;
+  const isNeutral = hasChange && change === 0;
+
   return (
-    <div className={`rounded-2xl p-6 transition-shadow hover:shadow-md ${
-      accent
-        ? 'bg-sp-dark text-white border border-white/10'
-        : 'bg-white border border-sp-border'
-    }`}>
-      <div className={`font-display text-3xl sm:text-4xl font-black truncate ${
-        accent ? 'text-white' : 'gradient-text'
-      }`} title={value}>
-        {value}
+    <div
+      className="rounded-xl bg-white border border-sp-border/50 p-5 transition-shadow hover:shadow-[0_2px_8px_-2px_rgba(0,0,0,0.06)]"
+      style={color ? { borderTopColor: color, borderTopWidth: '2px' } : undefined}
+    >
+      <div className="text-[11px] font-medium text-sp-muted mb-2">{label}</div>
+      <div className="flex items-end gap-2.5">
+        <span className="font-display text-[1.75rem] font-black leading-none text-sp-dark tracking-tight truncate" title={value}>
+          {value}
+        </span>
+        {hasChange && (
+          <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold pb-0.5 ${
+            isPositive ? 'text-emerald-600' : isNegative ? 'text-red-500' : 'text-sp-muted/50'
+          }`}>
+            {!isNeutral && (
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" className={isNegative ? 'rotate-180' : ''}>
+                <path d="M5 2l4 5H1z" />
+              </svg>
+            )}
+            {isNeutral ? '0%' : `${Math.abs(change).toFixed(1)}%`}
+          </span>
+        )}
       </div>
-      <div className={`text-sm mt-1 ${accent ? 'text-white/60' : 'text-sp-muted'}`}>{label}</div>
       {subtitle && (
-        <div className={`text-xs mt-0.5 ${accent ? 'text-white/40' : 'text-sp-muted'}`}>{subtitle}</div>
+        <div className="text-[10px] text-sp-muted/60 mt-1">{subtitle}</div>
       )}
     </div>
   );

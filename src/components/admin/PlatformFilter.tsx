@@ -18,9 +18,9 @@ export function PlatformFilter({ value, onChange }: PlatformFilterProps) {
         <button
           key={o.value}
           onClick={() => onChange(o.value)}
-          className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={`min-h-[36px] px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
             value === o.value
-              ? 'bg-sp-dark text-white shadow-sm'
+              ? 'bg-sp-dark text-white'
               : 'text-sp-muted hover:text-sp-dark hover:bg-sp-off'
           }`}
         >
