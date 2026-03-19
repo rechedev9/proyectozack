@@ -5,3 +5,4 @@ export * from './submissions';
 export * from './posts';
 export * from './creatorApplications';
 export * from './auth';
+export * from './brands';

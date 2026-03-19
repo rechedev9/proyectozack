@@ -1,5 +1,6 @@
 import { pgTable, serial, varchar, text, integer } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { talents } from './talents';
 
 export const caseStudies = pgTable('case_studies', {
   id: serial('id').primaryKey(),
@@ -33,6 +34,7 @@ export const caseCreators = pgTable('case_creators', {
   id: serial('id').primaryKey(),
   caseId: integer('case_id').notNull().references(() => caseStudies.id, { onDelete: 'cascade' }),
   creatorName: varchar('creator_name', { length: 100 }).notNull(),
+  talentId: integer('talent_id').references(() => talents.id, { onDelete: 'set null' }),
 });
 
 export const caseStudiesRelations = relations(caseStudies, ({ many }) => ({

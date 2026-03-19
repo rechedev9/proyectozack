@@ -15,6 +15,8 @@ import type {
   caseCreators,
   contactSubmissions,
   posts,
+  brandCampaigns,
+  talentProposals,
 } from '@/db/schema';
 
 // ─── Base model types ────────────────────────────────────────────────────────
@@ -39,6 +41,9 @@ export type ContactSubmission = InferSelectModel<typeof contactSubmissions>;
 
 export type Post = InferSelectModel<typeof posts>;
 
+export type BrandCampaign = InferSelectModel<typeof brandCampaigns>;
+export type TalentProposal = InferSelectModel<typeof talentProposals>;
+
 // ─── With-relations types ────────────────────────────────────────────────────
 
 export type TalentWithRelations = Talent & {
@@ -51,4 +56,13 @@ export type CaseStudyWithRelations = CaseStudy & {
   body: CaseBodyRow[];
   tags: CaseTag[];
   creators: CaseCreator[];
+};
+
+export type BrandCampaignWithRelations = BrandCampaign & {
+  talent: Talent;
+  caseStudy: CaseStudy | null;
+};
+
+export type TalentProposalWithTalent = TalentProposal & {
+  talent: Talent;
 };
