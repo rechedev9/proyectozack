@@ -43,6 +43,7 @@ export const caseCreators = pgTable('case_creators', {
   talentId: integer('talent_id').references(() => talents.id, { onDelete: 'set null' }),
 }, (t) => [
   index('case_creators_case_id_idx').on(t.caseId),
+  index('case_creators_talent_id_idx').on(t.talentId),
 ]);
 
 export const caseStudiesRelations = relations(caseStudies, ({ many }) => ({

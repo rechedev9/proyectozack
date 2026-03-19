@@ -1,4 +1,4 @@
-import { eq, desc } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { brandCampaigns, talentProposals } from '@/db/schema';
 import type { BrandCampaignWithRelations, TalentProposalWithTalent } from '@/types';
@@ -31,12 +31,15 @@ export async function getTalentCampaignsForBrand(
   talentId: number,
 ): Promise<BrandCampaignWithRelations[]> {
   const rows = await db.query.brandCampaigns.findMany({
-    where: eq(brandCampaigns.brandUserId, brandUserId),
+    where: and(
+      eq(brandCampaigns.brandUserId, brandUserId),
+      eq(brandCampaigns.talentId, talentId),
+    ),
     with: {
       talent: true,
       caseStudy: true,
     },
     orderBy: [desc(brandCampaigns.createdAt)],
   });
-  return (rows as BrandCampaignWithRelations[]).filter((c) => c.talentId === talentId);
+  return rows as BrandCampaignWithRelations[];
 }

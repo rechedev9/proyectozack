@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { eq, and, inArray, type SQL } from 'drizzle-orm';
+import { eq, and, inArray, sql, type SQL } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { talents, talentTags, talentStats, talentSocials } from '@/db/schema';
 import type { TalentWithRelations } from '@/types';
@@ -27,6 +27,16 @@ export async function getTalents(filters?: TalentFilters): Promise<TalentWithRel
     conditions.push(eq(talents.status, filters.status));
   }
 
+  // Pre-filter by tags at DB level via subquery
+  if (filters?.tags && filters.tags.length > 0) {
+    const lowerTags = filters.tags.map((t) => t.toLowerCase());
+    const matchingIds = db
+      .select({ talentId: talentTags.talentId })
+      .from(talentTags)
+      .where(inArray(sql`lower(${talentTags.tag})`, lowerTags));
+    conditions.push(inArray(talents.id, matchingIds));
+  }
+
   const rows = await db.query.talents.findMany({
     where: conditions.length > 0 ? and(...conditions) : undefined,
     with: {
@@ -37,16 +47,7 @@ export async function getTalents(filters?: TalentFilters): Promise<TalentWithRel
     orderBy: (t, { asc }) => [asc(t.sortOrder)],
   });
 
-  // Client-side filter for tags (requires join that Drizzle relational queries don't support inline)
-  let filtered = rows;
-  if (filters?.tags && filters.tags.length > 0) {
-    const lowerTags = filters.tags.map((t) => t.toLowerCase());
-    filtered = filtered.filter((talent) =>
-      talent.tags.some((t) => lowerTags.includes(t.tag.toLowerCase())),
-    );
-  }
-
-  return filtered;
+  return rows;
 }
 
 export const getTalentBySlug = cache(async (slug: string): Promise<TalentWithRelations | undefined> => {

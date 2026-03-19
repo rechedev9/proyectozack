@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, text, timestamp, index } from 'drizzle-orm/pg-core';
 
 export const creatorApplications = pgTable('creator_applications', {
   id: serial('id').primaryKey(),
@@ -9,4 +9,6 @@ export const creatorApplications = pgTable('creator_applications', {
   followers: varchar('followers', { length: 50 }),
   message: text('message'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+}, (t) => [
+  index('creator_applications_created_at_idx').on(t.createdAt),
+]);

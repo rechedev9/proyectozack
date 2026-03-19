@@ -43,6 +43,20 @@
       "when": 1773952544722,
       "tag": "0005_busy_shinobi_shaw",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1773953754040,
+      "tag": "0006_natural_sage",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1773953854374,
+      "tag": "0007_milky_lady_mastermind",
+      "breakpoints": true
     }
   ]
 }

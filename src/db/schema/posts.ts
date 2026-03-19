@@ -16,4 +16,5 @@ export const posts = pgTable('posts', {
 }, (t) => [
   index('posts_slug_idx').on(t.slug),
   index('posts_status_idx').on(t.status),
+  index('posts_status_published_at_idx').on(t.status, t.publishedAt),
 ]);

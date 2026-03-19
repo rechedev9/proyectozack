@@ -21,6 +21,7 @@ export const brandCampaigns = pgTable('brand_campaigns', {
 }, (t) => [
   index('brand_campaigns_brand_user_id_idx').on(t.brandUserId),
   index('brand_campaigns_talent_id_idx').on(t.talentId),
+  index('brand_campaigns_case_id_idx').on(t.caseId),
 ]);
 
 export const talentProposals = pgTable('talent_proposals', {
@@ -37,6 +38,9 @@ export const talentProposals = pgTable('talent_proposals', {
 }, (t) => [
   index('talent_proposals_brand_user_id_idx').on(t.brandUserId),
   index('talent_proposals_talent_id_idx').on(t.talentId),
+  index('talent_proposals_status_idx').on(t.status),
+  index('talent_proposals_created_at_idx').on(t.createdAt),
+  index('talent_proposals_brand_talent_status_idx').on(t.brandUserId, t.talentId, t.status),
 ]);
 
 export const brandCampaignsRelations = relations(brandCampaigns, ({ one }) => ({

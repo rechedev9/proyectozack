@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, text, timestamp, index } from 'drizzle-orm/pg-core';
 
 export const contactSubmissions = pgTable('contact_submissions', {
   id: serial('id').primaryKey(),
@@ -18,4 +18,7 @@ export const contactSubmissions = pgTable('contact_submissions', {
   monetization: varchar('monetization', { length: 200 }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   ipHash: varchar('ip_hash', { length: 64 }),
-});
+}, (t) => [
+  index('contact_submissions_created_at_idx').on(t.createdAt),
+  index('contact_submissions_ip_hash_idx').on(t.ipHash),
+]);
