@@ -19,6 +19,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           { href: '/admin/talents', label: 'Talentos' },
           { href: '/admin/cases', label: 'Casos' },
           { href: '/admin/brands', label: 'Marcas' },
+          { href: '/admin/analytics', label: 'Analytics' },
         ]}
         userEmail={session.user.email}
         logoutHref="/api/auth/sign-out"
