@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import type { ProposalInput } from '@/lib/schemas/proposal';
 
 interface ProposalModalProps {
   talentId: number;
@@ -43,7 +42,7 @@ export function ProposalModal({ talentId, talentName, onClose }: ProposalModalPr
           budgetRange: form.budgetRange,
           timeline: form.timeline,
           message: form.message,
-        } as ProposalInput),
+        }),
       });
 
       if (res.ok) {
