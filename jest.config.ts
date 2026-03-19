@@ -31,6 +31,19 @@ const config: Config = {
         '/node_modules/(?!(@t3-oss|@neondatabase|drizzle-orm|better-auth|@better-auth)/)',
       ],
     },
+    {
+      displayName: 'fuzz',
+      testEnvironment: 'node',
+      testMatch: ['<rootDir>/src/**/__tests__/fuzz/**/*.fuzz.ts'],
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+      moduleNameMapper: { '^@/(.*)$': '<rootDir>/src/$1' },
+      transform: {
+        '^.+\\.tsx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.jest.json' }],
+      },
+      transformIgnorePatterns: [
+        '/node_modules/(?!(@t3-oss|@neondatabase|drizzle-orm|better-auth|@better-auth)/)',
+      ],
+    },
   ],
 
   collectCoverageFrom: [
