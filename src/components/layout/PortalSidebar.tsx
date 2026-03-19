@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 interface NavItem {
   href: string;
   label: string;
+  icon?: React.ReactNode;
 }
 
 interface PortalSidebarProps {
@@ -18,6 +20,12 @@ interface PortalSidebarProps {
 
 export function PortalSidebar({ title, subtitle, navItems, userEmail, logoutHref }: PortalSidebarProps) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  function isActive(href: string) {
+    if (href === '/admin' || href === '/marcas') return pathname === href;
+    return pathname.startsWith(href);
+  }
 
   return (
     <>
@@ -68,17 +76,28 @@ export function PortalSidebar({ title, subtitle, navItems, userEmail, logoutHref
           </Link>
           <p className="text-xs text-sp-muted2 mt-1">{subtitle}</p>
         </div>
-        <div className="flex-1 p-4 space-y-1">
-          {navItems.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setOpen(false)}
-              className="block px-4 py-2.5 rounded-xl text-sm font-medium text-sp-muted2 hover:text-white hover:bg-white/10 transition-colors"
-            >
-              {label}
-            </Link>
-          ))}
+        <div className="flex-1 p-3 space-y-0.5 mt-2">
+          {navItems.map(({ href, label, icon }) => {
+            const active = isActive(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setOpen(false)}
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  active
+                    ? 'bg-white/10 text-white'
+                    : 'text-sp-muted2 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                {icon && <span className="w-5 h-5 shrink-0 opacity-70">{icon}</span>}
+                {label}
+                {active && (
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-sp-orange" />
+                )}
+              </Link>
+            );
+          })}
         </div>
         <div className="p-4 border-t border-white/10">
           <p className="text-xs text-sp-muted truncate">{userEmail}</p>

@@ -1,5 +1,12 @@
 import { requireRole } from '@/lib/auth-guard';
 import { PortalSidebar } from '@/components/layout/PortalSidebar';
+import {
+  DashboardIcon,
+  TalentIcon,
+  CaseIcon,
+  BrandIcon,
+  AnalyticsIcon,
+} from '@/components/admin/SidebarIcons';
 import type { ReactNode } from 'react';
 
 interface AdminLayoutProps {
@@ -15,11 +22,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         title="SocialPro"
         subtitle="Admin Panel"
         navItems={[
-          { href: '/admin', label: 'Dashboard' },
-          { href: '/admin/talents', label: 'Talentos' },
-          { href: '/admin/cases', label: 'Casos' },
-          { href: '/admin/brands', label: 'Marcas' },
-          { href: '/admin/analytics', label: 'Analytics' },
+          { href: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
+          { href: '/admin/talents', label: 'Talentos', icon: <TalentIcon /> },
+          { href: '/admin/cases', label: 'Casos', icon: <CaseIcon /> },
+          { href: '/admin/brands', label: 'Marcas', icon: <BrandIcon /> },
+          { href: '/admin/analytics', label: 'Analytics', icon: <AnalyticsIcon /> },
         ]}
         userEmail={session.user.email}
         logoutHref="/api/auth/sign-out"
