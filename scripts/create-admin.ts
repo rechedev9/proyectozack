@@ -28,7 +28,7 @@ async function main() {
   if (!DATABASE_URL) { console.error('DATABASE_URL not set'); process.exit(1); }
 
   const email = 'admin@socialpro.es';
-  const password = 'admin12345';
+  const password = 'AdminKekoZack12345';
   const name = 'Admin SocialPro';
 
   // Hash password using Better Auth's exact scrypt config
