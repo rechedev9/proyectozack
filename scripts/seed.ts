@@ -402,6 +402,12 @@ interface CaseData {
   title: string;
   logoUrl: string | null;
   sortOrder: number;
+  reach: string | null;
+  engagementRate: string | null;
+  conversions: string | null;
+  roiMultiplier: string | null;
+  heroImageUrl: string | null;
+  excerpt: string | null;
   body: string[];
   tags: string[];
   creators: string[];
@@ -412,6 +418,9 @@ const CASES_DATA: CaseData[] = [
     slug: 'razer', brandName: 'RAZER',
     title: 'SocialPro × RAZER: Activación con creadores del ecosistema gaming',
     logoUrl: '/images/cases/razer.jpg', sortOrder: 0,
+    reach: '2.5M+', engagementRate: '4.8%', conversions: '185K interacciones',
+    roiMultiplier: '3.2x', heroImageUrl: null,
+    excerpt: 'Activación multicanal con 13 creadores del ecosistema gaming, integrando periféricos RAZER en streams y redes sociales.',
     body: [
       'SocialPro ha colaborado con RAZER, una de las marcas líderes a nivel mundial en periféricos gaming, en una activación con distintos creadores de contenido del ecosistema gaming y de streaming.',
       'La campaña contó con la participación de múltiples perfiles del sector, quienes integraron periféricos de la marca en sus setups y contenido habitual, reforzando la presencia de RAZER dentro de sus comunidades.',
@@ -425,6 +434,9 @@ const CASES_DATA: CaseData[] = [
     slug: 'onewin', brandName: '1WIN',
     title: '1WIN × SocialPro: 100+ Influencers en Instagram',
     logoUrl: null, sortOrder: 1,
+    reach: '8M+', engagementRate: '3.5%', conversions: '100+ influencers activos',
+    roiMultiplier: '4.5x', heroImageUrl: null,
+    excerpt: 'Campaña activa con más de 100 influencers del ecosistema gaming e iGaming en Instagram, en constante expansión.',
     body: [
       'Campaña activa desde mediados de 2025. Activación en Instagram con más de 100 influencers del ecosistema gaming e iGaming.',
       'Con perfiles como Manolito de Zona Gemelos entre otros, la campaña sigue activa y en constante expansión.',
@@ -436,6 +448,9 @@ const CASES_DATA: CaseData[] = [
     slug: 'skinsmonkey', brandName: 'SKINSMONKEY',
     title: 'SkinsMonkey × SocialPro: +200.000€ en CS2 Skins Marketplace',
     logoUrl: null, sortOrder: 2,
+    reach: '1.2M+', engagementRate: '6.2%', conversions: '200K€+ en trading',
+    roiMultiplier: '5.1x', heroImageUrl: null,
+    excerpt: 'Gestión de 13 creadores CS2 en YouTube con más de 200.000€ trackeados en trading de skins.',
     body: [
       'Desde inicios de 2025, SocialPro ha gestionado la presencia de SkinsMonkey con 13 creadores especializados en CS2 en YouTube.',
       'Más de 200.000€ trackeados en trading de skins directamente a través de los códigos de SocialPro. Tasas de conversión muy superiores a la media del sector.',
@@ -535,7 +550,16 @@ async function seed(): Promise<void> {
 
     const [inserted] = await db
       .insert(schema.caseStudies)
-      .values({ ...caseRow, logoUrl: caseRow.logoUrl ?? undefined })
+      .values({
+        ...caseRow,
+        logoUrl: caseRow.logoUrl ?? undefined,
+        heroImageUrl: caseRow.heroImageUrl ?? undefined,
+        excerpt: caseRow.excerpt ?? undefined,
+        reach: caseRow.reach ?? undefined,
+        engagementRate: caseRow.engagementRate ?? undefined,
+        conversions: caseRow.conversions ?? undefined,
+        roiMultiplier: caseRow.roiMultiplier ?? undefined,
+      })
       .onConflictDoNothing()
       .returning({ id: schema.caseStudies.id });
 
