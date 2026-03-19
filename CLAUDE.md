@@ -56,30 +56,44 @@ socialpro/src/
     page.tsx                     # Home: Server Component, Promise.all, revalidate=3600
     globals.css
     admin/
-      layout.tsx                 # Better Auth session guard
+      layout.tsx                 # Better Auth session guard (uses requireRole)
       page.tsx, talents/, cases/, testimonials/
+      brands/                    # Brand account management (invite + list)
+    marcas/
+      login/page.tsx             # Brand login page
+      (portal)/
+        layout.tsx               # Brand portal layout (requireRole('brand'))
+        page.tsx                 # Brand dashboard
+        talentos/page.tsx        # Talent catalog with filters
+        talentos/[slug]/         # Talent ficha + proposal modal
+        comparar/page.tsx        # Side-by-side talent comparison
+        propuestas/page.tsx      # Brand's proposals list
     api/
       contact/route.ts           # POST → DB insert + Resend email
       auth/[...all]/route.ts     # Better Auth catch-all
+      marcas/proposals/route.ts  # POST proposal submission
   components/
-    layout/                      # Nav.tsx (CLIENT), Footer.tsx (SERVER)
+    layout/                      # Nav.tsx (CLIENT), Footer.tsx (SERVER), PortalSidebar.tsx (SERVER)
     sections/                    # One file per page section
+    brand/                       # BrandTalentCard, FilterChips, ProposalModal, EmptyState, ComparisonView
     ui/                          # GradientText, SectionTag, SectionHeading, StatusBadge, SocialIcon
   db/
     index.ts                     # Neon + Drizzle singleton (edge-safe)
-    schema/                      # talents.ts, content.ts, cases.ts, submissions.ts → re-exported from index.ts
+    schema/                      # talents.ts, content.ts, cases.ts, submissions.ts, brands.ts, auth.ts → re-exported from index.ts
   lib/
-    queries/                     # talents.ts, content.ts, cases.ts, portfolio.ts
+    queries/                     # talents.ts, content.ts, cases.ts, portfolio.ts, brands.ts
+    schemas/                     # Zod schemas (contact.ts, proposal.ts)
     env.ts                       # @t3-oss/env-nextjs schema
-    email.ts                     # Resend helpers
+    email.ts                     # Resend helpers (contact + brand invite)
     auth.ts                      # Better Auth config
+    auth-guard.ts                # Shared requireRole() util for admin + brand portals
   types/index.ts                 # InferSelectModel exports
 ```
 
 ### Server vs Client Component Rule
 
 - **SERVER:** anything that only reads data (no onClick/useState/useEffect/scroll events)
-- **CLIENT:** Nav, TalentGrid, TalentCard/Modal, ServicesSection (tabs), CaseCard/Modal, PortfolioGrid, ContactSection
+- **CLIENT:** Nav, TalentGrid, TalentCard/Modal, ServicesSection (tabs), CaseCard, PortfolioGrid, ContactSection, FilterChips, ProposalModal, BrandTalentFichaClient
 - **Data flow:** Server shell fetches all data → passes full array as prop to Client child → Client filters locally. No client-side DB calls ever.
 
 ### Database Schema Summary
@@ -87,10 +101,12 @@ socialpro/src/
 See `roadmap.md` Phase 2 for exact column definitions. Tables:
 - `talents`, `talent_tags`, `talent_stats`, `talent_socials`
 - `testimonials`, `collaborators`, `team_members`, `brands`, `portfolio_items`
-- `case_studies`, `case_body`, `case_tags`, `case_creators`
-- `contact_submissions`
+- `case_studies`, `case_body`, `case_tags`, `case_creators` (has `talent_id` FK)
+- `contact_submissions`, `creator_applications`, `posts`
+- `brand_campaigns`, `talent_proposals` (Growth G)
+- Auth: `user` (with `role` text column), `session`, `account`, `verification`
 
-Enums (`platform`: twitch|youtube|cs2; `status`: active|available|inactive; `portfolio type`: thumb|video|campaign) — must match exact strings in the HTML prototype JS.
+Enums: `platform` (twitch|youtube), `status` (active|available), `portfolio_type` (thumb|video|campaign), `proposal_status` (pendiente|en_revision|aceptada|rechazada).
 
 ## Database Migrations
 - **Drizzle is the single source of truth.** Never create tables or alter columns via raw SQL, seed scripts, or the Neon console. All schema changes go through `npx drizzle-kit generate` → `npx drizzle-kit migrate`.

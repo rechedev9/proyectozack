@@ -376,15 +376,19 @@ Keep complex CSS in `globals.css` — do not force-migrate to Tailwind utilities
 
 ---
 
-### Growth G — Dashboard Marcas MVP (mes 2-3)
+### Growth G — Dashboard Marcas MVP ✅
 
 **Por qué:** Diferenciador tecnológico que ninguna agencia española ofrece. La infra Next.js ya lo soporta.
 
-- [ ] Portal `/marcas` protegido con auth (Better Auth roles)
-- [ ] Browse de talento con filtros: plataforma, nicho, rango de seguidores, ubicación
-- [ ] Ficha de talento con métricas, historial de campañas, disponibilidad
-- [ ] Formulario de interés / solicitud de propuesta por talento
-- [ ] Admin: gestión de acceso de marcas
+- [x] Portal `/marcas` protegido con auth (Better Auth roles: `admin` | `brand`, shared `requireRole()` guard)
+- [x] Browse de talento con filtros: plataforma, nicho (tags), con FilterChips URL-based
+- [x] Ficha de talento con métricas, historial de campañas con la marca, socials, bio
+- [x] Formulario de interés / solicitud de propuesta por talento (ProposalModal + API `POST /api/marcas/proposals`)
+- [x] Admin: gestión de acceso de marcas (`/admin/brands` con invite-only via Resend)
+- [x] Dashboard de marca con stats (campañas, talentos, propuestas pendientes)
+- [x] Vista de comparación de talentos side-by-side (`/marcas/comparar?ids=...`)
+- [x] Lista de propuestas con status badges (`/marcas/propuestas`)
+- [x] Schema: `brand_campaigns`, `talent_proposals`, `proposal_status` enum, `case_creators.talent_id` FK
 
 ---
 
