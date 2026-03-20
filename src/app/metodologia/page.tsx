@@ -5,9 +5,12 @@ import { SectionHeading } from '@/components/ui/SectionHeading';
 import { GradientText } from '@/components/ui/GradientText';
 
 export const metadata: Metadata = {
-  title: 'Metodología — SocialPro',
+  title: 'Metodología',
   description:
     'Nuestro proceso de trabajo: discovery, matching, ejecución y reporting. Campañas medibles con ROI demostrable.',
+  alternates: {
+    canonical: '/metodologia',
+  },
 };
 
 const PHASES = [

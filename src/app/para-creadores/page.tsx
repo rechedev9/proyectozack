@@ -5,9 +5,12 @@ import { GradientText } from '@/components/ui/GradientText';
 import { CreatorApplyForm } from '@/components/sections/CreatorApplyForm';
 
 export const metadata: Metadata = {
-  title: 'Para Creadores — SocialPro',
+  title: 'Para Creadores',
   description:
     'Únete al roster de SocialPro. Conectamos creadores gaming con las mejores marcas de iGaming, periféricos y entretenimiento.',
+  alternates: {
+    canonical: '/para-creadores',
+  },
 };
 
 const STEPS = [

@@ -26,22 +26,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const description =
     caseStudy.excerpt || caseStudy.body[0]?.paragraph || caseStudy.title;
-  const ogImage = caseStudy.heroImageUrl || '/og-image.jpg';
+  const title = `${caseStudy.brandName} × SocialPro | Caso de Éxito`;
+  const hasImage = !!caseStudy.heroImageUrl;
 
   return {
-    title: `${caseStudy.brandName} × SocialPro | Caso de Éxito`,
+    title,
     description,
+    alternates: {
+      canonical: `/casos/${slug}`,
+    },
     openGraph: {
-      title: `${caseStudy.brandName} × SocialPro | Caso de Éxito`,
+      title,
       description,
       url: `${SITE_URL}/casos/${slug}`,
-      images: [{ url: ogImage, width: 1200, height: 630 }],
+      images: hasImage ? [{ url: caseStudy.heroImageUrl!, width: 1200, height: 630 }] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${caseStudy.brandName} × SocialPro | Caso de Éxito`,
+      title,
       description,
-      images: [ogImage],
+      images: hasImage ? [caseStudy.heroImageUrl!] : undefined,
     },
   };
 }

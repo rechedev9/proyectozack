@@ -23,23 +23,29 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const post = await getPostBySlug(slug);
   if (!post) return {};
 
+  const title = `${post.title} — Blog SocialPro`;
+
   return {
-    title: `${post.title} — Blog SocialPro`,
+    title,
     description: post.excerpt,
+    alternates: {
+      canonical: `/blog/${slug}`,
+    },
     openGraph: {
-      title: `${post.title} — Blog SocialPro`,
+      title,
       description: post.excerpt,
       url: `${SITE_URL}/blog/${slug}`,
       type: 'article',
+      publishedTime: post.publishedAt?.toISOString(),
       images: post.coverUrl
         ? [{ url: post.coverUrl, width: 1200, height: 630 }]
-        : [{ url: '/og-image.jpg', width: 1200, height: 630 }],
+        : undefined,
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${post.title} — Blog SocialPro`,
+      title,
       description: post.excerpt,
-      images: [post.coverUrl || '/og-image.jpg'],
+      images: post.coverUrl ? [post.coverUrl] : undefined,
     },
   };
 }

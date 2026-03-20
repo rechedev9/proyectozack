@@ -8,9 +8,12 @@ import { SectionHeading } from '@/components/ui/SectionHeading';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Blog — SocialPro',
+  title: 'Blog',
   description:
     'Artículos sobre marketing gaming, esports, estrategias para creadores y tendencias del sector iGaming en España y Latinoamérica.',
+  alternates: {
+    canonical: '/blog',
+  },
 };
 
 export default async function BlogPage() {

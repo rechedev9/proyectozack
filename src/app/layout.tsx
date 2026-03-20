@@ -21,10 +21,16 @@ const barlowCondensed = Barlow_Condensed({
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
 
 export const metadata: Metadata = {
-  title: 'SocialPro — Agencia Gaming & Esports',
+  title: {
+    default: 'SocialPro — Agencia Gaming & Esports',
+    template: '%s | SocialPro',
+  },
   description:
     'Agencia de talentos gaming y esports. Conectamos streamers y creadores con las mejores marcas de iGaming, periféricos y entretenimiento.',
   metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'SocialPro — Agencia Gaming & Esports',
     description:
@@ -33,22 +39,14 @@ export const metadata: Metadata = {
     siteName: 'SocialPro',
     locale: 'es_ES',
     type: 'website',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'SocialPro — Agencia Gaming & Esports',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'SocialPro — Agencia Gaming & Esports',
     description:
       'Conectamos streamers y creadores con las mejores marcas de iGaming. +13 años, +15M views/mes.',
-    images: ['/og-image.jpg'],
   },
+  manifest: '/manifest.json',
 };
 
 const jsonLd = {
@@ -59,7 +57,12 @@ const jsonLd = {
       '@id': `${SITE_URL}/#organization`,
       name: 'SocialPro',
       url: SITE_URL,
-      logo: `${SITE_URL}/logo.png`,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/logo.png`,
+        width: 512,
+        height: 512,
+      },
       description:
         'Agencia de talentos gaming y esports. Conectamos streamers y creadores con las mejores marcas de iGaming.',
       foundingDate: '2012',
@@ -68,9 +71,14 @@ const jsonLd = {
         telephone: '+34-604-868-426',
         email: 'marketing@socialpro.es',
         contactType: 'sales',
-        availableLanguage: 'Spanish',
+        availableLanguage: ['Spanish', 'English'],
       },
-      sameAs: [],
+      sameAs: [
+        'https://www.instagram.com/socialproes/',
+        'https://x.com/SocialProES',
+        'https://www.facebook.com/SocialProES',
+        'https://www.linkedin.com/company/socialproes',
+      ],
     },
     {
       '@type': 'WebSite',
@@ -79,19 +87,38 @@ const jsonLd = {
       name: 'SocialPro',
       publisher: { '@id': `${SITE_URL}/#organization` },
       inLanguage: 'es',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${SITE_URL}/blog?q={search_term_string}`,
+        },
+        'query-input': 'required name=search_term_string',
+      },
     },
     {
       '@type': 'LocalBusiness',
       '@id': `${SITE_URL}/#localbusiness`,
       name: 'SocialPro',
       url: SITE_URL,
+      image: `${SITE_URL}/logo.png`,
       telephone: '+34-604-868-426',
       email: 'marketing@socialpro.es',
       priceRange: '$$',
       address: {
         '@type': 'PostalAddress',
         addressCountry: 'ES',
+        addressLocality: 'Madrid',
       },
+      areaServed: [
+        { '@type': 'Country', name: 'España' },
+        { '@type': 'Country', name: 'México' },
+        { '@type': 'Country', name: 'Argentina' },
+        { '@type': 'Country', name: 'Colombia' },
+        { '@type': 'Country', name: 'Chile' },
+        { '@type': 'Country', name: 'Turquía' },
+        { '@type': 'Continent', name: 'Europa' },
+      ],
       makesOffer: [
         { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Gestión de Talentos Gaming' } },
         { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Campañas para Marcas iGaming' } },

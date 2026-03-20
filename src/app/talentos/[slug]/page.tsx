@@ -33,19 +33,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
+    alternates: {
+      canonical: `/talentos/${slug}`,
+    },
     openGraph: {
       title,
       description,
       url: `${SITE_URL}/talentos/${slug}`,
       images: talent.photoUrl
         ? [{ url: talent.photoUrl, width: 600, height: 600 }]
-        : [{ url: '/og-image.jpg', width: 1200, height: 630 }],
+        : undefined,
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [talent.photoUrl || '/og-image.jpg'],
+      images: talent.photoUrl ? [talent.photoUrl] : undefined,
     },
   };
 }

@@ -25,6 +25,12 @@ export async function GET(): Promise<Response> {
     <link>${SITE_URL}/blog</link>
     <description>Insights sobre marketing gaming, esports y creadores de contenido</description>
     <language>es</language>
+    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    <image>
+      <url>${SITE_URL}/logo.png</url>
+      <title>SocialPro Blog</title>
+      <link>${SITE_URL}/blog</link>
+    </image>
     <atom:link href="${SITE_URL}/blog/feed.xml" rel="self" type="application/rss+xml"/>
     ${items}
   </channel>

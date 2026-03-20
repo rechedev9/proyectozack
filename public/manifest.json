@@ -1,0 +1,16 @@
+{
+  "name": "SocialPro — Agencia Gaming & Esports",
+  "short_name": "SocialPro",
+  "description": "Agencia de talentos gaming y esports. Conectamos streamers y creadores con las mejores marcas de iGaming.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#f5632a",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
