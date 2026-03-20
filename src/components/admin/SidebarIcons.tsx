@@ -48,3 +48,13 @@ export function AnalyticsIcon() {
     </svg>
   );
 }
+
+export function GiveawayIcon() {
+  return (
+    <svg {...s}>
+      <path d="M10 2a2 2 0 0 1 4 0v2h3a2 2 0 0 1 2 2v2H5V6a2 2 0 0 1 2-2h3V2z" />
+      <rect x="4" y="8" width="16" height="10" rx="2" />
+      <path d="M12 8v10" />
+    </svg>
+  );
+}

@@ -6,6 +6,7 @@ import {
   CaseIcon,
   BrandIcon,
   AnalyticsIcon,
+  GiveawayIcon,
 } from '@/components/admin/SidebarIcons';
 import type { ReactNode } from 'react';
 
@@ -27,6 +28,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           { href: '/admin/cases', label: 'Casos', icon: <CaseIcon /> },
           { href: '/admin/brands', label: 'Marcas', icon: <BrandIcon /> },
           { href: '/admin/analytics', label: 'Analytics', icon: <AnalyticsIcon /> },
+          { href: '/admin/giveaways', label: 'Giveaways', icon: <GiveawayIcon /> },
         ]}
         userEmail={session.user.email}
         logoutHref="/api/auth/sign-out"
