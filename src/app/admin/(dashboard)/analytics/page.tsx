@@ -1,5 +1,5 @@
 import { getSnapshots, countTrackedTalents } from '@/lib/queries/analytics';
-import { getTalents } from '@/lib/queries/talents';
+import { getAllTalents } from '@/lib/queries/talents';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 
 export default async function AdminAnalyticsPage() {
@@ -11,7 +11,7 @@ export default async function AdminAnalyticsPage() {
 
   const [snapshots, allTalents, trackedCount] = await Promise.all([
     getSnapshots({ from, to }),
-    getTalents(),
+    getAllTalents(),
     countTrackedTalents(),
   ]);
 

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getTalentBySlug } from '@/lib/queries/talents';
+import { getTalentBySlugAdmin } from '@/lib/queries/talents';
 import { getTalentSnapshots } from '@/lib/queries/analytics';
 import { GrowthReport } from './GrowthReport';
 
@@ -12,7 +12,7 @@ export default async function GrowthReportPage({ params, searchParams }: ReportP
   const { talentSlug } = await params;
   const { from, to } = await searchParams;
 
-  const talent = await getTalentBySlug(talentSlug);
+  const talent = await getTalentBySlugAdmin(talentSlug);
   if (!talent) return notFound();
 
   const toDate = to ?? new Date().toISOString().split('T')[0];

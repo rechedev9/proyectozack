@@ -64,6 +64,13 @@
       "when": 1774020599324,
       "tag": "0008_magenta_hiroim",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1774021983992,
+      "tag": "0009_loud_princess_powerful",
+      "breakpoints": true
     }
   ]
 }

@@ -5,6 +5,8 @@ import { relations } from 'drizzle-orm';
 export const platformEnum = pgEnum('platform', ['twitch', 'youtube']);
 // status: real values from source data are 'active' | 'available' only
 export const statusEnum = pgEnum('status', ['active', 'available']);
+// visibility: controls whether talent appears on public site
+export const visibilityEnum = pgEnum('visibility', ['public', 'internal']);
 
 export const talents = pgTable('talents', {
   id: serial('id').primaryKey(),
@@ -20,6 +22,7 @@ export const talents = pgTable('talents', {
   initials: varchar('initials', { length: 4 }).notNull(),
   photoUrl: varchar('photo_url', { length: 500 }),
   sortOrder: integer('sort_order').notNull().default(0),
+  visibility: visibilityEnum('visibility').notNull().default('public'),
 }, (t) => [
   index('talents_slug_idx').on(t.slug),
   index('talents_platform_idx').on(t.platform),

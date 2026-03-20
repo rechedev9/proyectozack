@@ -14,11 +14,11 @@ export interface TalentFilters {
 }
 
 export async function getTalentSlugs(): Promise<{ slug: string }[]> {
-  return db.select({ slug: talents.slug }).from(talents);
+  return db.select({ slug: talents.slug }).from(talents).where(eq(talents.visibility, 'public'));
 }
 
 export async function getTalents(filters?: TalentFilters): Promise<TalentWithRelations[]> {
-  const conditions: SQL[] = [];
+  const conditions: SQL[] = [eq(talents.visibility, 'public')];
 
   if (filters?.platform) {
     conditions.push(eq(talents.platform, filters.platform));
@@ -52,7 +52,7 @@ export async function getTalents(filters?: TalentFilters): Promise<TalentWithRel
 
 export const getTalentBySlug = cache(async (slug: string): Promise<TalentWithRelations | undefined> => {
   const row = await db.query.talents.findFirst({
-    where: eq(talents.slug, slug),
+    where: and(eq(talents.slug, slug), eq(talents.visibility, 'public')),
     with: {
       tags: true,
       stats: { orderBy: (s, { asc }) => [asc(s.sortOrder)] },
@@ -73,6 +73,35 @@ export async function getTalentsByIds(ids: number[]): Promise<TalentWithRelation
     },
   });
 }
+
+// ── Admin queries (no visibility filter) ────────────────────────────
+
+export async function getAllTalents(): Promise<TalentWithRelations[]> {
+  return db.query.talents.findMany({
+    with: {
+      tags: true,
+      stats: { orderBy: (s, { asc }) => [asc(s.sortOrder)] },
+      socials: { orderBy: (s, { asc }) => [asc(s.sortOrder)] },
+    },
+    orderBy: (t, { asc }) => [asc(t.sortOrder)],
+  });
+}
+
+export async function getAllTalentSlugs(): Promise<{ slug: string }[]> {
+  return db.select({ slug: talents.slug }).from(talents);
+}
+
+export const getTalentBySlugAdmin = cache(async (slug: string): Promise<TalentWithRelations | undefined> => {
+  const row = await db.query.talents.findFirst({
+    where: eq(talents.slug, slug),
+    with: {
+      tags: true,
+      stats: { orderBy: (s, { asc }) => [asc(s.sortOrder)] },
+      socials: { orderBy: (s, { asc }) => [asc(s.sortOrder)] },
+    },
+  });
+  return row ?? undefined;
+});
 
 // Re-export for convenience
 export { talents, talentTags, talentStats, talentSocials };
