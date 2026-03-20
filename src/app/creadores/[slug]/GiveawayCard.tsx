@@ -17,6 +17,12 @@ export function GiveawayCard({ giveaway }: GiveawayCardProps) {
 
   const handleExpired = useCallback(() => setExpired(true), []);
 
+  // High-value detection for HOT badge
+  const numericValue = giveaway.value
+    ? parseFloat(giveaway.value.replace(/[^\d.,]/g, '').replace(',', '.'))
+    : 0;
+  const isHot = !isFinished && numericValue >= 3000;
+
   return (
     <motion.a
       href={isFinished ? '#' : giveaway.redirectUrl}
@@ -50,6 +56,15 @@ export function GiveawayCard({ giveaway }: GiveawayCardProps) {
           </span>
         )}
       </div>
+
+      {/* HOT badge for high-value prizes */}
+      {isHot && (
+        <div className="absolute top-12 right-3 z-20 gw-hot-badge">
+          <div className="px-2 py-1 rounded-md bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-black uppercase tracking-wider shadow-[0_0_12px_rgba(239,68,68,0.4)]">
+            HOT
+          </div>
+        </div>
+      )}
 
       {/* Prize image — unbox animation */}
       {giveaway.imageUrl ? (

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
+import { CursorTrail } from './[slug]/CursorTrail';
 
 export const metadata: Metadata = {
   robots: { index: true, follow: true },
@@ -11,6 +12,8 @@ export default function CreadoresLayout({ children }: { children: ReactNode }) {
       {/* Ambient orbs */}
       <div className="gw-orb-top" />
       <div className="gw-orb-bottom" />
+      {/* Neon cursor trail */}
+      <CursorTrail />
       {/* Content */}
       <div className="relative z-10">
         {children}

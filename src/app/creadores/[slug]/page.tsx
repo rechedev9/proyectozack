@@ -48,6 +48,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+function computeTotalValue(giveaways: { value: string | null }[]): string {
+  let total = 0;
+  for (const g of giveaways) {
+    if (!g.value) continue;
+    const num = parseFloat(g.value.replace(/[^\d.,]/g, '').replace(',', '.'));
+    if (!isNaN(num)) total += num;
+  }
+  return total.toLocaleString('es-ES', { maximumFractionDigits: 0 }) + '\u20AC';
+}
+
 export default async function CreadorPage({ params }: PageProps) {
   const { slug } = await params;
   const talent = await getTalentBySlug(slug);
@@ -58,8 +68,32 @@ export default async function CreadorPage({ params }: PageProps) {
     getFinishedGiveaways(talent.id),
   ]);
 
+  const allGiveaways = [...active, ...finished];
+  const totalValue = computeTotalValue(allGiveaways);
+
   return (
     <>
+      {/* Ticker marquee */}
+      {active.length > 0 && (
+        <div className="bg-[#C3FC00] overflow-hidden">
+          <div className="gw-ticker-track whitespace-nowrap">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <span key={i} className="inline-flex items-center gap-6 px-6">
+                {active.map((g) => (
+                  <span key={`${i}-${g.id}`} className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-black/80">
+                    <span className="w-1.5 h-1.5 rounded-full bg-black/30 animate-pulse" />
+                    {g.title} — {g.value}
+                  </span>
+                ))}
+                <span className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-black/50">
+                  LIVE GIVEAWAYS
+                </span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Sticky header */}
       <header className="sticky top-0 z-50 bg-[#050507]/90 backdrop-blur-xl border-b border-white/[0.04]">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
@@ -79,8 +113,30 @@ export default async function CreadorPage({ params }: PageProps) {
 
       <CreatorHero talent={talent} />
 
+      {/* Stats bar */}
+      {allGiveaways.length > 0 && (
+        <div className="border-y border-white/[0.04] bg-white/[0.01]">
+          <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-center gap-8 md:gap-16">
+            <div className="text-center">
+              <p className="text-2xl font-black text-[#C3FC00] gw-value-shimmer">{active.length}</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-white/30 font-bold mt-0.5">Activos</p>
+            </div>
+            <div className="w-px h-8 bg-white/[0.06]" />
+            <div className="text-center">
+              <p className="text-2xl font-black text-[#C3FC00] gw-value-shimmer">{totalValue}</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-white/30 font-bold mt-0.5">En premios</p>
+            </div>
+            <div className="w-px h-8 bg-white/[0.06]" />
+            <div className="text-center">
+              <p className="text-2xl font-black text-[#C3FC00] gw-value-shimmer">{finished.length}</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-white/30 font-bold mt-0.5">Entregados</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Giveaways content */}
-      <div id="giveaways" className="max-w-5xl mx-auto px-6 pb-20 space-y-12">
+      <div id="giveaways" className="max-w-5xl mx-auto px-6 pb-20 pt-10 space-y-12">
         {active.length === 0 && finished.length === 0 ? (
           <div className="text-center py-20">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="w-16 h-16 mx-auto mb-4 text-white/10">
@@ -102,6 +158,13 @@ export default async function CreadorPage({ params }: PageProps) {
             <GiveawayGrid giveaways={finished} title="Finalizados" />
           </>
         )}
+      </div>
+
+      {/* Footer badge */}
+      <div className="border-t border-white/[0.04] py-6 text-center">
+        <p className="text-[10px] uppercase tracking-[0.3em] text-white/15 font-bold">
+          Powered by SocialPro
+        </p>
       </div>
     </>
   );
