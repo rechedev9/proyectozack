@@ -203,3 +203,12 @@
   color: #f5632a;
   border: 1px solid rgba(245, 99, 42, 0.3);
 }
+
+/* ── Giveaway button glow ─────────────────────────────────────────────── */
+@keyframes giveaway-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(195,252,0,0.2); }
+  50% { box-shadow: 0 0 20px rgba(195,252,0,0.4); }
+}
+.giveaway-btn-glow {
+  animation: giveaway-glow 2s ease-in-out infinite;
+}
