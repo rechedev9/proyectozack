@@ -10,3 +10,4 @@ export * from './analytics';
 export * from './agencyCreators';
 export * from './giveaways';
 export * from './creatorCodes';
+export * from './giveawayWinners';

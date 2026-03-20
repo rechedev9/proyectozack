@@ -19,6 +19,7 @@ import type {
   talentMetricSnapshots,
   giveaways,
   creatorCodes,
+  giveawayWinners,
 } from '@/db/schema';
 
 // ─── Base model types ────────────────────────────────────────────────────────
@@ -77,6 +78,12 @@ export type GiveawayWithTalent = Giveaway & {
   talent: Talent;
 };
 
+export type GiveawayWinner = InferSelectModel<typeof giveawayWinners>;
+
 export type CreatorCodeWithTalent = CreatorCode & {
   talent: Talent;
+};
+
+export type GiveawayWinnerWithGiveaway = GiveawayWinner & {
+  giveaway: Giveaway;
 };
