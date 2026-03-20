@@ -8,3 +8,4 @@ export * from './auth';
 export * from './brands';
 export * from './analytics';
 export * from './agencyCreators';
+export * from './giveaways';
