@@ -401,3 +401,89 @@
 .gw-hot-badge {
   animation: gw-hot-pulse 1.5s ease-in-out infinite;
 }
+
+/* ── Giveaway Hub — SP brand theme ───────────────────────────────────── */
+
+@keyframes gw-sp-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.gw-sp-value {
+  background: linear-gradient(90deg, #f5632a 0%, #e03070 30%, #8b3aad 60%, #f5632a 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gw-sp-shimmer 4s linear infinite;
+}
+
+@keyframes gw-sp-btn-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(245,99,42,0.2), inset 0 0 8px rgba(245,99,42,0.05); }
+  50% { box-shadow: 0 0 24px rgba(224,48,112,0.4), inset 0 0 12px rgba(224,48,112,0.1); }
+}
+.gw-sp-btn-glow {
+  animation: gw-sp-btn-glow 2s ease-in-out infinite;
+}
+
+.gw-sp-card {
+  position: relative;
+}
+.gw-sp-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent 40%, rgba(245,99,42,0.2) 50%, rgba(139,58,173,0.15) 60%, transparent 70%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.gw-sp-card:hover::before {
+  opacity: 1;
+}
+
+.gw-sp-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 30%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(245,99,42,0.04), rgba(255,255,255,0.06), rgba(139,58,173,0.04), transparent);
+  transform: rotate(25deg) translateX(-100%);
+  pointer-events: none;
+  z-index: 1;
+}
+.gw-sp-card:hover::after {
+  animation: gw-shine 0.8s ease-out forwards;
+}
+
+.gw-sp-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: gw-ticker 25s linear infinite;
+  padding: 6px 0;
+}
+
+.gw-creator-active {
+  background: linear-gradient(90deg, rgba(245,99,42,0.1), transparent);
+  border-left: 2px solid #f5632a;
+}
+
+.gw-sp-digit {
+  background: linear-gradient(180deg, #1a1a1a 0%, #0e0e0e 100%);
+  border: 1px solid rgba(245,99,42,0.1);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 2px 8px rgba(0,0,0,0.5);
+}
+
+@keyframes gw-sp-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.gw-sp-float {
+  animation: gw-sp-float 3s ease-in-out infinite;
+}
