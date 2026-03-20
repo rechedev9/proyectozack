@@ -1,7 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-
 type BrandsSidebarProps = {
   brands: { name: string; logo: string | null }[];
 };
@@ -19,7 +17,8 @@ export function BrandsSidebar({ brands }: BrandsSidebarProps) {
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]"
           >
             {b.logo ? (
-              <Image
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
                 src={b.logo}
                 alt={b.name}
                 width={24}
