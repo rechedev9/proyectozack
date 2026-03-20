@@ -27,7 +27,7 @@ export async function createGiveawayAction(formData: FormData): Promise<void> {
 
   const parsed = createGiveawaySchema.safeParse(raw);
   if (!parsed.success) {
-    console.error('Giveaway validation failed:', parsed.error.issues.map((e) => e.message).join(', '));
+    console.error('Giveaway validation failed:', parsed.error.issues.map((e: { message: string }) => e.message).join(', '));
     return;
   }
 
@@ -51,7 +51,7 @@ export async function updateGiveawayAction(formData: FormData): Promise<void> {
 
   const parsed = updateGiveawaySchema.safeParse(raw);
   if (!parsed.success) {
-    console.error('Giveaway update validation failed:', parsed.error.issues.map((e) => e.message).join(', '));
+    console.error('Giveaway update validation failed:', parsed.error.issues.map((e: { message: string }) => e.message).join(', '));
     return;
   }
 
