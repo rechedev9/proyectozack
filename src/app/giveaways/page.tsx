@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { getAllActiveGiveaways, getAllFinishedGiveaways, extractUniqueBrands } from '@/lib/queries/giveawaysHub';
 import { getAllCodes } from '@/lib/queries/creatorCodes';
+import { getTopWinners, getRecentWinners } from '@/lib/queries/giveawayWinners';
 import { getTalents } from '@/lib/queries/talents';
 import { GiveawaysHub } from './GiveawaysHub';
 import { StatsBar } from './StatsBar';
@@ -18,11 +19,13 @@ function computeTotalValue(giveaways: { value: string | null }[]): string {
 }
 
 export default async function GiveawaysPage() {
-  const [active, finished, codes, talents] = await Promise.all([
+  const [active, finished, codes, talents, topWinnersData, recentWinnersData] = await Promise.all([
     getAllActiveGiveaways(),
     getAllFinishedGiveaways(),
     getAllCodes(),
     getTalents(),
+    getTopWinners(),
+    getRecentWinners(),
   ]);
 
   const allGiveaways = [...active, ...finished];
@@ -101,6 +104,8 @@ export default async function GiveawaysPage() {
         codes={codes}
         creators={creators}
         brands={brands}
+        topWinners={topWinnersData}
+        recentWinners={recentWinnersData}
       />
 
       {/* Footer */}

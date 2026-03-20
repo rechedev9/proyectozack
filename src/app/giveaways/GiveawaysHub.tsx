@@ -4,9 +4,11 @@ import { useState, useMemo } from 'react';
 import { motion, type Variants } from 'motion/react';
 import { CreatorsSidebar } from './CreatorsSidebar';
 import { BrandsSidebar } from './BrandsSidebar';
+import { TopWinners } from './TopWinners';
+import { RecentWinners } from './RecentWinners';
 import { GiveawayHubCard } from './GiveawayHubCard';
 import { CodeCard } from './CodeCard';
-import type { GiveawayWithTalent, CreatorCodeWithTalent, Talent } from '@/types';
+import type { GiveawayWithTalent, CreatorCodeWithTalent, GiveawayWinnerWithGiveaway, Talent } from '@/types';
 
 type GiveawaysHubProps = {
   active: GiveawayWithTalent[];
@@ -14,6 +16,8 @@ type GiveawaysHubProps = {
   codes: CreatorCodeWithTalent[];
   creators: (Talent & { giveawayCount: number })[];
   brands: { name: string; logo: string | null }[];
+  topWinners: { winnerName: string; winnerAvatar: string | null; wins: number }[];
+  recentWinners: GiveawayWinnerWithGiveaway[];
 };
 
 const gridContainer: Variants = {
@@ -26,7 +30,7 @@ const gridItem: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
 };
 
-export function GiveawaysHub({ active, finished, codes, creators, brands }: GiveawaysHubProps) {
+export function GiveawaysHub({ active, finished, codes, creators, brands, topWinners, recentWinners }: GiveawaysHubProps) {
   const [selectedCreator, setSelectedCreator] = useState<number | null>(null);
   const [tab, setTab] = useState<'giveaways' | 'codes'>('giveaways');
 
@@ -155,7 +159,11 @@ export function GiveawaysHub({ active, finished, codes, creators, brands }: Give
         </div>
 
         {/* Right sidebar */}
-        <BrandsSidebar brands={brands} />
+        <div className="w-full lg:w-48 shrink-0 space-y-0">
+          <BrandsSidebar brands={brands} />
+          <TopWinners winners={topWinners} />
+          <RecentWinners winners={recentWinners} />
+        </div>
       </div>
     </div>
   );
