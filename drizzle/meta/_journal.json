@@ -57,6 +57,13 @@
       "when": 1773953854374,
       "tag": "0007_milky_lady_mastermind",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1774020599324,
+      "tag": "0008_magenta_hiroim",
+      "breakpoints": true
     }
   ]
 }
