@@ -2,8 +2,10 @@ import Image from 'next/image';
 import { getAllGiveaways } from '@/lib/queries/giveaways';
 import { getAllTalents } from '@/lib/queries/talents';
 import { getAllCodes } from '@/lib/queries/creatorCodes';
+import { getAllWinners } from '@/lib/queries/giveawayWinners';
 import { createGiveawayAction, deleteGiveawayAction } from './actions';
 import { createCodeAction, deleteCodeAction } from './codes-actions';
+import { createWinnerAction, deleteWinnerAction } from './winners-actions';
 
 function isActive(endsAt: Date): boolean {
   return new Date(endsAt) > new Date();
@@ -15,10 +17,11 @@ type PageProps = {
 
 export default async function AdminGiveawaysPage({ searchParams }: PageProps) {
   const { creator, status } = await searchParams;
-  const [allGiveaways, allTalents, allCodes] = await Promise.all([
+  const [allGiveaways, allTalents, allCodes, allWinners] = await Promise.all([
     getAllGiveaways(),
     getAllTalents(),
     getAllCodes(),
+    getAllWinners(),
   ]);
 
   let giveaways = allGiveaways;
@@ -239,6 +242,69 @@ export default async function AdminGiveawaysPage({ searchParams }: PageProps) {
                   <td className="px-6 py-4">
                     <form action={deleteCodeAction}>
                       <input type="hidden" name="id" value={c.id} />
+                      <button type="submit" className="text-red-500 hover:text-red-700 text-xs font-bold">Eliminar</button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Winners section */}
+      <h1 className="font-display text-4xl font-black uppercase text-sp-dark mb-8 mt-16">Ganadores</h1>
+
+      <div className="rounded-2xl bg-white border border-sp-border p-6 mb-8">
+        <h2 className="font-display text-lg font-bold uppercase text-sp-dark mb-4">Registrar Ganador</h2>
+        <form action={createWinnerAction} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-sp-dark mb-1">Sorteo</label>
+            <select name="giveawayId" required className="w-full rounded-lg border border-sp-border px-3 py-2 text-sm">
+              <option value="">Seleccionar...</option>
+              {allGiveaways.map((g) => (
+                <option key={g.id} value={g.id}>{g.title} ({g.talent.name})</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-sp-dark mb-1">Nombre del ganador</label>
+            <input name="winnerName" required maxLength={100} className="w-full rounded-lg border border-sp-border px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-sp-dark mb-1">Avatar (URL)</label>
+            <input name="winnerAvatar" type="url" className="w-full rounded-lg border border-sp-border px-3 py-2 text-sm" />
+          </div>
+          <div className="md:col-span-3">
+            <button type="submit" className="px-6 py-2 rounded-lg bg-sp-dark text-white text-sm font-bold hover:bg-sp-black transition-colors">
+              Registrar Ganador
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {allWinners.length === 0 ? (
+        <p className="text-sm text-sp-muted">No hay ganadores registrados.</p>
+      ) : (
+        <div className="rounded-2xl bg-white border border-sp-border overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-sp-border bg-sp-off">
+                <th className="text-left px-6 py-3 font-semibold text-sp-dark">Ganador</th>
+                <th className="text-left px-6 py-3 font-semibold text-sp-dark">Sorteo</th>
+                <th className="text-left px-6 py-3 font-semibold text-sp-dark">Fecha</th>
+                <th className="text-left px-6 py-3 font-semibold text-sp-dark">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allWinners.map((w) => (
+                <tr key={w.id} className="border-b border-sp-border/50 last:border-0">
+                  <td className="px-6 py-4 font-medium text-sp-dark">{w.winnerName}</td>
+                  <td className="px-6 py-4 text-sp-muted">{w.giveaway.title}</td>
+                  <td className="px-6 py-4 text-sp-muted">{new Date(w.wonAt).toLocaleDateString('es-ES')}</td>
+                  <td className="px-6 py-4">
+                    <form action={deleteWinnerAction}>
+                      <input type="hidden" name="id" value={w.id} />
                       <button type="submit" className="text-red-500 hover:text-red-700 text-xs font-bold">Eliminar</button>
                     </form>
                   </td>
