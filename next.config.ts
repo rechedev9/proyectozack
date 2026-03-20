@@ -13,7 +13,7 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: https://*.vercel-storage.com https://www.googletagmanager.com",
+      "img-src 'self' data: https://*.vercel-storage.com https://www.googletagmanager.com https:",
       "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com",
       "frame-src 'none'",
       "object-src 'none'",
@@ -46,6 +46,7 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       { protocol: 'https', hostname: '**.vercel-storage.com' },
+      { protocol: 'https', hostname: '**' },
     ],
   },
   experimental: {
