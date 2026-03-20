@@ -136,3 +136,29 @@ Full context in `.impeccable.md`. Summary:
 3. Dark hero + light interior sections — alternating rhythm is intentional
 4. Typography does the heavy lifting — Barlow Condensed IS the energy
 5. Motion earns attention — remove it if it makes no difference
+
+## Change Order — Bottom-Up (STRICT)
+
+**Always implement in this order: DB → Query/API → Frontend. Never the reverse.**
+
+Violating this order breaks something every time:
+- Writing frontend before the query exists → TypeScript errors, shape mismatches
+- Writing a query before the schema exists → runtime errors, wrong column names
+- Assuming a column/table exists without reading the schema → silent bugs
+
+Rules:
+1. **Schema first.** Read `db/schema/` before touching any query or component. Verify column names, types, and relations exist before using them.
+2. **Query second.** Write or update `lib/queries/` after schema is confirmed. Run `npx tsc --noEmit` to verify types.
+3. **Frontend last.** Only build components after the data shape is proven correct end-to-end.
+4. **`followers_display` values come from `scripts/sync-followers.ts`.** Never hardcode follower counts — run the sync script against real APIs.
+
+## TypeScript Rules
+
+Hard lessons from this project — never skip these:
+
+1. **Never assume a field name — read the schema.** Column names in Drizzle use camelCase in TS but snake_case in SQL. `followers_display` in DB = `followersDisplay` in TS. Always verify in `db/schema/` before using.
+2. **Never guess what an API returns.** Type the response explicitly or cast to a typed interface. Untyped `await res.json()` silently gives `any` and hides bugs.
+3. **Parse, don't assume data formats.** `followers_display` can be `"180K"`, `"1.2M"`, `"63"`, or `"-"`. Always verify real DB values before writing a parser — the format you assume is never the full picture.
+4. **`parseFollowers("-")` must return 0** — treat unknown/missing values explicitly, not as a fallback edge case.
+5. **Sort comparators with unknowns need explicit sentinel logic.** When sorting by a numeric field derived from display strings, creators with `totalFollowers === 0` (no data) must always go to the bottom regardless of sort direction — otherwise they flood the top in `asc` and make the sort useless.
+6. **Platform filters affect sort context.** When filtering by platform(s) and sorting by followers, sort by followers on the *filtered* platforms only — not total across all networks. A creator with 1M Twitch followers and 63 YT subs should not rank first in a YT-filtered followers sort.
