@@ -5,7 +5,7 @@ const LABELS: Record<Status, string> = {
   available: 'Disponible',
 };
 
-interface StatusBadgeProps {
+type StatusBadgeProps = {
   status: Status;
   className?: string;
 }

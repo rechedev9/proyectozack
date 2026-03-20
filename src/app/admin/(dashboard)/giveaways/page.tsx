@@ -7,7 +7,7 @@ function isActive(endsAt: Date): boolean {
   return new Date(endsAt) > new Date();
 }
 
-interface PageProps {
+type PageProps = {
   searchParams: Promise<{ creator?: string; status?: string }>;
 }
 

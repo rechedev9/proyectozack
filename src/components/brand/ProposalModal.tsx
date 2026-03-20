@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-interface ProposalModalProps {
+type ProposalModalProps = {
   talentId: number;
   talentName: string;
   onClose: () => void;
@@ -49,8 +49,8 @@ export function ProposalModal({ talentId, talentName, onClose }: ProposalModalPr
         setSuccess(true);
         setTimeout(() => onCloseRef.current(), 1500);
       } else {
-        const data = await res.json().catch(() => ({}));
-        setError((data as { error?: string }).error ?? 'Error al enviar propuesta');
+        const data = await (res.json() as Promise<{ error?: string }>).catch((): { error?: string } => ({}));
+        setError(data.error ?? 'Error al enviar propuesta');
       }
     } catch {
       setError('Error de red');

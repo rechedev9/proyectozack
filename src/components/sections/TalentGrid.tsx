@@ -8,7 +8,7 @@ import { FilterTabs } from '@/components/ui/FilterTabs';
 import { TalentCard } from './TalentCard';
 import { TalentModal } from './TalentModal';
 
-interface TalentGridProps {
+type TalentGridProps = {
   talents: TalentWithRelations[];
 }
 

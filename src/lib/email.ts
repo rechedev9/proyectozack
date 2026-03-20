@@ -13,11 +13,11 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#x27;');
 }
 
-interface ContactEmailPayload {
+type ContactEmailPayload = {
   name: string;
   email: string;
   type: string;
-  company?: string;
+  company?: string | undefined;
   message: string;
 }
 

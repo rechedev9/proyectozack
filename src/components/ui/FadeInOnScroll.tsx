@@ -3,7 +3,7 @@
 import * as motion from 'motion/react-client';
 import type { ReactNode } from 'react';
 
-interface FadeInOnScrollProps {
+type FadeInOnScrollProps = {
   children: ReactNode;
   className?: string;
   /** Delay in seconds before animation starts after becoming visible */

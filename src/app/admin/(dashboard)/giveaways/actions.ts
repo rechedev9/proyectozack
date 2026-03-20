@@ -31,7 +31,13 @@ export async function createGiveawayAction(formData: FormData): Promise<void> {
     return;
   }
 
-  await createGiveaway(parsed.data);
+  await createGiveaway({
+    ...parsed.data,
+    description: parsed.data.description ?? null,
+    imageUrl: parsed.data.imageUrl ?? null,
+    brandLogo: parsed.data.brandLogo ?? null,
+    value: parsed.data.value ?? null,
+  });
 
   const talent = await db.select({ slug: talents.slug }).from(talents).where(eq(talents.id, parsed.data.talentId)).then((r) => r[0]);
   if (talent) revalidatePath(`/creadores/${talent.slug}`);
@@ -55,7 +61,10 @@ export async function updateGiveawayAction(formData: FormData): Promise<void> {
     return;
   }
 
-  await updateGiveaway(id, parsed.data);
+  const updateData = Object.fromEntries(
+    Object.entries(parsed.data).filter(([, v]) => v !== undefined),
+  ) as Parameters<typeof updateGiveaway>[1];
+  await updateGiveaway(id, updateData);
 
   const talentSlug = formData.get('talentSlug') as string;
   if (talentSlug) revalidatePath(`/creadores/${talentSlug}`);

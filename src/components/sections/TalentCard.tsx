@@ -6,7 +6,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { SocialIcon } from '@/components/ui/SocialIcon';
 import { gradientStyle } from '@/lib/gradient';
 
-interface TalentCardProps {
+type TalentCardProps = {
   talent: TalentWithRelations;
   onOpen: () => void;
 }

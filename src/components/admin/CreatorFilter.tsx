@@ -2,12 +2,12 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-interface CreatorOption {
+type CreatorOption = {
   id: number;
   name: string;
 }
 
-interface CreatorFilterProps {
+type CreatorFilterProps = {
   creators: CreatorOption[];
   selected: number[];
   onChange: (ids: number[]) => void;

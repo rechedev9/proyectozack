@@ -11,7 +11,7 @@ import { CreatorFilter } from '@/components/admin/CreatorFilter';
 import { formatCompact } from '@/lib/format';
 import type { TalentMetricSnapshot, Talent } from '@/types';
 
-interface AnalyticsDashboardProps {
+type AnalyticsDashboardProps = {
   snapshots: TalentMetricSnapshot[];
   talents: Array<Pick<Talent, 'id' | 'name' | 'slug'>>;
   trackedCount: number;
@@ -24,12 +24,12 @@ const CHART_COLORS = [
 ];
 
 function getDateRange(preset: string, customFrom: string, customTo: string): { from: string; to: string } {
-  const to = customTo || new Date().toISOString().split('T')[0];
+  const to = customTo || new Date().toISOString().split('T')[0]!;
   if (preset === 'custom' && customFrom) return { from: customFrom, to };
   const days = preset === '7d' ? 7 : preset === '90d' ? 90 : 30;
   const fromDate = new Date();
   fromDate.setDate(fromDate.getDate() - days);
-  return { from: fromDate.toISOString().split('T')[0], to };
+  return { from: fromDate.toISOString().split('T')[0]!, to };
 }
 
 export function AnalyticsDashboard({ snapshots, talents, trackedCount }: AnalyticsDashboardProps) {
@@ -147,7 +147,7 @@ export function AnalyticsDashboard({ snapshots, talents, trackedCount }: Analyti
     }
     return Array.from(keys).map((key, i) => ({
       key,
-      color: CHART_COLORS[i % CHART_COLORS.length],
+      color: CHART_COLORS[i % CHART_COLORS.length]!,
       name: key,
     }));
   }, [chartData]);
@@ -216,8 +216,8 @@ export function AnalyticsDashboard({ snapshots, talents, trackedCount }: Analyti
     for (const [platform, snaps] of byPlatform) {
       const sorted = [...snaps].sort((a, b) => a.snapshotDate.localeCompare(b.snapshotDate));
       if (sorted.length >= 1) {
-        const first = sorted[0];
-        const last = sorted[sorted.length - 1];
+        const first = sorted[0]!;
+        const last = sorted[sorted.length - 1]!;
         const days = Math.ceil((new Date(last.snapshotDate).getTime() - new Date(first.snapshotDate).getTime()) / (1000 * 60 * 60 * 24));
         summaries.push({
           platform, from: first.value, to: last.value,

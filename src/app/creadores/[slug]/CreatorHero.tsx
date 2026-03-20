@@ -22,84 +22,106 @@ function SocialButton({ platform, url, color }: { platform: string; url: string;
   if (!path) return null;
 
   return (
-    <a
+    <motion.a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110"
-      style={{ backgroundColor: `${color}20` }}
+      className="w-11 h-11 rounded-xl flex items-center justify-center border border-white/5 backdrop-blur-sm transition-colors hover:border-[#C3FC00]/30"
+      style={{ backgroundColor: `${color}10` }}
+      whileHover={{ scale: 1.1, y: -2 }}
+      whileTap={{ scale: 0.95 }}
     >
       <svg viewBox="0 0 24 24" fill={color} className="w-4.5 h-4.5">
         <path d={path} />
       </svg>
-    </a>
+    </motion.a>
   );
 }
 
 export function CreatorHero({ talent }: CreatorHeroProps) {
   return (
-    <section className="relative pt-8 pb-12 md:pt-12 md:pb-16 overflow-hidden">
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#C3FC00]/5 via-transparent to-transparent" />
+    <section className="relative pt-10 pb-14 md:pt-16 md:pb-20 overflow-hidden">
+      {/* Hero radial glow behind photo */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[radial-gradient(ellipse,rgba(195,252,0,0.08)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="relative max-w-5xl mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col md:flex-row items-center md:items-start gap-6"
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="flex flex-col items-center text-center gap-5"
         >
-          {/* Photo */}
-          <div className="relative w-32 h-32 md:w-40 md:h-40 shrink-0 rounded-2xl overflow-hidden border-2 border-[#C3FC00]/20 shadow-[0_0_30px_rgba(195,252,0,0.1)]">
-            {talent.photoUrl ? (
-              <Image
-                src={talent.photoUrl}
-                alt={talent.name}
-                fill
-                sizes="(max-width: 768px) 128px, 160px"
-                className="object-cover object-top"
-                priority
-              />
-            ) : (
-              <div
-                className="w-full h-full flex items-center justify-center text-3xl font-black text-white/80"
-                style={{ background: `linear-gradient(135deg, ${talent.gradientC1}, ${talent.gradientC2})` }}
-              >
-                {talent.initials}
-              </div>
-            )}
-          </div>
+          {/* Photo with animated ring */}
+          <motion.div
+            className="relative"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <div className="absolute -inset-2 rounded-2xl bg-gradient-to-br from-[#C3FC00]/20 via-transparent to-[#C3FC00]/10 blur-sm animate-pulse" />
+            <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden border-2 border-[#C3FC00]/20 shadow-[0_0_40px_rgba(195,252,0,0.12)]">
+              {talent.photoUrl ? (
+                <Image
+                  src={talent.photoUrl}
+                  alt={talent.name}
+                  fill
+                  sizes="(max-width: 768px) 112px, 144px"
+                  className="object-cover object-top"
+                  priority
+                />
+              ) : (
+                <div
+                  className="w-full h-full flex items-center justify-center text-3xl font-black text-white/80"
+                  style={{ background: `linear-gradient(135deg, ${talent.gradientC1}, ${talent.gradientC2})` }}
+                >
+                  {talent.initials}
+                </div>
+              )}
+            </div>
+          </motion.div>
 
-          {/* Info */}
-          <div className="text-center md:text-left">
+          {/* Name */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <h1
-              className="text-4xl md:text-5xl font-black uppercase tracking-tight text-white leading-none"
-              style={{ textShadow: '0 0 30px rgba(195,252,0,0.15)' }}
+              className="text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter text-white leading-[0.9]"
+              style={{ textShadow: '0 0 60px rgba(195,252,0,0.12), 0 0 120px rgba(195,252,0,0.06)' }}
             >
               {talent.name}
             </h1>
-            <p className="text-sm text-white/50 mt-2 uppercase tracking-wider font-bold">
+            <p className="text-xs text-[#C3FC00]/60 mt-3 uppercase tracking-[0.3em] font-bold">
               {talent.role} · {talent.game}
             </p>
+          </motion.div>
 
-            {/* Social links */}
-            {talent.socials.length > 0 && (
-              <div className="flex gap-2 mt-4 justify-center md:justify-start">
-                {talent.socials.map((s) => (
-                  s.profileUrl && (
-                    <SocialButton
-                      key={s.id}
-                      platform={s.platform}
-                      url={s.profileUrl}
-                      color={s.hexColor}
-                    />
-                  )
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Social links */}
+          {talent.socials.length > 0 && (
+            <motion.div
+              className="flex gap-2.5"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.35 }}
+            >
+              {talent.socials.map((s) => (
+                s.profileUrl && (
+                  <SocialButton
+                    key={s.id}
+                    platform={s.platform}
+                    url={s.profileUrl}
+                    color={s.hexColor}
+                  />
+                )
+              ))}
+            </motion.div>
+          )}
         </motion.div>
       </div>
+
+      {/* Bottom fade line */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C3FC00]/10 to-transparent" />
     </section>
   );
 }

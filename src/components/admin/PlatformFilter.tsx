@@ -1,6 +1,6 @@
 'use client';
 
-interface PlatformFilterProps {
+type PlatformFilterProps = {
   value: 'all' | 'youtube' | 'twitch';
   onChange: (value: 'all' | 'youtube' | 'twitch') => void;
 }

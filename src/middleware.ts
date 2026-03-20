@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 /*  Resets on deploy / cold start — acceptable for Vercel serverless.         */
 /* -------------------------------------------------------------------------- */
 
-interface Bucket {
+type Bucket = {
   count: number;
   resetAt: number;
 }

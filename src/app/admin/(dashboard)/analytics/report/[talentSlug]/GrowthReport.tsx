@@ -4,7 +4,7 @@ import { MetricsChart } from '@/components/admin/MetricsChart';
 import { formatCompact } from '@/lib/format';
 import type { TalentMetricSnapshot } from '@/types';
 
-interface GrowthReportProps {
+type GrowthReportProps = {
   talentName: string;
   talentPhoto: string | null;
   from: string;
@@ -23,8 +23,8 @@ export function GrowthReport({ talentName, talentPhoto, from, to, snapshots }: G
   // Build chart data per platform
   const platforms = Array.from(byPlatform.entries()).map(([platform, snaps]) => {
     const sorted = [...snaps].sort((a, b) => a.snapshotDate.localeCompare(b.snapshotDate));
-    const first = sorted[0];
-    const last = sorted[sorted.length - 1];
+    const first = sorted[0]!;
+    const last = sorted[sorted.length - 1]!;
     const days = Math.max(
       Math.ceil((new Date(last.snapshotDate).getTime() - new Date(first.snapshotDate).getTime()) / (1000 * 60 * 60 * 24)),
       1,

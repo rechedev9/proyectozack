@@ -5,7 +5,7 @@ import Link from 'next/link';
 import * as m from 'motion/react-client';
 import type { CaseStudyWithRelations } from '@/types';
 
-interface CaseCardProps {
+type CaseCardProps = {
   caseStudy: CaseStudyWithRelations;
 }
 

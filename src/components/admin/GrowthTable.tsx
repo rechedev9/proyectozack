@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { formatCompact } from '@/lib/format';
 
-export interface GrowthRow {
+export type GrowthRow = {
   talentId: number;
   talentName: string;
   platform: string;
@@ -13,7 +13,7 @@ export interface GrowthRow {
   percentChange: number | null;
 }
 
-interface GrowthTableProps {
+type GrowthTableProps = {
   rows: GrowthRow[];
   onCreatorClick?: (talentId: number) => void;
 }

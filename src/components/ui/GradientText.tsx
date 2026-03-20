@@ -1,7 +1,7 @@
 
 import type { ReactNode } from 'react';
 
-interface GradientTextProps {
+type GradientTextProps = {
   children: ReactNode;
   className?: string;
 }

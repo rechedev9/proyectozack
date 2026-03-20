@@ -4,7 +4,7 @@ import { motion, type Variants } from 'motion/react';
 import { GiveawayCard } from './GiveawayCard';
 import type { Giveaway } from '@/types';
 
-interface GiveawayGridProps {
+type GiveawayGridProps = {
   giveaways: Giveaway[];
   title: string;
 }
@@ -24,7 +24,7 @@ export function GiveawayGrid({ giveaways, title }: GiveawayGridProps) {
 
   return (
     <section className="space-y-6">
-      <h2 className="text-xl font-black uppercase tracking-wider text-white/80">
+      <h2 className="text-lg font-black uppercase tracking-[0.2em] text-white/60 gw-section-title">
         {title}
       </h2>
       <motion.div

@@ -5,7 +5,7 @@ import { GradientText } from '@/components/ui/GradientText';
 import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 import { TalentGrid } from './TalentGrid';
 
-interface TalentSectionProps {
+type TalentSectionProps = {
   talents: TalentWithRelations[];
 }
 

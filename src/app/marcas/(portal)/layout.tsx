@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { requireRole } from '@/lib/auth-guard';
 import { PortalSidebar } from '@/components/layout/PortalSidebar';
 
-interface BrandPortalLayoutProps {
+type BrandPortalLayoutProps = {
   children: ReactNode;
 }
 

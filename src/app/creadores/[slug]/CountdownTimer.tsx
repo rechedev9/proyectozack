@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 
-interface CountdownTimerProps {
+type CountdownTimerProps = {
   endsAt: string;
   onExpired?: () => void;
 }
 
-interface TimeLeft {
+type TimeLeft = {
   days: number;
   hours: number;
   minutes: number;
@@ -30,7 +30,7 @@ function FlipDigit({ value, label }: { value: number; label: string }) {
   const display = String(value).padStart(2, '0');
   return (
     <div className="flex flex-col items-center gap-1">
-      <div className="relative w-14 h-12 bg-[#0b0c0e] border border-[#1a1b1e] rounded-lg flex items-center justify-center overflow-hidden">
+      <div className="relative w-14 h-12 gw-digit rounded-lg flex items-center justify-center overflow-hidden">
         <AnimatePresence mode="popLayout">
           <motion.span
             key={display}

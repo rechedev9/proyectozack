@@ -4,7 +4,7 @@ import { SectionTag } from '@/components/ui/SectionTag';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 
-interface BrandsCarouselProps {
+type BrandsCarouselProps = {
   brands: Brand[];
 }
 

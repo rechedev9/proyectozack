@@ -1,7 +1,7 @@
 
 import type { ReactNode } from 'react';
 
-interface SectionHeadingProps {
+type SectionHeadingProps = {
   children: ReactNode;
   className?: string;
 }

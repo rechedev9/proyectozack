@@ -3,12 +3,12 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 
-interface FilterOption {
+type FilterOption = {
   label: string;
   value: string;
 }
 
-interface FilterChipsProps {
+type FilterChipsProps = {
   paramName: string;
   options: FilterOption[];
 }

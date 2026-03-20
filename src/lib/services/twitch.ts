@@ -1,14 +1,14 @@
-interface TwitchTokenResponse {
+type TwitchTokenResponse = {
   access_token: string;
   expires_in: number;
   token_type: string;
 }
 
-interface TwitchFollowerResponse {
+type TwitchFollowerResponse = {
   total: number;
 }
 
-interface TwitchFollowerResult {
+type TwitchFollowerResult = {
   broadcasterId: string;
   followerCount: number;
 }

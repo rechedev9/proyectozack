@@ -13,12 +13,12 @@ import {
 } from 'recharts';
 import { formatCompact } from '@/lib/format';
 
-interface ChartDataPoint {
+type ChartDataPoint = {
   date: string;
   [creatorOrPlatform: string]: string | number;
 }
 
-interface MetricsChartProps {
+type MetricsChartProps = {
   data: ChartDataPoint[];
   lines: Array<{ key: string; color: string; name: string }>;
   height?: number;
@@ -54,7 +54,7 @@ function EmptyState() {
 
 /** Horizontal bar chart for single-date snapshots */
 function SinglePointBarChart({ data, lines, height }: MetricsChartProps & { height: number }) {
-  const point = data[0];
+  const point = data[0]!;
   const barData = lines
     .map((l) => ({
       name: l.name,
@@ -149,7 +149,7 @@ export function MetricsChart({ data, lines, height = 380, yAxisLabel }: MetricsC
             tickLine={false}
             axisLine={false}
             width={48}
-            label={yAxisLabel ? { value: yAxisLabel, angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: '#a8a39d' } } : undefined}
+            {...(yAxisLabel ? { label: { value: yAxisLabel, angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: '#a8a39d' } } } : {})}
           />
           <Tooltip
             formatter={(value) => formatCompact(Number(value))}

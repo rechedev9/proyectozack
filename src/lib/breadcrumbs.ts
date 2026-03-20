@@ -1,4 +1,4 @@
-interface BreadcrumbItem {
+type BreadcrumbItem = {
   name: string;
   url: string;
 }

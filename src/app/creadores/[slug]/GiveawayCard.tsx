@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
 import { CountdownTimer } from './CountdownTimer';
+import { UnboxReveal } from './UnboxReveal';
 import type { Giveaway } from '@/types';
 
 interface GiveawayCardProps {
@@ -18,70 +19,65 @@ export function GiveawayCard({ giveaway }: GiveawayCardProps) {
 
   return (
     <motion.a
-      href={isFinished ? undefined : giveaway.redirectUrl}
-      target="_blank"
+      href={isFinished ? '#' : giveaway.redirectUrl}
+      target={isFinished ? '_self' : '_blank'}
       rel="noopener noreferrer"
-      className={`group block rounded-xl border overflow-hidden transition-colors ${
+      className={`gw-card-glow group block rounded-xl border overflow-hidden transition-all duration-300 ${
         isFinished
-          ? 'border-white/5 bg-[#0b0c0e]/50 grayscale pointer-events-none'
-          : 'border-[#1a1b1e] bg-[#0b0c0e] hover:border-[#C3FC00]/40'
+          ? 'border-white/[0.03] bg-[#08090a]/80 grayscale-[0.8] opacity-50 pointer-events-none'
+          : 'border-white/[0.06] bg-[#0a0b0d]/90 hover:border-[#C3FC00]/30 hover:bg-[#0c0d10]/95 hover:shadow-[0_0_30px_rgba(195,252,0,0.06)]'
       }`}
-      whileHover={isFinished ? undefined : { y: -4, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
+      whileHover={{ y: isFinished ? 0 : -6, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
     >
       {/* Brand bar */}
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#050607] border-b border-[#1a1b1e]">
+      <div className="flex items-center gap-2.5 px-4 py-2.5 bg-white/[0.02] border-b border-white/[0.04]">
         {giveaway.brandLogo && (
           <Image
             src={giveaway.brandLogo}
             alt={giveaway.brandName}
-            width={20}
-            height={20}
-            className="rounded-sm object-contain"
+            width={18}
+            height={18}
+            className="rounded-sm object-contain opacity-60"
           />
         )}
-        <span className="text-xs font-bold uppercase tracking-wider text-white/60">
+        <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/40">
           {giveaway.brandName}
         </span>
+        {!isFinished && (
+          <span className="ml-auto flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C3FC00] animate-pulse" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#C3FC00]/60">Live</span>
+          </span>
+        )}
       </div>
 
-      {/* Prize image */}
-      <div className="relative aspect-[4/3] bg-[#050607] overflow-hidden">
-        {giveaway.imageUrl ? (
-          <Image
-            src={giveaway.imageUrl}
-            alt={giveaway.title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-contain p-4 transition-transform duration-300 group-hover:scale-110 group-hover:brightness-110"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-white/20 text-4xl font-black">
-            ?
-          </div>
-        )}
-        {!isFinished && (
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-[#C3FC00]/5" />
-        )}
-      </div>
+      {/* Prize image — unbox animation */}
+      {giveaway.imageUrl ? (
+        <UnboxReveal imageUrl={giveaway.imageUrl} alt={giveaway.title} isFinished={isFinished} />
+      ) : (
+        <div className="relative aspect-[4/3] bg-gradient-to-b from-transparent to-black/20 flex items-center justify-center">
+          <span className="text-white/10 text-5xl font-black">?</span>
+        </div>
+      )}
 
       {/* Info */}
-      <div className="p-4 space-y-3">
+      <div className="p-4 pt-3 space-y-3">
         <div>
-          <h3 className="font-black text-sm uppercase tracking-wide text-white leading-tight">
+          <h3 className="font-black text-[13px] uppercase tracking-wide text-white/90 leading-tight">
             {giveaway.title}
           </h3>
           {giveaway.value && (
-            <p className="text-lg font-black text-[#C3FC00] mt-1" style={{ textShadow: '0 0 12px rgba(195,252,0,0.4)' }}>
+            <p className="text-xl font-black mt-1.5 gw-value-shimmer">
               {giveaway.value}
             </p>
           )}
         </div>
 
         {/* Countdown or Finished badge */}
-        <div className="flex justify-center">
+        <div className="flex justify-center py-1">
           {isFinished ? (
-            <div className="inline-flex px-4 py-2 rounded-lg bg-white/5 border border-white/10">
-              <span className="text-sm font-bold uppercase tracking-wider text-white/50">Finalizado</span>
+            <div className="inline-flex px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05]">
+              <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/30">Finalizado</span>
             </div>
           ) : (
             <CountdownTimer endsAt={giveaway.endsAt.toISOString()} onExpired={handleExpired} />
@@ -91,7 +87,7 @@ export function GiveawayCard({ giveaway }: GiveawayCardProps) {
         {/* CTA Button */}
         {!isFinished && (
           <div className="pt-1">
-            <div className="w-full py-2.5 rounded-lg bg-[#C3FC00] text-black text-center text-sm font-black uppercase tracking-wider transition-shadow group-hover:shadow-[0_0_20px_rgba(195,252,0,0.3)] giveaway-btn-glow">
+            <div className="w-full py-3 rounded-lg bg-[#C3FC00] text-black text-center text-[13px] font-black uppercase tracking-[0.1em] transition-all giveaway-btn-glow group-hover:bg-[#d4ff33] group-hover:tracking-[0.15em]">
               Participar
             </div>
           </div>

@@ -5,7 +5,7 @@ import { EmptyState } from '@/components/brand/EmptyState';
 import { BrandTalentCard } from '@/components/brand/BrandTalentCard';
 import { Suspense } from 'react';
 
-interface PageProps {
+type PageProps = {
   searchParams: Promise<{ platform?: string; tag?: string }>;
 }
 

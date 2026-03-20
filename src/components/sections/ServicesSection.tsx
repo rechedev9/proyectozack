@@ -85,7 +85,7 @@ const ADVANTAGES = [
 
 export function ServicesSection() {
   const [active, setActive] = useState('brands');
-  const current = SERVICES.find((s) => s.id === active) ?? SERVICES[0];
+  const current = SERVICES.find((s) => s.id === active) ?? SERVICES[0]!;
 
   return (
     <section id="servicios" className="py-24 bg-white">

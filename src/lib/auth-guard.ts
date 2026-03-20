@@ -7,7 +7,7 @@ type Role = 'admin' | 'brand';
 /** Only these paths are valid redirect targets — prevents open redirect. */
 const ALLOWED_LOGIN_PATHS = new Set(['/admin/login', '/marcas/login']);
 
-interface SessionWithRole {
+type SessionWithRole = {
   user: {
     id: string;
     email: string;

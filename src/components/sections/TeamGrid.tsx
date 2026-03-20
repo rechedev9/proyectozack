@@ -6,7 +6,7 @@ import { GradientText } from '@/components/ui/GradientText';
 import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 import { gradientStyle } from '@/lib/gradient';
 
-interface TeamGridProps {
+type TeamGridProps = {
   team: TeamMember[];
 }
 

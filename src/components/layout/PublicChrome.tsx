@@ -16,7 +16,7 @@ function isPortalRoute(pathname: string): boolean {
   return false;
 }
 
-interface PublicChromeProps {
+type PublicChromeProps = {
   nav: ReactNode;
   footer: ReactNode;
   children: ReactNode;

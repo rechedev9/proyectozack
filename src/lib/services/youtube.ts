@@ -1,9 +1,9 @@
-interface YouTubeChannelStats {
+type YouTubeChannelStats = {
   channelId: string;
   subscriberCount: number;
 }
 
-interface YouTubeAPIResponse {
+type YouTubeAPIResponse = {
   items?: Array<{
     id: string;
     statistics: {

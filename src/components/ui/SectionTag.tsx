@@ -1,4 +1,4 @@
-interface SectionTagProps {
+type SectionTagProps = {
   children: string;
   className?: string;
 }

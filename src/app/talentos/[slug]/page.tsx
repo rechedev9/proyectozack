@@ -13,7 +13,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
 
 export const revalidate = 3600;
 
-interface PageProps {
+type PageProps = {
   params: Promise<{ slug: string }>;
 }
 

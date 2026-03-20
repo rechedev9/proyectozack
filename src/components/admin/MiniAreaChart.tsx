@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import { formatCompact } from '@/lib/format';
 
-interface MiniAreaChartProps {
+type MiniAreaChartProps = {
   title: string;
   data: Array<{ date: string; value: number }>;
   color: string;
@@ -33,8 +33,8 @@ export function MiniAreaChart({ title, data, color, height = 200 }: MiniAreaChar
   }
 
   // Calculate total and change
-  const first = data[0].value;
-  const last = data[data.length - 1].value;
+  const first = data[0]!.value;
+  const last = data[data.length - 1]!.value;
   const total = last;
   const pct = first > 0 ? ((last - first) / first) * 100 : 0;
 

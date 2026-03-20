@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ProposalModal } from '@/components/brand/ProposalModal';
 
-interface Props {
+type Props = {
   talentId: number;
   talentName: string;
 }

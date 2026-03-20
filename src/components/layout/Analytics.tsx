@@ -2,7 +2,7 @@
 
 import Script from 'next/script';
 
-interface AnalyticsProps {
+type AnalyticsProps = {
   gtmId?: string;
 }
 

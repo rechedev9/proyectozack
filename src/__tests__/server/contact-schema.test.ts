@@ -21,7 +21,7 @@ describe('contactBodySchema', () => {
   it('rejects a name shorter than 2 chars', () => {
     const result = contactBodySchema.safeParse({ ...valid, name: 'A' });
     expect(result.success).toBe(false);
-    if (!result.success) expect(result.error.issues[0].path).toContain('name');
+    if (!result.success) expect(result.error.issues[0]?.path).toContain('name');
   });
 
   it('rejects an invalid email', () => {

@@ -10,7 +10,7 @@ import {
 } from '@/components/admin/SidebarIcons';
 import type { ReactNode } from 'react';
 
-interface AdminLayoutProps {
+type AdminLayoutProps = {
   children: ReactNode;
 }
 

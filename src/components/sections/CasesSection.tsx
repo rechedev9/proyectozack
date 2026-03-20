@@ -5,7 +5,7 @@ import { GradientText } from '@/components/ui/GradientText';
 import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 import { CaseCard } from './CaseCard';
 
-interface CasesSectionProps {
+type CasesSectionProps = {
   cases: CaseStudyWithRelations[];
 }
 

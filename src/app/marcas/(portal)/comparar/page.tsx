@@ -5,7 +5,7 @@ import { gradientStyle } from '@/lib/gradient';
 import Link from 'next/link';
 import { EmptyState } from '@/components/brand/EmptyState';
 
-interface PageProps {
+type PageProps = {
   searchParams: Promise<{ ids?: string }>;
 }
 

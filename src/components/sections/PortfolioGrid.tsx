@@ -7,7 +7,7 @@ import { AnimatePresence } from 'motion/react';
 import type { PortfolioItem } from '@/types';
 import { FilterTabs } from '@/components/ui/FilterTabs';
 
-interface PortfolioGridProps {
+type PortfolioGridProps = {
   items: PortfolioItem[];
 }
 

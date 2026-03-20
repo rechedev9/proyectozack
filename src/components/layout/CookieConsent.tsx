@@ -50,7 +50,7 @@ export function CookieConsent() {
   return (
     <>
       {/* Load analytics only after consent */}
-      {storedConsent === 'accepted' && (
+      {storedConsent === 'accepted' && process.env.NEXT_PUBLIC_GTM_ID && (
         <Analytics gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
       )}
 

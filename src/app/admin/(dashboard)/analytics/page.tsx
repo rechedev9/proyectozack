@@ -6,8 +6,8 @@ export default async function AdminAnalyticsPage() {
   // Fetch last 90 days of data (client can filter further)
   const ninetyDaysAgo = new Date();
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-  const from = ninetyDaysAgo.toISOString().split('T')[0];
-  const to = new Date().toISOString().split('T')[0];
+  const from = ninetyDaysAgo.toISOString().split('T')[0]!;
+  const to = new Date().toISOString().split('T')[0]!;
 
   const [snapshots, allTalents, trackedCount] = await Promise.all([
     getSnapshots({ from, to }),

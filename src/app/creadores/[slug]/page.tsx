@@ -9,7 +9,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
 
 export const revalidate = 3600;
 
-interface PageProps {
+type PageProps = {
   params: Promise<{ slug: string }>;
 }
 
@@ -61,15 +61,15 @@ export default async function CreadorPage({ params }: PageProps) {
   return (
     <>
       {/* Sticky header */}
-      <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
+      <header className="sticky top-0 z-50 bg-[#050507]/90 backdrop-blur-xl border-b border-white/[0.04]">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-          <span className="font-black text-sm uppercase tracking-wider text-white">
+          <span className="font-black text-xs uppercase tracking-[0.2em] text-white/50">
             {talent.name}
           </span>
           {active.length > 0 && (
             <a
               href="#giveaways"
-              className="px-4 py-1.5 rounded-full bg-[#C3FC00] text-black text-xs font-black uppercase tracking-wider hover:shadow-[0_0_12px_rgba(195,252,0,0.4)] transition-shadow"
+              className="px-5 py-1.5 rounded-full bg-[#C3FC00] text-black text-[11px] font-black uppercase tracking-[0.15em] hover:shadow-[0_0_20px_rgba(195,252,0,0.4)] hover:bg-[#d4ff33] transition-all giveaway-btn-glow"
             >
               Giveaways
             </a>

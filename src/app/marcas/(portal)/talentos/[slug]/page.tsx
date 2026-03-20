@@ -8,7 +8,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { gradientStyle } from '@/lib/gradient';
 import { BrandTalentFichaClient } from './client';
 
-interface PageProps {
+type PageProps = {
   params: Promise<{ slug: string }>;
 }
 

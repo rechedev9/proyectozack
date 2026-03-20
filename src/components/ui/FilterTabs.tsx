@@ -2,12 +2,12 @@
 
 import { BRAND_GRADIENT } from '@/lib/gradient';
 
-interface Tab<K extends string> {
+type Tab<K extends string> = {
   key: K;
   label: string;
 }
 
-interface FilterTabsProps<K extends string> {
+type FilterTabsProps<K extends string> = {
   tabs: readonly Tab<K>[];
   active: K;
   onChange: (key: K) => void;

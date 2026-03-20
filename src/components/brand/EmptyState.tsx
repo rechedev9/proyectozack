@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-interface EmptyStateProps {
+type EmptyStateProps = {
   message: string;
   actionLabel: string;
   actionHref: string;

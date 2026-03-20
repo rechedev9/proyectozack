@@ -8,7 +8,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { SocialIcon } from '@/components/ui/SocialIcon';
 import { gradientStyle } from '@/lib/gradient';
 
-interface TalentModalProps {
+type TalentModalProps = {
   talent: TalentWithRelations;
   onClose: () => void;
 }
@@ -126,7 +126,7 @@ export function TalentModal({ talent, onClose }: TalentModalProps) {
 
           {/* CTA */}
           <a
-            href="#contacto"
+            href="/contacto"
             onClick={onClose}
             className="block text-center w-full py-3.5 rounded-full font-bold text-white text-sm"
             style={{ background: grad }}

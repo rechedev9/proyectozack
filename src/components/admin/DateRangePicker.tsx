@@ -1,6 +1,6 @@
 'use client';
 
-interface DateRangePickerProps {
+type DateRangePickerProps = {
   value: string; // '7d' | '30d' | '90d' | 'custom'
   onChange: (value: string) => void;
   customFrom?: string;

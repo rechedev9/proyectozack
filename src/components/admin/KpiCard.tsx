@@ -1,4 +1,4 @@
-interface KpiCardProps {
+type KpiCardProps = {
   label: string;
   value: string;
   change?: number | null; // percentage change

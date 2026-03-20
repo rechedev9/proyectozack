@@ -1,6 +1,6 @@
 'use client';
 
-interface DeleteButtonProps {
+type DeleteButtonProps = {
   name: string;
 }
 

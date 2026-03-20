@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
-interface NavItem {
+type NavItem = {
   href: string;
   label: string;
   icon?: React.ReactNode;
 }
 
-interface PortalSidebarProps {
+type PortalSidebarProps = {
   title: string;
   subtitle: string;
   navItems: NavItem[];

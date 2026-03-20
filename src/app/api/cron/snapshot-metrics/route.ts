@@ -24,7 +24,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const today = new Date().toISOString().split('T')[0]!; // YYYY-MM-DD
   const socials = await getTrackableSocials();
   const errors: string[] = [];
   let youtubeCount = 0;

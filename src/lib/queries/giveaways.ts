@@ -48,18 +48,18 @@ export async function getGiveawayById(id: number): Promise<GiveawayWithTalent | 
 export async function createGiveaway(data: {
   talentId: number;
   title: string;
-  description?: string | null;
-  imageUrl?: string | null;
+  description?: string | null | undefined;
+  imageUrl?: string | null | undefined;
   brandName: string;
-  brandLogo?: string | null;
-  value?: string | null;
+  brandLogo?: string | null | undefined;
+  value?: string | null | undefined;
   redirectUrl: string;
   startsAt: Date;
   endsAt: Date;
   sortOrder?: number;
 }): Promise<Giveaway> {
   const [row] = await db.insert(giveaways).values(data).returning();
-  return row;
+  return row!;
 }
 
 export async function updateGiveaway(
