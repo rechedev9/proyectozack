@@ -1,22 +1,61 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import type { TalentWithRelations } from '@/types';
 
 const PLATFORMS = [
   { key: 'yt', abbr: 'YT', label: 'YouTube', color: '#FF0000' },
-  { key: 'x', abbr: 'X', label: 'Twitter/X', color: '#000000' },
-  { key: 'ig', abbr: 'IG', label: 'Instagram', color: '#E1306C' },
-  { key: 'tt', abbr: 'TT', label: 'TikTok', color: '#010101' },
   { key: 'twitch', abbr: 'TW', label: 'Twitch', color: '#9146FF' },
-  { key: 'kick', abbr: 'K', label: 'Kick', color: '#53FC18' },
 ] as const;
 
 const PLATFORM_LABELS: Record<string, string> = Object.fromEntries(
   PLATFORMS.map((p) => [p.key, p.abbr]),
 );
 
-type SortDir = 'asc' | 'desc' | null;
+type SortField = 'name' | 'socials' | 'followers';
+type SortDir = 'asc' | 'desc';
+type SortState = { field: SortField; dir: SortDir } | null;
+
+const SORT_OPTIONS: { field: SortField; dir: SortDir; label: string }[] = [
+  { field: 'name', dir: 'asc', label: 'Nombre A → Z' },
+  { field: 'name', dir: 'desc', label: 'Nombre Z → A' },
+  { field: 'socials', dir: 'desc', label: 'Más redes primero' },
+  { field: 'socials', dir: 'asc', label: 'Menos redes primero' },
+  { field: 'followers', dir: 'desc', label: 'Más followers primero' },
+  { field: 'followers', dir: 'asc', label: 'Menos followers primero' },
+];
+
+/**
+ * Parse followers display strings → number.
+ * Handles: "180K", "1.2M", "9K", "8,300", plain numbers.
+ * Returns 0 for unknown values like "-".
+ */
+function parseFollowers(display: string): number {
+  const s = display.trim();
+  // Fast-reject non-numeric strings like "-"
+  if (!s || !/\d/.test(s)) return 0;
+  // Remove thousands separators (comma or period used as separator when
+  // followed by exactly 3 digits and no suffix — e.g. "8,300" or "1.200")
+  // Strategy: strip commas, keep dots only if followed by digits+suffix
+  const noCommas = s.replace(/,/g, '');
+  const match = noCommas.match(/^([\d]+(?:\.\d+)?)\s*([KkMm]?)$/);
+  if (!match) return 0;
+  const num = parseFloat(match[1]);
+  const suffix = match[2].toUpperCase();
+  if (suffix === 'M') return num * 1_000_000;
+  if (suffix === 'K') return num * 1_000;
+  return num;
+}
+
+/**
+ * Sum followers for a creator, optionally restricted to specific platforms.
+ * If platforms is empty, sums all socials.
+ */
+function totalFollowers(c: TalentWithRelations, platforms?: Set<string>): number {
+  return c.socials
+    .filter((s) => !platforms || platforms.size === 0 || platforms.has(s.platform))
+    .reduce((sum, s) => sum + parseFollowers(s.followersDisplay), 0);
+}
 
 export function AgencyRoster({
   creators,
@@ -24,30 +63,85 @@ export function AgencyRoster({
   creators: TalentWithRelations[];
 }) {
   const [search, setSearch] = useState('');
-  const [platformFilter, setPlatformFilter] = useState<string | null>(null);
-  const [sortDir, setSortDir] = useState<SortDir>(null);
+  const [activePlatforms, setActivePlatforms] = useState<Set<string>>(new Set());
+  const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'public' | 'internal'>('all');
+  const [sort, setSort] = useState<SortState>(null);
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  // Close sort dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) setSortOpen(false);
+    }
+    if (sortOpen) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [sortOpen]);
+
+  const hasFilters = search || activePlatforms.size > 0 || visibilityFilter !== 'all' || sort !== null;
+
+  const clearAll = () => {
+    setSearch('');
+    setActivePlatforms(new Set());
+    setVisibilityFilter('all');
+    setSort(null);
+  };
+
+  const togglePlatform = (key: string) => {
+    setActivePlatforms((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   const filtered = useMemo(() => {
     let result = creators;
+
+    // Search
     const q = search.toLowerCase().trim();
     if (q) result = result.filter((c) => c.name.toLowerCase().includes(q));
-    if (platformFilter)
+
+    // Visibility
+    if (visibilityFilter !== 'all')
+      result = result.filter((c) => c.visibility === visibilityFilter);
+
+    // Multi-platform: creator must have ALL selected platforms
+    if (activePlatforms.size > 0)
       result = result.filter((c) =>
-        c.socials.some((s) => s.platform === platformFilter),
+        [...activePlatforms].every((pKey) =>
+          c.socials.some((s) => s.platform === pKey),
+        ),
       );
-    if (sortDir)
-      result = [...result].sort((a, b) =>
-        sortDir === 'desc'
-          ? b.socials.length - a.socials.length
-          : a.socials.length - b.socials.length,
-      );
+
+    // Sort
+    if (sort) {
+      result = [...result].sort((a, b) => {
+        if (sort.field === 'followers') {
+          // When platform filters are active, rank by followers on those
+          // platforms only — not the creator's total across all networks.
+          const fa = totalFollowers(a, activePlatforms);
+          const fb = totalFollowers(b, activePlatforms);
+          // Creators with no known followers always go to the bottom,
+          // regardless of sort direction.
+          if (fa === 0 && fb === 0) return 0;
+          if (fa === 0) return 1;
+          if (fb === 0) return -1;
+          const cmp = fa - fb;
+          return sort.dir === 'desc' ? -cmp : cmp;
+        }
+        let cmp = 0;
+        if (sort.field === 'name') cmp = a.name.localeCompare(b.name, 'es');
+        else cmp = a.socials.length - b.socials.length;
+        return sort.dir === 'desc' ? -cmp : cmp;
+      });
+    }
+
     return result;
-  }, [creators, search, platformFilter, sortDir]);
+  }, [creators, search, activePlatforms, visibilityFilter, sort]);
 
-  const toggleSort = () =>
-    setSortDir((p) => (p === null ? 'desc' : p === 'desc' ? 'asc' : null));
-
-  /* Platform counts for filter badges */
+  /* Platform counts (across all creators, not filtered) */
   const platformCounts = useMemo(() => {
     const map = new Map<string, number>();
     for (const c of creators)
@@ -55,12 +149,24 @@ export function AgencyRoster({
     return map;
   }, [creators]);
 
+  /* Visibility counts */
+  const visCounts = useMemo(() => {
+    let pub = 0;
+    let int = 0;
+    for (const c of creators) {
+      if (c.visibility === 'public') pub++;
+      else int++;
+    }
+    return { public: pub, internal: int };
+  }, [creators]);
+
   return (
     <div className="space-y-0">
       {/* ── Control bar ──────────────────────────────────────────────── */}
-      <div className="rounded-t-xl bg-white border border-sp-border border-b-0 overflow-hidden">
-        {/* Top row: search + sort + count */}
+      <div className="rounded-t-xl bg-white border border-sp-border border-b-0">
+        {/* Top row: search + sort + visibility + count + clear */}
         <div className="flex items-center gap-3 px-5 py-3 border-b border-sp-border/60">
+          {/* Search */}
           <div className="relative flex-1 max-w-xs">
             <svg
               className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-sp-muted pointer-events-none"
@@ -81,51 +187,118 @@ export function AgencyRoster({
             />
           </div>
 
-          {/* Sort toggle */}
-          <button
-            onClick={toggleSort}
-            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-              sortDir
-                ? 'bg-sp-dark text-white'
-                : 'bg-sp-off text-sp-muted hover:text-sp-dark'
-            }`}
-          >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path d="M3 7h6M3 12h10M3 17h14" strokeLinecap="round" />
-            </svg>
-            {sortDir === 'desc' ? 'Mayor a menor' : sortDir === 'asc' ? 'Menor a mayor' : 'Ordenar'}
-          </button>
+          {/* Sort dropdown */}
+          <div className="relative" ref={sortRef}>
+            <button
+              onClick={() => setSortOpen((p) => !p)}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                sort
+                  ? 'bg-sp-dark text-white'
+                  : 'bg-sp-off text-sp-muted hover:text-sp-dark'
+              }`}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path d="M3 7h6M3 12h10M3 17h14" strokeLinecap="round" />
+              </svg>
+              {sort
+                ? SORT_OPTIONS.find((o) => o.field === sort.field && o.dir === sort.dir)?.label ?? 'Ordenar'
+                : 'Ordenar'}
+              <svg className={`w-3 h-3 transition-transform ${sortOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
 
-          {/* Result count */}
-          <span className="text-xs text-sp-muted tabular-nums ml-auto">
-            <span className="font-bold text-sp-dark">{filtered.length}</span> de {creators.length}
-          </span>
+            {sortOpen && (
+              <div className="absolute top-full left-0 mt-1 w-52 bg-white rounded-lg border border-sp-border shadow-lg z-30 py-1">
+                {/* No sort option */}
+                <button
+                  onClick={() => { setSort(null); setSortOpen(false); }}
+                  className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+                    sort === null
+                      ? 'bg-sp-off font-bold text-sp-dark'
+                      : 'text-sp-muted hover:bg-sp-off/60 hover:text-sp-dark'
+                  }`}
+                >
+                  Sin ordenar
+                </button>
+                <div className="h-px bg-sp-border/50 my-1" />
+                {SORT_OPTIONS.map((opt) => {
+                  const active = sort?.field === opt.field && sort?.dir === opt.dir;
+                  return (
+                    <button
+                      key={`${opt.field}-${opt.dir}`}
+                      onClick={() => { setSort({ field: opt.field, dir: opt.dir }); setSortOpen(false); }}
+                      className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+                        active
+                          ? 'bg-sp-off font-bold text-sp-dark'
+                          : 'text-sp-muted hover:bg-sp-off/60 hover:text-sp-dark'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Visibility pills */}
+          <div className="flex items-center gap-1 border-l border-sp-border/60 pl-3">
+            {(['all', 'public', 'internal'] as const).map((v) => {
+              const active = visibilityFilter === v;
+              const label = v === 'all' ? 'Todos' : v === 'public' ? 'Público' : 'Interno';
+              const count = v === 'all' ? creators.length : visCounts[v];
+              return (
+                <button
+                  key={v}
+                  onClick={() => setVisibilityFilter(v)}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
+                    active
+                      ? 'bg-sp-dark text-white'
+                      : 'text-sp-muted hover:text-sp-dark'
+                  }`}
+                >
+                  {label}
+                  <span className={`text-[10px] tabular-nums ${active ? 'text-white/50' : 'text-sp-muted/40'}`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Result count + clear */}
+          <div className="flex items-center gap-2 ml-auto">
+            <span className="text-xs text-sp-muted tabular-nums">
+              <span className="font-bold text-sp-dark">{filtered.length}</span> de {creators.length}
+            </span>
+            {hasFilters && (
+              <button
+                onClick={clearAll}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-sp-orange hover:bg-sp-orange/10 transition-colors"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
+                </svg>
+                Limpiar
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Platform filter row */}
+        {/* Platform filter row — multi-select */}
         <div className="flex items-center gap-1.5 px-5 py-2.5 bg-sp-off/50">
           <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-muted/60 mr-2 shrink-0">
             Red social
           </span>
 
-          <button
-            onClick={() => setPlatformFilter(null)}
-            className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
-              platformFilter === null
-                ? 'bg-sp-dark text-white shadow-sm'
-                : 'bg-white text-sp-muted border border-sp-border/60 hover:border-sp-dark/30 hover:text-sp-dark'
-            }`}
-          >
-            Todas
-          </button>
-
           {PLATFORMS.map((p) => {
             const count = platformCounts.get(p.key) ?? 0;
-            const active = platformFilter === p.key;
+            const active = activePlatforms.has(p.key);
             return (
               <button
                 key={p.key}
-                onClick={() => setPlatformFilter(active ? null : p.key)}
+                onClick={() => togglePlatform(p.key)}
                 className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
                   active
                     ? 'text-white shadow-sm'
@@ -148,6 +321,15 @@ export function AgencyRoster({
               </button>
             );
           })}
+
+          {activePlatforms.size > 0 && (
+            <button
+              onClick={() => setActivePlatforms(new Set())}
+              className="ml-1 text-[10px] font-semibold text-sp-muted hover:text-sp-orange transition-colors"
+            >
+              Todas
+            </button>
+          )}
         </div>
       </div>
 
