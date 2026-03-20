@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
-const PORTAL_PREFIXES = ['/admin', '/marcas', '/creadores'];
+const PORTAL_PREFIXES = ['/admin', '/marcas', '/creadores', '/giveaways'];
 const LOGIN_SUFFIXES = ['/login'];
 
 function isPortalRoute(pathname: string): boolean {
