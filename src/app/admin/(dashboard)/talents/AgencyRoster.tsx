@@ -5,7 +5,7 @@ import type { TalentWithRelations } from '@/types';
 
 const PLATFORMS = [
   { key: 'yt', abbr: 'YT', label: 'YouTube', color: '#FF0000' },
-  { key: 'x', abbr: 'X', label: 'Twitter', color: '#000000' },
+  { key: 'x', abbr: 'X', label: 'Twitter/X', color: '#000000' },
   { key: 'ig', abbr: 'IG', label: 'Instagram', color: '#E1306C' },
   { key: 'tt', abbr: 'TT', label: 'TikTok', color: '#010101' },
   { key: 'twitch', abbr: 'TW', label: 'Twitch', color: '#9146FF' },
@@ -29,155 +29,191 @@ export function AgencyRoster({
 
   const filtered = useMemo(() => {
     let result = creators;
-
-    // Search by name
     const q = search.toLowerCase().trim();
     if (q) result = result.filter((c) => c.name.toLowerCase().includes(q));
-
-    // Filter by platform
-    if (platformFilter) {
+    if (platformFilter)
       result = result.filter((c) =>
         c.socials.some((s) => s.platform === platformFilter),
       );
-    }
-
-    // Sort by social count
-    if (sortDir) {
+    if (sortDir)
       result = [...result].sort((a, b) =>
         sortDir === 'desc'
           ? b.socials.length - a.socials.length
           : a.socials.length - b.socials.length,
       );
-    }
-
     return result;
   }, [creators, search, platformFilter, sortDir]);
 
-  const toggleSort = () => {
-    setSortDir((prev) => (prev === null ? 'desc' : prev === 'desc' ? 'asc' : null));
-  };
+  const toggleSort = () =>
+    setSortDir((p) => (p === null ? 'desc' : p === 'desc' ? 'asc' : null));
+
+  /* Platform counts for filter badges */
+  const platformCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const c of creators)
+      for (const s of c.socials) map.set(s.platform, (map.get(s.platform) ?? 0) + 1);
+    return map;
+  }, [creators]);
 
   return (
-    <section>
-      <h2 className="font-display text-lg font-black uppercase text-sp-dark mb-4">
-        Creadores
-      </h2>
-
-      {/* ── Controls ─────────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-3 mb-4">
-        <input
-          type="text"
-          placeholder="Buscar por nombre..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full sm:max-w-sm rounded-lg border border-sp-border bg-white px-4 py-2 text-sm text-sp-dark placeholder:text-sp-muted focus:outline-none focus:ring-2 focus:ring-sp-orange/40"
-        />
-
-        {/* Platform filter toggles */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-sp-muted uppercase tracking-wider mr-1">
-            Filtrar:
-          </span>
-          <button
-            onClick={() => setPlatformFilter(null)}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
-              platformFilter === null
-                ? 'bg-sp-dark text-white'
-                : 'bg-sp-off text-sp-muted hover:bg-sp-border'
-            }`}
+    <div className="space-y-5">
+      {/* ── Toolbar ──────────────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        {/* Search */}
+        <div className="relative flex-1 max-w-sm">
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sp-muted pointer-events-none"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
           >
-            Todas
-          </button>
-          {PLATFORMS.map((p) => (
-            <button
-              key={p.key}
-              onClick={() => setPlatformFilter(platformFilter === p.key ? null : p.key)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
-                platformFilter === p.key
-                  ? 'text-white'
-                  : 'bg-sp-off text-sp-muted hover:bg-sp-border'
-              }`}
-              style={platformFilter === p.key ? { backgroundColor: p.color } : undefined}
-            >
-              {p.abbr}
-            </button>
-          ))}
+            <circle cx={11} cy={11} r={8} />
+            <path d="m21 21-4.35-4.35" strokeLinecap="round" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Buscar creador..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-lg border border-sp-border bg-white pl-9 pr-4 py-2.5 text-sm text-sp-dark placeholder:text-sp-muted/60 focus:outline-none focus:border-sp-orange/60 transition-colors"
+          />
         </div>
+
+        {/* Result count */}
+        <span className="text-xs text-sp-muted tabular-nums">
+          {filtered.length} / {creators.length}
+        </span>
       </div>
 
-      <p className="text-sm text-sp-muted mb-3">
-        Mostrando {filtered.length} de {creators.length} creadores
-      </p>
+      {/* ── Platform filters ─────────────────────────────────────────── */}
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => setPlatformFilter(null)}
+          className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all ${
+            platformFilter === null
+              ? 'bg-sp-dark text-white shadow-sm'
+              : 'bg-transparent text-sp-muted hover:text-sp-dark'
+          }`}
+        >
+          Todas
+        </button>
+        {PLATFORMS.map((p) => {
+          const count = platformCounts.get(p.key) ?? 0;
+          const active = platformFilter === p.key;
+          return (
+            <button
+              key={p.key}
+              onClick={() => setPlatformFilter(active ? null : p.key)}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                active
+                  ? 'text-white shadow-sm'
+                  : 'bg-transparent text-sp-muted hover:text-sp-dark'
+              }`}
+              style={active ? { backgroundColor: p.color } : undefined}
+            >
+              <span
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ backgroundColor: active ? '#fff' : p.color }}
+              />
+              {p.label}
+              <span className={active ? 'text-white/60' : 'text-sp-muted/50'}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
       {/* ── Table ────────────────────────────────────────────────────── */}
-      <div className="rounded-2xl border border-sp-border bg-white overflow-hidden">
+      <div className="rounded-xl border border-sp-border overflow-hidden">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-sp-border bg-sp-off">
-              <th className="px-5 py-3 font-display text-xs font-black uppercase tracking-wider text-sp-muted">
-                Nombre
+            <tr className="bg-sp-off/80">
+              <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-sp-muted">
+                Creador
               </th>
               <th
-                className="px-5 py-3 font-display text-xs font-black uppercase tracking-wider text-sp-muted cursor-pointer select-none hover:text-sp-dark transition-colors"
+                className="px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-sp-muted cursor-pointer select-none hover:text-sp-dark transition-colors w-20 text-center"
                 onClick={toggleSort}
-                title="Ordenar por número de redes"
               >
-                Redes{' '}
-                <span className="text-sp-orange">
-                  {sortDir === 'desc' ? '↓' : sortDir === 'asc' ? '↑' : '↕'}
+                <span className="inline-flex items-center gap-1">
+                  Redes
+                  <span className="text-sp-orange text-xs">
+                    {sortDir === 'desc' ? '↓' : sortDir === 'asc' ? '↑' : '↕'}
+                  </span>
                 </span>
               </th>
-              <th className="px-5 py-3 font-display text-xs font-black uppercase tracking-wider text-sp-muted">
+              <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-sp-muted">
                 Plataformas
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-sp-border/40">
             {filtered.length === 0 ? (
               <tr>
-                <td
-                  colSpan={3}
-                  className="px-5 py-12 text-center text-sp-muted"
-                >
-                  No se encontraron creadores
+                <td colSpan={3} className="px-5 py-16 text-center text-sp-muted">
+                  Sin resultados para esta búsqueda
                 </td>
               </tr>
             ) : (
-              filtered.map((creator, idx) => (
+              filtered.map((creator) => (
                 <tr
                   key={creator.id}
-                  className={`border-b border-sp-border/50 transition-colors hover:bg-sp-off/60 ${
-                    idx % 2 === 1 ? 'bg-sp-off/30' : ''
-                  }`}
+                  className="transition-colors hover:bg-sp-orange/[0.03] group"
                 >
-                  <td className="px-5 py-3 font-bold text-sp-dark">
-                    {creator.name}
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center gap-3">
+                      {/* Initials avatar */}
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white shrink-0"
+                        style={{
+                          background: `linear-gradient(135deg, ${creator.gradientC1}, ${creator.gradientC2})`,
+                        }}
+                      >
+                        {creator.initials}
+                      </div>
+                      <div>
+                        <span className="font-semibold text-sp-dark text-[13px] group-hover:text-sp-orange transition-colors">
+                          {creator.name}
+                        </span>
+                        {creator.visibility === 'internal' && (
+                          <span className="ml-2 text-[9px] font-semibold uppercase tracking-wider text-sp-muted/50 bg-sp-off px-1.5 py-0.5 rounded">
+                            interno
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </td>
-                  <td className="px-5 py-3 text-center font-semibold text-sp-dark">
-                    {creator.socials.length}
+                  <td className="px-5 py-3.5 text-center">
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-sp-off text-[11px] font-bold text-sp-dark tabular-nums">
+                      {creator.socials.length}
+                    </span>
                   </td>
-                  <td className="px-5 py-3">
-                    <div className="flex items-center gap-1.5">
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center gap-1">
                       {creator.socials.map((social) => {
                         const abbr =
                           PLATFORM_LABELS[social.platform] ??
                           social.platform.toUpperCase();
+                        const base =
+                          'inline-flex items-center justify-center w-6 h-6 rounded-md text-white text-[9px] font-bold leading-none';
                         return social.profileUrl ? (
                           <a
                             key={social.id}
                             href={social.profileUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-[10px] font-bold transition-opacity hover:opacity-80"
+                            className={`${base} transition-transform hover:scale-110`}
                             style={{ backgroundColor: social.hexColor }}
-                            title={abbr}
+                            title={`${abbr}: ${social.handle}`}
                           >
                             {abbr}
                           </a>
                         ) : (
                           <span
                             key={social.id}
-                            className="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-[10px] font-bold opacity-40"
+                            className={`${base} opacity-25`}
                             style={{ backgroundColor: social.hexColor }}
                             title={abbr}
                           >
@@ -193,6 +229,6 @@ export function AgencyRoster({
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
   );
 }
