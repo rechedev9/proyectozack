@@ -3,18 +3,21 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from './db';
 import { env } from './env';
 
-/** Derive www/non-www variants so auth works regardless of redirect config. */
+/** Derive www/non-www variants + production domain so auth works regardless of env config. */
 function getSiteOrigins(siteUrl: string): string[] {
-  const origins = [siteUrl];
+  const origins = new Set<string>([siteUrl]);
   try {
     const u = new URL(siteUrl);
     if (u.hostname.startsWith('www.')) {
-      origins.push(siteUrl.replace('www.', ''));
+      origins.add(siteUrl.replace('www.', ''));
     } else {
-      origins.push(siteUrl.replace('://', '://www.'));
+      origins.add(siteUrl.replace('://', '://www.'));
     }
   } catch { /* keep just the original */ }
-  return origins;
+  // Always include the production domain (handles Vercel preview URL as SITE_URL)
+  origins.add('https://socialpro.es');
+  origins.add('https://www.socialpro.es');
+  return [...origins];
 }
 
 export const auth = betterAuth({
