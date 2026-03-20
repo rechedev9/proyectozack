@@ -3,6 +3,20 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from './db';
 import { env } from './env';
 
+/** Derive www/non-www variants so auth works regardless of redirect config. */
+function getSiteOrigins(siteUrl: string): string[] {
+  const origins = [siteUrl];
+  try {
+    const u = new URL(siteUrl);
+    if (u.hostname.startsWith('www.')) {
+      origins.push(siteUrl.replace('www.', ''));
+    } else {
+      origins.push(siteUrl.replace('://', '://www.'));
+    }
+  } catch { /* keep just the original */ }
+  return origins;
+}
+
 export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET,
   baseURL: env.NEXT_PUBLIC_SITE_URL,
@@ -25,7 +39,7 @@ export const auth = betterAuth({
       path: '/',
     },
   },
-  trustedOrigins: [env.NEXT_PUBLIC_SITE_URL],
+  trustedOrigins: getSiteOrigins(env.NEXT_PUBLIC_SITE_URL),
   user: {
     additionalFields: {
       role: {
