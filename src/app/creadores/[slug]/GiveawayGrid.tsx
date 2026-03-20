@@ -1,0 +1,45 @@
+'use client';
+
+import { motion } from 'motion/react';
+import { GiveawayCard } from './GiveawayCard';
+import type { Giveaway } from '@/types';
+
+interface GiveawayGridProps {
+  giveaways: Giveaway[];
+  title: string;
+}
+
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } },
+};
+
+export function GiveawayGrid({ giveaways, title }: GiveawayGridProps) {
+  if (giveaways.length === 0) return null;
+
+  return (
+    <section className="space-y-6">
+      <h2 className="text-xl font-black uppercase tracking-wider text-white/80">
+        {title}
+      </h2>
+      <motion.div
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-50px' }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+      >
+        {giveaways.map((g) => (
+          <motion.div key={g.id} variants={item}>
+            <GiveawayCard giveaway={g} />
+          </motion.div>
+        ))}
+      </motion.div>
+    </section>
+  );
+}
