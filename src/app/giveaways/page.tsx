@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { getAllActiveGiveaways, getAllFinishedGiveaways, extractUniqueBrands } from '@/lib/queries/giveawaysHub';
 import { getAllCodes } from '@/lib/queries/creatorCodes';
 import { getTalents } from '@/lib/queries/talents';
@@ -69,9 +70,14 @@ export default async function GiveawaysPage() {
       <header className="sticky top-0 z-50 bg-sp-black/90 backdrop-blur-xl border-b border-white/[0.04]">
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="font-display text-lg font-black uppercase tracking-tight text-white">
-              SocialPro
-            </span>
+            <Image
+              src="/images/logos/2.png"
+              alt="SocialPro"
+              width={120}
+              height={32}
+              className="h-7 w-auto object-contain brightness-0 invert"
+              priority
+            />
             <span className="text-white/20">|</span>
             <span className="font-display text-sm font-bold uppercase tracking-[0.15em] text-white/50">
               Giveaways
