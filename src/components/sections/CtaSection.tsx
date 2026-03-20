@@ -16,7 +16,7 @@ export function CtaSection() {
             Cuéntanos tu proyecto y te conectamos con el talento perfecto para tu marca.
           </p>
           <m.a
-            href="#contacto"
+            href="/contacto"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
             className="inline-flex items-center justify-center px-10 py-4 rounded-full font-bold text-white text-base bg-sp-grad"

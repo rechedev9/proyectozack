@@ -127,7 +127,7 @@ export function Hero() {
             className="flex flex-col sm:flex-row gap-4"
           >
             <m.a
-              href="#contacto"
+              href="/contacto"
               whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(224,48,112,0.3)' }}
               whileTap={{ scale: 0.95 }}
               className="px-10 py-4 rounded-full font-bold text-white text-sm tracking-widest uppercase transition-shadow bg-sp-grad"
@@ -135,7 +135,7 @@ export function Hero() {
               Iniciar Propuesta
             </m.a>
             <m.a
-              href="#talentos"
+              href="/talentos"
               whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
               whileTap={{ scale: 0.95 }}
               className="px-10 py-4 rounded-full font-bold text-white text-sm tracking-widest uppercase border border-white/10 backdrop-blur-sm transition-all"

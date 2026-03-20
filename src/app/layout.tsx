@@ -125,6 +125,21 @@ const jsonLd = {
         { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Gestión de Canales YouTube' } },
       ],
     },
+    {
+      '@type': 'SiteNavigationElement',
+      '@id': `${SITE_URL}/#navigation`,
+      name: 'Main Navigation',
+      hasPart: [
+        { '@type': 'WebPage', name: 'Talentos', url: `${SITE_URL}/talentos` },
+        { '@type': 'WebPage', name: 'Servicios', url: `${SITE_URL}/servicios` },
+        { '@type': 'WebPage', name: 'Casos de Éxito', url: `${SITE_URL}/casos` },
+        { '@type': 'WebPage', name: 'Blog', url: `${SITE_URL}/blog` },
+        { '@type': 'WebPage', name: 'Nosotros', url: `${SITE_URL}/nosotros` },
+        { '@type': 'WebPage', name: 'Contacto', url: `${SITE_URL}/contacto` },
+        { '@type': 'WebPage', name: 'Metodología', url: `${SITE_URL}/metodologia` },
+        { '@type': 'WebPage', name: 'Para Creadores', url: `${SITE_URL}/para-creadores` },
+      ],
+    },
   ],
 };
 

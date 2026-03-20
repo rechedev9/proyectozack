@@ -8,12 +8,12 @@ import { AnimatePresence } from 'motion/react';
 import { useScroll, useMotionValueEvent } from 'motion/react';
 
 const NAV_LINKS = [
-  { href: '#talentos', label: 'Talentos' },
-  { href: '#servicios', label: 'Servicios' },
-  { href: '#casos', label: 'Casos de Éxito' },
+  { href: '/talentos', label: 'Talentos' },
+  { href: '/servicios', label: 'Servicios' },
+  { href: '/casos', label: 'Casos de Éxito' },
   { href: '/blog', label: 'Blog' },
-  { href: '#nosotros', label: 'Nosotros' },
-  { href: '#contacto', label: 'Contacto' },
+  { href: '/nosotros', label: 'Nosotros' },
+  { href: '/contacto', label: 'Contacto' },
 ];
 
 export function Nav() {
@@ -93,7 +93,7 @@ export function Nav() {
 
         {/* CTA */}
         <m.a
-          href="#contacto"
+          href="/contacto"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className="hidden md:inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase tracking-widest text-white bg-sp-grad"
@@ -158,7 +158,7 @@ export function Nav() {
               )
             )}
             <m.a
-              href="#contacto"
+              href="/contacto"
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.15, ease: 'easeOut', delay: NAV_LINKS.length * 0.04 }}
