@@ -17,6 +17,7 @@ import type {
   brandCampaigns,
   talentProposals,
   talentMetricSnapshots,
+  giveaways,
 } from '@/db/schema';
 
 // ─── Base model types ────────────────────────────────────────────────────────
@@ -44,6 +45,8 @@ export type BrandCampaign = InferSelectModel<typeof brandCampaigns>;
 export type TalentProposal = InferSelectModel<typeof talentProposals>;
 export type TalentMetricSnapshot = InferSelectModel<typeof talentMetricSnapshots>;
 
+export type Giveaway = InferSelectModel<typeof giveaways>;
+
 // ─── With-relations types ────────────────────────────────────────────────────
 
 export type TalentWithRelations = Talent & {
@@ -64,5 +67,9 @@ export type BrandCampaignWithRelations = BrandCampaign & {
 };
 
 export type TalentProposalWithTalent = TalentProposal & {
+  talent: Talent;
+};
+
+export type GiveawayWithTalent = Giveaway & {
   talent: Talent;
 };
