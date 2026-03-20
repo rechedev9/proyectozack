@@ -1,27 +1,14 @@
-import {
-  getAgencyCreators,
-  countAgencyCreators,
-  getAgencyCreatorCountries,
-} from '@/lib/queries/agencyCreators';
+import { getAllTalents } from '@/lib/queries/talents';
 import { AgencyRoster } from './AgencyRoster';
 
 export default async function AdminTalentsPage() {
-  const [creators, totalCount, countries] = await Promise.all([
-    getAgencyCreators(),
-    countAgencyCreators(),
-    getAgencyCreatorCountries(),
-  ]);
+  const creators = await getAllTalents();
 
-  /* Count creators per country for breakdown pills */
-  const countryMap = new Map<string, number>();
+  /* Unique platforms across all creators */
+  const platformSet = new Set<string>();
   for (const c of creators) {
-    const key = c.country?.trim();
-    if (key) countryMap.set(key, (countryMap.get(key) ?? 0) + 1);
+    for (const s of c.socials) platformSet.add(s.platform);
   }
-  const countryCounts = [...countryMap.entries()]
-    .sort((a, b) => b[1] - a[1]);
-
-  const topCountries = countryCounts.slice(0, 3).map(([name]) => name);
 
   return (
     <div className="space-y-10">
@@ -40,33 +27,17 @@ export default async function AdminTalentsPage() {
       </section>
 
       {/* ── KPI cards ────────────────────────────────────────────────── */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard value={totalCount} label="Total Creadores" />
-        <KpiCard value={countries.length} label="Países" />
-        <KpiCard value={6} label="Plataformas" />
-        <KpiCard value={topCountries.join(', ')} label="Mercados" small />
-      </section>
-
-      {/* ── Country breakdown pills ──────────────────────────────────── */}
-      <section>
-        <h2 className="font-display text-lg font-black uppercase text-sp-dark mb-3">
-          Distribución por País
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          {countryCounts.map(([country, count]) => (
-            <span
-              key={country}
-              className="rounded-full bg-sp-off border border-sp-border px-3 py-1 text-sm text-sp-dark"
-            >
-              {country}{' '}
-              <span className="font-semibold text-sp-muted">({count})</span>
-            </span>
-          ))}
-        </div>
+      <section className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <KpiCard value={creators.length} label="Total Creadores" />
+        <KpiCard value={platformSet.size} label="Plataformas" />
+        <KpiCard
+          value={creators.reduce((sum, c) => sum + c.socials.length, 0)}
+          label="Perfiles Sociales"
+        />
       </section>
 
       {/* ── Interactive roster table ──────────────────────────────────── */}
-      <AgencyRoster creators={creators} countries={countries} />
+      <AgencyRoster creators={creators} />
     </div>
   );
 }
@@ -75,19 +46,13 @@ export default async function AdminTalentsPage() {
 function KpiCard({
   value,
   label,
-  small,
 }: {
   value: number | string;
   label: string;
-  small?: boolean;
 }) {
   return (
     <div className="rounded-2xl bg-white border border-sp-border p-6">
-      <div
-        className={`font-display font-black gradient-text leading-none ${
-          small ? 'text-xl lg:text-2xl' : 'text-4xl lg:text-5xl'
-        }`}
-      >
+      <div className="font-display text-4xl lg:text-5xl font-black gradient-text leading-none">
         {value}
       </div>
       <div className="text-sm text-sp-muted mt-2">{label}</div>
