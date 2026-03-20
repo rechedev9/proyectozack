@@ -1,7 +1,9 @@
 import Image from 'next/image';
 import { getAllGiveaways } from '@/lib/queries/giveaways';
 import { getAllTalents } from '@/lib/queries/talents';
+import { getAllCodes } from '@/lib/queries/creatorCodes';
 import { createGiveawayAction, deleteGiveawayAction } from './actions';
+import { createCodeAction, deleteCodeAction } from './codes-actions';
 
 function isActive(endsAt: Date): boolean {
   return new Date(endsAt) > new Date();
@@ -13,9 +15,10 @@ type PageProps = {
 
 export default async function AdminGiveawaysPage({ searchParams }: PageProps) {
   const { creator, status } = await searchParams;
-  const [allGiveaways, allTalents] = await Promise.all([
+  const [allGiveaways, allTalents, allCodes] = await Promise.all([
     getAllGiveaways(),
     getAllTalents(),
+    getAllCodes(),
   ]);
 
   let giveaways = allGiveaways;
@@ -158,6 +161,85 @@ export default async function AdminGiveawaysPage({ searchParams }: PageProps) {
                       <button type="submit" className="text-red-500 hover:text-red-700 text-xs font-bold">
                         Eliminar
                       </button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Codes section */}
+      <h1 className="font-display text-4xl font-black uppercase text-sp-dark mb-8 mt-16">Códigos de Creadores</h1>
+
+      {/* Create code form */}
+      <div className="rounded-2xl bg-white border border-sp-border p-6 mb-8">
+        <h2 className="font-display text-lg font-bold uppercase text-sp-dark mb-4">Crear Código</h2>
+        <form action={createCodeAction} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-sp-dark mb-1">Creador</label>
+            <select name="talentId" required className="w-full rounded-lg border border-sp-border px-3 py-2 text-sm">
+              <option value="">Seleccionar...</option>
+              {allTalents.map((t) => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-sp-dark mb-1">Código</label>
+            <input name="code" required maxLength={100} placeholder="TODOCS2" className="w-full rounded-lg border border-sp-border px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-sp-dark mb-1">Marca</label>
+            <input name="brandName" required maxLength={150} className="w-full rounded-lg border border-sp-border px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-sp-dark mb-1">URL de redirección</label>
+            <input name="redirectUrl" type="url" required className="w-full rounded-lg border border-sp-border px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-sp-dark mb-1">Logo marca (URL)</label>
+            <input name="brandLogo" type="url" className="w-full rounded-lg border border-sp-border px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-sp-dark mb-1">Descripción</label>
+            <input name="description" maxLength={300} className="w-full rounded-lg border border-sp-border px-3 py-2 text-sm" />
+          </div>
+          <div className="md:col-span-2">
+            <button type="submit" className="px-6 py-2 rounded-lg bg-sp-dark text-white text-sm font-bold hover:bg-sp-black transition-colors">
+              Crear Código
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Codes list */}
+      {allCodes.length === 0 ? (
+        <p className="text-sm text-sp-muted">No hay códigos. Crea el primero.</p>
+      ) : (
+        <div className="rounded-2xl bg-white border border-sp-border overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-sp-border bg-sp-off">
+                <th className="text-left px-6 py-3 font-semibold text-sp-dark">Código</th>
+                <th className="text-left px-6 py-3 font-semibold text-sp-dark">Creador</th>
+                <th className="text-left px-6 py-3 font-semibold text-sp-dark">Marca</th>
+                <th className="text-left px-6 py-3 font-semibold text-sp-dark">URL</th>
+                <th className="text-left px-6 py-3 font-semibold text-sp-dark">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allCodes.map((c) => (
+                <tr key={c.id} className="border-b border-sp-border/50 last:border-0">
+                  <td className="px-6 py-4 font-mono font-bold text-sp-dark">{c.code}</td>
+                  <td className="px-6 py-4 text-sp-muted">{c.talent.name}</td>
+                  <td className="px-6 py-4 text-sp-muted">{c.brandName}</td>
+                  <td className="px-6 py-4 text-sp-muted truncate max-w-[200px]">{c.redirectUrl}</td>
+                  <td className="px-6 py-4">
+                    <form action={deleteCodeAction}>
+                      <input type="hidden" name="id" value={c.id} />
+                      <button type="submit" className="text-red-500 hover:text-red-700 text-xs font-bold">Eliminar</button>
                     </form>
                   </td>
                 </tr>
