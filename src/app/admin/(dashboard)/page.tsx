@@ -1,16 +1,19 @@
 import { db } from '@/lib/db';
 import { talents, caseStudies, contactSubmissions } from '@/db/schema';
 import { sql } from 'drizzle-orm';
+import { countAgencyCreators } from '@/lib/queries/agencyCreators';
 
 export default async function AdminDashboardPage() {
-  const [talentCount, caseCount, submissionCount] = await Promise.all([
+  const [talentCount, caseCount, submissionCount, agencyCount] = await Promise.all([
     db.select({ count: sql<number>`count(*)` }).from(talents),
     db.select({ count: sql<number>`count(*)` }).from(caseStudies),
     db.select({ count: sql<number>`count(*)` }).from(contactSubmissions),
+    countAgencyCreators(),
   ]);
 
   const stats = [
-    { label: 'Talentos', value: talentCount[0]?.count ?? 0, href: '/admin/talents' },
+    { label: 'Talentos Web', value: talentCount[0]?.count ?? 0, href: '/admin/talents' },
+    { label: 'Roster Agencia', value: agencyCount, href: '/admin/talents' },
     { label: 'Casos', value: caseCount[0]?.count ?? 0, href: '/admin/cases' },
     { label: 'Contactos', value: submissionCount[0]?.count ?? 0, href: '#' },
   ];
