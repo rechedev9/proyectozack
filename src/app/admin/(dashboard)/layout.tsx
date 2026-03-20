@@ -23,7 +23,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         subtitle="Admin Panel"
         navItems={[
           { href: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
-          { href: '/admin/talents', label: 'Talentos', icon: <TalentIcon /> },
+          { href: '/admin/talents', label: 'Roster', icon: <TalentIcon /> },
           { href: '/admin/cases', label: 'Casos', icon: <CaseIcon /> },
           { href: '/admin/brands', label: 'Marcas', icon: <BrandIcon /> },
           { href: '/admin/analytics', label: 'Analytics', icon: <AnalyticsIcon /> },
