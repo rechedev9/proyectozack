@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
 
-interface UnboxRevealProps {
+type UnboxRevealProps = {
   imageUrl: string;
   alt: string;
   isFinished: boolean;
@@ -48,7 +48,7 @@ export function UnboxReveal({ imageUrl, alt, isFinished }: UnboxRevealProps) {
         alt={alt}
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        className={`object-contain p-6 drop-shadow-[0_0_20px_rgba(195,252,0,0.1)] transition-all duration-500 ${isFinished ? '' : 'gw-float'}`}
+        className={`object-contain p-6 transition-all duration-500 ${isFinished ? '' : 'gw-float'}`}
       />
 
       {/* Unbox overlay — plays on hover */}
@@ -111,7 +111,7 @@ export function UnboxReveal({ imageUrl, alt, isFinished }: UnboxRevealProps) {
                 alt={alt}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className="object-contain p-6 drop-shadow-[0_0_30px_rgba(195,252,0,0.35)]"
+                className="object-contain p-6"
               />
             </motion.div>
 
