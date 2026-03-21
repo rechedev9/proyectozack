@@ -22,7 +22,7 @@ export function BrandsCarousel({ brands }: BrandsCarouselProps) {
       </FadeInOnScroll>
 
       <div className="overflow-hidden">
-        <div className="marquee-track">
+        <div className="marquee-track--slow">
           {items.map((brand, i) => (
             <div
               key={`${brand.slug}-${i}`}

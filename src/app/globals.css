@@ -162,10 +162,17 @@
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee 30s linear infinite;
+  animation: marquee 20s linear infinite;
 }
 
-.marquee-track:hover {
+.marquee-track--slow {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+.marquee-track:hover,
+.marquee-track--slow:hover {
   animation-play-state: paused;
 }
 
