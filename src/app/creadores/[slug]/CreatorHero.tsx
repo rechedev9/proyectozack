@@ -58,7 +58,7 @@ export function CreatorHero({ talent }: CreatorHeroProps) {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <div className="absolute -inset-2 rounded-2xl bg-gradient-to-br from-[#C3FC00]/20 via-transparent to-[#C3FC00]/10 blur-sm animate-pulse" />
+            <div className="absolute -inset-2 rounded-2xl bg-gradient-to-br from-[#C3FC00]/20 via-transparent to-[#C3FC00]/10 animate-pulse" />
             <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden border-2 border-[#C3FC00]/20 shadow-[0_0_40px_rgba(195,252,0,0.12)]">
               {talent.photoUrl ? (
                 <Image
