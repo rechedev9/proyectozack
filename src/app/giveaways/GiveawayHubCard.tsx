@@ -89,7 +89,7 @@ export function GiveawayHubCard({ giveaway }: GiveawayHubCardProps) {
               <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/30">Finalizado</span>
             </div>
           ) : (
-            <CountdownTimer endsAt={giveaway.endsAt.toISOString()} onExpired={handleExpired} />
+            <CountdownTimer endsAt={giveaway.endsAt.toISOString()} onExpiredAction={handleExpired} />
           )}
         </div>
 

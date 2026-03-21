@@ -44,7 +44,7 @@ function calcTimeLeft(endsAt: string, now: number): TimeLeft | null {
 
 type CountdownTimerProps = {
   endsAt: string;
-  onExpired?: () => void;
+  onExpiredAction?: () => void;
 }
 
 function FlipDigit({ value, label }: { value: number; label: string }) {
@@ -72,7 +72,7 @@ function FlipDigit({ value, label }: { value: number; label: string }) {
   );
 }
 
-export function CountdownTimer({ endsAt, onExpired }: CountdownTimerProps) {
+export function CountdownTimer({ endsAt, onExpiredAction }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(() =>
     calcTimeLeft(endsAt, Date.now())
   );
@@ -80,8 +80,8 @@ export function CountdownTimer({ endsAt, onExpired }: CountdownTimerProps) {
   const tick = useCallback((now: number) => {
     const tl = calcTimeLeft(endsAt, now);
     setTimeLeft(tl);
-    if (!tl) onExpired?.();
-  }, [endsAt, onExpired]);
+    if (!tl) onExpiredAction?.();
+  }, [endsAt, onExpiredAction]);
 
   useEffect(() => {
     return subscribe(tick);
