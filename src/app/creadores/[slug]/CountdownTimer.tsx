@@ -1,11 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 
-type CountdownTimerProps = {
-  endsAt: string;
-  onExpired?: () => void;
+// Single shared interval — all CountdownTimer instances subscribe to this
+let listeners: Array<(now: number) => void> = [];
+let intervalId: ReturnType<typeof setInterval> | null = null;
+
+function subscribe(fn: (now: number) => void) {
+  listeners.push(fn);
+  if (!intervalId) {
+    intervalId = setInterval(() => {
+      const now = Date.now();
+      for (const l of listeners) l(now);
+    }, 1000);
+  }
+  return () => {
+    listeners = listeners.filter((l) => l !== fn);
+    if (listeners.length === 0 && intervalId !== null) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  };
 }
 
 type TimeLeft = {
@@ -15,8 +31,8 @@ type TimeLeft = {
   seconds: number;
 }
 
-function calcTimeLeft(endsAt: string): TimeLeft | null {
-  const diff = new Date(endsAt).getTime() - Date.now();
+function calcTimeLeft(endsAt: string, now: number): TimeLeft | null {
+  const diff = new Date(endsAt).getTime() - now;
   if (diff <= 0) return null;
   return {
     days: Math.floor(diff / (1000 * 60 * 60 * 24)),
@@ -24,6 +40,11 @@ function calcTimeLeft(endsAt: string): TimeLeft | null {
     minutes: Math.floor((diff / (1000 * 60)) % 60),
     seconds: Math.floor((diff / 1000) % 60),
   };
+}
+
+type CountdownTimerProps = {
+  endsAt: string;
+  onExpired?: () => void;
 }
 
 function FlipDigit({ value, label }: { value: number; label: string }) {
@@ -52,19 +73,19 @@ function FlipDigit({ value, label }: { value: number; label: string }) {
 }
 
 export function CountdownTimer({ endsAt, onExpired }: CountdownTimerProps) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(() => calcTimeLeft(endsAt));
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(() =>
+    calcTimeLeft(endsAt, Date.now())
+  );
+
+  const tick = useCallback((now: number) => {
+    const tl = calcTimeLeft(endsAt, now);
+    setTimeLeft(tl);
+    if (!tl) onExpired?.();
+  }, [endsAt, onExpired]);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      const tl = calcTimeLeft(endsAt);
-      setTimeLeft(tl);
-      if (!tl) {
-        clearInterval(id);
-        onExpired?.();
-      }
-    }, 1000);
-    return () => clearInterval(id);
-  }, [endsAt, onExpired]);
+    return subscribe(tick);
+  }, [tick]);
 
   if (!timeLeft) {
     return (
