@@ -334,6 +334,7 @@
 }
 .gw-float {
   animation: gw-float 3s ease-in-out infinite;
+  will-change: transform;
 }
 
 /* Countdown digit glow */
