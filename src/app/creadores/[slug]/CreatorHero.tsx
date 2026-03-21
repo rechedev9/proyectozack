@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { motion } from 'motion/react';
 import type { TalentWithRelations } from '@/types';
 
-interface CreatorHeroProps {
+type CreatorHeroProps = {
   talent: TalentWithRelations;
 }
 
@@ -26,7 +26,7 @@ function SocialButton({ platform, url, color }: { platform: string; url: string;
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="w-11 h-11 rounded-xl flex items-center justify-center border border-white/5 backdrop-blur-sm transition-colors hover:border-[#C3FC00]/30"
+      className="w-11 h-11 rounded-xl flex items-center justify-center border border-white/5 transition-colors hover:border-[#C3FC00]/30"
       style={{ backgroundColor: `${color}10` }}
       whileHover={{ scale: 1.1, y: -2 }}
       whileTap={{ scale: 0.95 }}
