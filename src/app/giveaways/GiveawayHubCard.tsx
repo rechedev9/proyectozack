@@ -67,7 +67,7 @@ export function GiveawayHubCard({ giveaway }: GiveawayHubCardProps) {
             alt={giveaway.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            className={`object-contain p-6 drop-shadow-[0_0_20px_rgba(245,99,42,0.1)] transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_30px_rgba(245,99,42,0.2)] ${isFinished ? '' : 'gw-sp-float'}`}
+            className={`object-contain p-6 drop-shadow-[0_0_20px_rgba(245,99,42,0.15)] transition-transform duration-500 group-hover:scale-110 ${isFinished ? '' : 'gw-sp-float'}`}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white/10 text-5xl font-black">?</div>

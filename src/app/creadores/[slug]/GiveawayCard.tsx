@@ -102,7 +102,7 @@ export function GiveawayCard({ giveaway }: GiveawayCardProps) {
         {/* CTA Button */}
         {!isFinished && (
           <div className="pt-1">
-            <div className="w-full py-3 rounded-lg bg-[#C3FC00] text-black text-center text-[13px] font-black uppercase tracking-[0.1em] transition-all giveaway-btn-glow group-hover:bg-[#d4ff33] group-hover:tracking-[0.15em]">
+            <div className="w-full py-3 rounded-lg bg-[#C3FC00] text-black text-center text-[13px] font-black uppercase tracking-[0.1em] giveaway-btn-glow group-hover:tracking-[0.15em]">
               Participar
             </div>
           </div>
