@@ -77,7 +77,7 @@ export default async function CreadorPage({ params }: PageProps) {
       {active.length > 0 && (
         <div className="bg-[#C3FC00] overflow-hidden">
           <div className="gw-ticker-track whitespace-nowrap">
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 2 }).map((_, i) => (
               <span key={i} className="inline-flex items-center gap-6 px-6">
                 {active.map((g) => (
                   <span key={`${i}-${g.id}`} className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-black/80">
