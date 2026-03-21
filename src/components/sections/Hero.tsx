@@ -78,18 +78,18 @@ export function Hero() {
         {/* Headline — Sharp & High Contrast */}
         <h1 className="font-display text-[4rem] sm:text-[6.5rem] md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tight mb-10">
           <m.span
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-            className="block text-white"
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+            className="block text-white will-change-[transform,opacity]"
           >
             CONECTAMOS
           </m.span>
           <m.span
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.45 }}
-            className="block"
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
+            className="block will-change-[transform,opacity]"
             style={{
               background: 'linear-gradient(90deg, #f5632a 0%, #e03070 50%, #8b3aad 100%)',
               WebkitBackgroundClip: 'text',
@@ -100,10 +100,10 @@ export function Hero() {
             CREADORES
           </m.span>
           <m.span
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
-            className="block text-white"
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.7 }}
+            className="block text-white will-change-[transform,opacity]"
           >
             CON MARCAS
           </m.span>
