@@ -19,6 +19,7 @@ export function Hero() {
           style={{
             background: 'radial-gradient(circle, #e03070 0%, transparent 60%)',
             filter: 'blur(80px)',
+            transform: 'translateZ(0)',
           }}
         />
         <m.div
@@ -31,6 +32,7 @@ export function Hero() {
           style={{
             background: 'radial-gradient(circle, #f5632a 0%, transparent 70%)',
             filter: 'blur(100px)',
+            transform: 'translateZ(0)',
           }}
         />
       </div>
@@ -93,7 +95,6 @@ export function Hero() {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
-              filter: 'drop-shadow(0 0 20px rgba(245,99,42,0.2))',
             }}
           >
             CREADORES
