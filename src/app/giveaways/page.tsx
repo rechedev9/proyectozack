@@ -83,7 +83,7 @@ export default async function GiveawaysPage() {
             />
             <span className="text-white/20">|</span>
             <span className="font-display text-sm font-bold uppercase tracking-[0.15em] text-white/50">
-              Giveaways
+              Códigos & Sorteos
             </span>
           </div>
           <div className="flex items-center gap-4">
@@ -95,7 +95,7 @@ export default async function GiveawaysPage() {
       </header>
 
       {/* Stats bar */}
-      <StatsBar activeCount={active.length} totalValue={totalValue} finishedCount={finished.length} />
+      <StatsBar activeCount={active.length} totalValue={totalValue} finishedCount={finished.length} codesCount={codes.length} />
 
       {/* Hub */}
       <GiveawaysHub

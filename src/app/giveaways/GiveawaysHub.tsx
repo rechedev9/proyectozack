@@ -32,7 +32,7 @@ const gridItem: Variants = {
 
 export function GiveawaysHub({ active, finished, codes, creators, brands, topWinners, recentWinners }: GiveawaysHubProps) {
   const [selectedCreator, setSelectedCreator] = useState<number | null>(null);
-  const [tab, setTab] = useState<'giveaways' | 'codes'>('giveaways');
+  const [tab, setTab] = useState<'codes' | 'giveaways'>('codes');
 
   const filteredActive = useMemo(
     () => selectedCreator ? active.filter((g) => g.talentId === selectedCreator) : active,
@@ -58,20 +58,20 @@ export function GiveawaysHub({ active, finished, codes, creators, brands, topWin
           {/* Tabs */}
           <div className="flex gap-1 mb-6 p-1 rounded-xl bg-white/[0.03] border border-white/[0.04] w-fit">
             <button
-              onClick={() => setTab('giveaways')}
-              className={`px-5 py-2 rounded-lg text-[12px] font-black uppercase tracking-[0.15em] transition-all ${
-                tab === 'giveaways' ? 'bg-sp-grad text-white' : 'text-white/40 hover:text-white/70'
-              }`}
-            >
-              Sorteos
-            </button>
-            <button
               onClick={() => setTab('codes')}
               className={`px-5 py-2 rounded-lg text-[12px] font-black uppercase tracking-[0.15em] transition-all ${
                 tab === 'codes' ? 'bg-sp-grad text-white' : 'text-white/40 hover:text-white/70'
               }`}
             >
               Códigos
+            </button>
+            <button
+              onClick={() => setTab('giveaways')}
+              className={`px-5 py-2 rounded-lg text-[12px] font-black uppercase tracking-[0.15em] transition-all ${
+                tab === 'giveaways' ? 'bg-sp-grad text-white' : 'text-white/40 hover:text-white/70'
+              }`}
+            >
+              Sorteos
             </button>
           </div>
 
