@@ -32,9 +32,15 @@ export function CodeCard({ code }: CodeCardProps) {
 
       {/* Code */}
       <div className="flex items-center gap-2">
-        <div className="flex-1 px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.06] font-mono text-sm text-sp-orange font-bold tracking-wider">
+        <a
+          href={code.redirectUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.06] font-mono text-sm text-sp-orange font-bold tracking-wider transition-colors hover:border-sp-orange/50 hover:bg-white/[0.06]"
+          aria-label={`Abrir enlace de ${code.brandName} para ${code.code}`}
+        >
           {code.code}
-        </div>
+        </a>
         <motion.button
           onClick={handleCopy}
           className="px-4 py-2.5 rounded-lg bg-sp-grad text-white text-[11px] font-black uppercase tracking-wider shrink-0"
@@ -54,9 +60,9 @@ export function CodeCard({ code }: CodeCardProps) {
         href={code.redirectUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex text-[10px] font-bold uppercase tracking-wider text-sp-orange/60 hover:text-sp-orange transition-colors"
+        className="inline-flex items-center rounded-lg border border-sp-orange/20 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-sp-orange/70 transition-colors hover:border-sp-orange/50 hover:text-sp-orange"
       >
-        Ir a {code.brandName} →
+        Abrir enlace de {code.brandName} →
       </a>
     </div>
   );

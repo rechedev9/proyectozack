@@ -238,7 +238,16 @@ export default async function AdminGiveawaysPage({ searchParams }: PageProps) {
                   <td className="px-6 py-4 font-mono font-bold text-sp-dark">{c.code}</td>
                   <td className="px-6 py-4 text-sp-muted">{c.talent.name}</td>
                   <td className="px-6 py-4 text-sp-muted">{c.brandName}</td>
-                  <td className="px-6 py-4 text-sp-muted truncate max-w-[200px]">{c.redirectUrl}</td>
+                  <td className="px-6 py-4 text-sp-muted truncate max-w-[200px]">
+                    <a
+                      href={c.redirectUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sp-orange hover:underline break-all"
+                    >
+                      {c.redirectUrl}
+                    </a>
+                  </td>
                   <td className="px-6 py-4">
                     <form action={deleteCodeAction}>
                       <input type="hidden" name="id" value={c.id} />
