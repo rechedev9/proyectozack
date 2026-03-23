@@ -3,7 +3,6 @@ import { PortalSidebar } from '@/components/layout/PortalSidebar';
 import {
   DashboardIcon,
   TalentIcon,
-  CaseIcon,
   BrandIcon,
   GiveawayIcon,
 } from '@/components/admin/SidebarIcons';
@@ -24,7 +23,6 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         navItems={[
           { href: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
           { href: '/admin/talents', label: 'Roster', icon: <TalentIcon /> },
-          { href: '/admin/cases', label: 'Casos', icon: <CaseIcon /> },
           { href: '/admin/brands', label: 'Marcas', icon: <BrandIcon /> },
           { href: '/admin/giveaways', label: 'Giveaways', icon: <GiveawayIcon /> },
         ]}

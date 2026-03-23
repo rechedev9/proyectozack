@@ -27,7 +27,6 @@ export default async function AdminDashboardPage() {
     { label: 'Público', value: stats.publicCount, href: '/admin/talents' },
     { label: 'Interno', value: stats.internalCount, href: '/admin/talents' },
     { label: 'Marcas', value: stats.activeBrandCount, href: '/admin/brands' },
-    { label: 'Casos', value: stats.caseCount, href: '/admin/cases' },
     { label: 'Sorteos activos', value: stats.activeGiveawayCount, href: '/admin/giveaways' },
   ];
 
@@ -40,7 +39,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="grid grid-cols-3 lg:grid-cols-5 gap-3">
         {statCards.map(({ label, value, href }) => (
           <Link
             key={label}
