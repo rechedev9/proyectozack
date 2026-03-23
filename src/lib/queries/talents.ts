@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 import { talents, talentTags, talentStats, talentSocials } from '@/db/schema';
 import type { TalentWithRelations } from '@/types';
 
-export interface TalentFilters {
+export type TalentFilters = {
   platform?: 'twitch' | 'youtube';
   tags?: string[];
   followersMin?: number;
@@ -102,6 +102,71 @@ export const getTalentBySlugAdmin = cache(async (slug: string): Promise<TalentWi
   });
   return row ?? undefined;
 });
+
+// ── Admin roster with 30-day growth data ─────────────────────────────
+
+export type GrowthData = {
+  /** platform key in snapshot space ('youtube' | 'twitch') */
+  platform: string;
+  latestValue: number;
+  earliestValue: number;
+  growthPct: number | null;
+};
+
+export type AdminRosterRow = TalentWithRelations & {
+  growth: GrowthData[];
+};
+
+/**
+ * Fetch all talents with their socials + 30-day growth from snapshots.
+ * Merges `talentMetricSnapshots` data into each talent row.
+ */
+export async function getAdminRosterWithGrowth(): Promise<AdminRosterRow[]> {
+  const { getLatestSnapshots, getEarliestSnapshots } = await import('./analytics');
+
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const fromDate = thirtyDaysAgo.toISOString().split('T')[0]!;
+
+  const [allTalents, latestSnaps, earliestSnaps] = await Promise.all([
+    getAllTalents(),
+    getLatestSnapshots(),
+    getEarliestSnapshots(fromDate),
+  ]);
+
+  // Build maps: talentId-platform → snapshot value
+  const latestMap = new Map<string, number>();
+  for (const s of latestSnaps) {
+    latestMap.set(`${s.talentId}-${s.platform}`, s.value);
+  }
+  const earliestMap = new Map<string, number>();
+  for (const s of earliestSnaps) {
+    earliestMap.set(`${s.talentId}-${s.platform}`, s.value);
+  }
+
+  return allTalents.map((t) => {
+    const growth: GrowthData[] = [];
+
+    for (const platform of ['youtube', 'twitch'] as const) {
+      const key = `${t.id}-${platform}`;
+      const latest = latestMap.get(key);
+      const earliest = earliestMap.get(key);
+
+      if (latest !== undefined) {
+        growth.push({
+          platform,
+          latestValue: latest,
+          earliestValue: earliest ?? latest,
+          growthPct: earliest && earliest > 0
+            ? ((latest - earliest) / earliest) * 100
+            : null,
+        });
+      }
+    }
+
+    return { ...t, growth };
+  });
+}
 
 // Re-export for convenience
 export { talents, talentTags, talentStats, talentSocials };
