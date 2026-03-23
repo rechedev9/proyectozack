@@ -19,7 +19,7 @@ export function CodeCard({ code }: CodeCardProps) {
   };
 
   return (
-    <div className="gw-sp-card rounded-xl border border-white/[0.06] bg-[#0e0e0e]/90 p-4 space-y-3">
+    <div className="gw-sp-card overflow-hidden rounded-xl border border-white/[0.06] bg-[#0e0e0e]/90 p-4 space-y-3">
       {/* Creator + Brand */}
       <div className="flex items-center gap-2">
         {code.talent.photoUrl && (
