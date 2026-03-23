@@ -21,7 +21,7 @@ export function CodeCard({ code }: CodeCardProps) {
   return (
     <div className="gw-sp-card overflow-hidden rounded-xl border border-white/[0.06] bg-[#0e0e0e]/90 p-4 space-y-3">
       {/* Creator + Brand */}
-      <div className="flex items-center gap-2">
+      <div className="relative z-10 flex items-center gap-2">
         {code.talent.photoUrl && (
           <Image src={code.talent.photoUrl} alt={code.talent.name} width={20} height={20} className="rounded-full object-cover" />
         )}
@@ -31,7 +31,7 @@ export function CodeCard({ code }: CodeCardProps) {
       </div>
 
       {/* Code */}
-      <div className="flex items-center gap-2">
+      <div className="relative z-10 flex items-center gap-2">
         <a
           href={code.redirectUrl}
           target="_blank"
@@ -52,7 +52,7 @@ export function CodeCard({ code }: CodeCardProps) {
 
       {/* Description */}
       {code.description && (
-        <p className="text-[11px] text-white/30">{code.description}</p>
+        <p className="relative z-10 text-[11px] text-white/30">{code.description}</p>
       )}
 
       {/* Link */}
@@ -60,7 +60,7 @@ export function CodeCard({ code }: CodeCardProps) {
         href={code.redirectUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center rounded-lg border border-sp-orange/20 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-sp-orange/70 transition-colors hover:border-sp-orange/50 hover:text-sp-orange"
+        className="relative z-10 inline-flex items-center rounded-lg border border-sp-orange/20 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-sp-orange/70 transition-colors hover:border-sp-orange/50 hover:text-sp-orange"
       >
         Abrir enlace de {code.brandName} →
       </a>
