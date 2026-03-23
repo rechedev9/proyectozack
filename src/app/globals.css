@@ -211,80 +211,6 @@
   border: 1px solid rgba(245, 99, 42, 0.3);
 }
 
-/* ── Giveaway page aesthetic ──────────────────────────────────────────── */
-
-/* Animated grid background */
-.gw-grid-bg {
-  background-image:
-    linear-gradient(rgba(195,252,0,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(195,252,0,0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  background-position: center;
-}
-
-/* Scan line overlay */
-.gw-scanlines::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 100;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.03) 2px,
-    rgba(0,0,0,0.03) 4px
-  );
-}
-
-/* Floating orb glow — top */
-.gw-orb-top {
-  position: fixed;
-  top: -200px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 800px;
-  height: 500px;
-  background: radial-gradient(ellipse, rgba(195,252,0,0.07) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform;
-  animation: gw-orb-drift 8s ease-in-out infinite alternate;
-}
-
-/* Secondary orb — bottom right */
-.gw-orb-bottom {
-  position: fixed;
-  bottom: -150px;
-  right: -100px;
-  width: 600px;
-  height: 400px;
-  background: radial-gradient(ellipse, rgba(195,252,0,0.04) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform;
-  animation: gw-orb-drift 12s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes gw-orb-drift {
-  0% { transform: translateX(-50%) translateY(0); }
-  100% { transform: translateX(-50%) translateY(30px); }
-}
-
-/* Noise texture overlay */
-.gw-noise::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 99;
-  opacity: 0.4;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 256px 256px;
-}
-
 /* Card glow on hover */
 .gw-card-glow {
   position: relative;
@@ -525,12 +451,6 @@
 .gw-creator-active {
   background: linear-gradient(90deg, rgba(245,99,42,0.1), transparent);
   border-left: 2px solid #f5632a;
-}
-
-.gw-sp-digit {
-  background: linear-gradient(180deg, #1a1a1a 0%, #0e0e0e 100%);
-  border: 1px solid rgba(245,99,42,0.1);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 2px 8px rgba(0,0,0,0.5);
 }
 
 @keyframes gw-sp-float {

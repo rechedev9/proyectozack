@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { getAllActiveGiveaways, getAllFinishedGiveaways, extractUniqueBrands } from '@/lib/queries/giveawaysHub';
 import { getAllCodes } from '@/lib/queries/creatorCodes';
 import { getTopWinners, getRecentWinners } from '@/lib/queries/giveawayWinners';
-import { getTalents } from '@/lib/queries/talents';
+import { getAllTalents } from '@/lib/queries/talents';
 import { GiveawaysHub } from './GiveawaysHub';
 import { StatsBar } from './StatsBar';
 
@@ -23,7 +23,7 @@ export default async function GiveawaysPage() {
     getAllActiveGiveaways(),
     getAllFinishedGiveaways(),
     getAllCodes(),
-    getTalents(),
+    getAllTalents(),
     getTopWinners(),
     getRecentWinners(),
   ]);
