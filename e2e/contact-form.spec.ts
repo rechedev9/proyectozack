@@ -16,7 +16,7 @@ test.describe('Contact form', () => {
     await submitBtn.click();
 
     // Expect at least one error to be visible
-    const errors = page.locator('#contacto [role="alert"], #contacto .text-red-500, #contacto [aria-invalid="true"]');
+    const errors = page.locator('#contacto [role="alert"], #contacto .text-red-400, #contacto [aria-invalid="true"]');
     await expect(errors.first()).toBeVisible({ timeout: 3000 });
   });
 
@@ -26,6 +26,7 @@ test.describe('Contact form', () => {
 
     await page.fill('#contacto input[name="name"]', 'Test User');
     await page.fill('#contacto input[name="email"]', 'test@example.com');
+    await page.selectOption('#contacto select[name="type"]', 'other');
     await page.fill('#contacto textarea[name="message"]', 'This is a test message from Playwright.');
 
     await page.locator('#contacto button[type="submit"]').click();
