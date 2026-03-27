@@ -12,7 +12,7 @@ import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 const SERVICES = [
   {
     id: 'brands',
-    label: '🎯 Soy una Marca',
+    label: 'Soy una Marca',
     title: 'Para marcas y anunciantes',
     steps: [
       'Selección del talento ideal para tu audiencia y objetivos.',
@@ -24,7 +24,7 @@ const SERVICES = [
   },
   {
     id: 'talents',
-    label: '🎮 Soy Creador',
+    label: 'Soy Creador',
     title: 'Para creadores de contenido',
     steps: [
       'Gestión de tu marca personal y posicionamiento.',
@@ -36,7 +36,7 @@ const SERVICES = [
   },
   {
     id: 'youtube',
-    label: '▶️ Gestión YouTube',
+    label: 'Gestión YouTube',
     title: 'Gestión integral de canal YouTube',
     steps: [
       'Auditoría y optimización SEO del canal.',
@@ -169,8 +169,15 @@ export function ServicesSection() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {ADVANTAGES.map(({ title, desc }, i) => (
             <FadeInOnScroll key={title} delay={i * 0.08}>
-              <div className="group rounded-2xl border border-sp-border bg-sp-off p-6 hover:-translate-y-1 transition-transform duration-300">
-                <h5 className="font-display text-base font-black uppercase text-sp-dark mb-2">{title}</h5>
+              <div className="group relative rounded-2xl border border-sp-border bg-sp-off p-6 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:bg-white hover:border-sp-orange/40 hover:shadow-[0_8px_32px_rgba(245,99,42,0.12)]">
+                {/* Gradient left accent bar */}
+                <div
+                  className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ background: 'linear-gradient(180deg,#f5632a 0%,#e03070 50%,#8b3aad 100%)' }}
+                />
+                <h5 className="font-display text-base font-black uppercase mb-2 text-sp-dark group-hover:text-sp-orange transition-colors duration-300">
+                  {title}
+                </h5>
                 <p className="text-sm text-sp-muted leading-relaxed">{desc}</p>
               </div>
             </FadeInOnScroll>

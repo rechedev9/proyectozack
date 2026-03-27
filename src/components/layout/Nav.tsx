@@ -63,7 +63,7 @@ export function Nav() {
               className="font-display font-black uppercase tracking-tight text-white leading-none"
               style={{ fontSize: '1.15rem', letterSpacing: '-0.02em' }}
             >
-              SOCIAL<span className="text-sp-muted2 font-light">PRO</span>
+              SOCIAL<span className="text-sp-orange">PRO</span>
             </span>
           </m.div>
         </Link>

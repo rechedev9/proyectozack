@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import * as m from 'motion/react-client';
 import { AnimatePresence } from 'motion/react';
+import { Target, Gamepad2 } from 'lucide-react';
 import { SectionTag } from '@/components/ui/SectionTag';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { GradientText } from '@/components/ui/GradientText';
@@ -60,12 +61,12 @@ const PLATFORM_OPTIONS = [
 
 const INFO_CARDS = [
   {
-    icon: '🎯',
+    Icon: Target,
     title: 'Para marcas',
     desc: 'Lanza campañas con los mejores creadores gaming. Selección, ejecución y resultados medibles.',
   },
   {
-    icon: '🎮',
+    Icon: Gamepad2,
     title: 'Para creadores',
     desc: 'Accede a colaboraciones premium, gestión de canal y desarrollo de marca personal.',
   },
@@ -122,12 +123,14 @@ export function ContactSection() {
           {/* Left — info cards */}
           <FadeInOnScroll delay={0.1}>
             <div className="space-y-4">
-              {INFO_CARDS.map(({ icon, title, desc }) => (
+              {INFO_CARDS.map(({ Icon, title, desc }) => (
                 <div
                   key={title}
                   className="rounded-2xl border border-white/10 bg-white/5 p-6"
                 >
-                  <div className="text-2xl mb-2">{icon}</div>
+                  <div className="mb-3">
+                    <Icon size={22} className="text-sp-orange" />
+                  </div>
                   <h3 className="font-bold text-white mb-1">{title}</h3>
                   <p className="text-sm text-sp-muted2 leading-relaxed">{desc}</p>
                 </div>
@@ -135,21 +138,19 @@ export function ContactSection() {
 
               {/* Contacto directo */}
               <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <h3 className="font-bold text-white mb-3">Contacto directo</h3>
-                <div className="space-y-2 text-sm text-sp-muted2">
-                  <p>
-                    <span className="text-white font-semibold">📞 </span>
-                    <a href="https://wa.me/34604868426" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                      +34 604 868 426
-                    </a>
-                  </p>
-                  <p>
-                    <span className="text-white font-semibold">✉️ </span>
-                    <a href="mailto:marketing@socialpro.es" className="hover:text-white transition-colors">
-                      marketing@socialpro.es
-                    </a>
-                  </p>
-                </div>
+                <h3 className="font-bold text-white mb-1">Respuesta garantizada en 24h</h3>
+                <p className="text-sm text-sp-muted2 mb-4 leading-relaxed">
+                  Nuestro equipo revisa cada solicitud personalmente. También puedes escribirnos directamente por WhatsApp usando el botón que aparece en la esquina inferior derecha.
+                </p>
+                <a
+                  href="mailto:marketing@socialpro.es"
+                  className="flex items-center gap-3 w-full px-5 py-3.5 rounded-xl font-semibold text-white text-sm border border-white/10 bg-white/5 hover:bg-white/10 transition-colors group"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-sp-orange flex-shrink-0">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                  </svg>
+                  marketing@socialpro.es
+                </a>
               </div>
             </div>
           </FadeInOnScroll>
@@ -159,7 +160,9 @@ export function ContactSection() {
             <div>
               {status === 'ok' ? (
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
-                  <div className="text-3xl mb-3">✅</div>
+                  <div className="w-12 h-12 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center mx-auto mb-3">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
                   <h3 className="font-bold text-white mb-2">¡Mensaje enviado!</h3>
                   <p className="text-sm text-sp-muted2">Te respondemos en menos de 24h.</p>
                 </div>
@@ -187,16 +190,7 @@ export function ContactSection() {
                     </div>
                   </div>
 
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className={labelClasses}>Teléfono</label>
-                      <input
-                        {...register('phone')}
-                        type="tel"
-                        placeholder="+34 600 000 000"
-                        className={inputClasses}
-                      />
-                    </div>
+                  <div>
                     <div>
                       <label className={labelClasses}>SOY… *</label>
                       <select {...register('type')} className={selectClasses}>
