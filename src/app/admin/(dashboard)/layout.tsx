@@ -16,10 +16,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   const session = await requireRole('admin', '/admin/login');
 
   return (
-    <div className="min-h-screen bg-sp-off flex overflow-x-hidden">
+    <div className="min-h-screen bg-sp-admin-bg flex overflow-x-hidden">
       <PortalSidebar
         title="SocialPro"
         subtitle="Admin Panel"
+        variant="dark"
         navItems={[
           { href: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
           { href: '/admin/talents', label: 'Roster', icon: <TalentIcon /> },

@@ -11,7 +11,7 @@ const PLATFORMS = [
   { key: 'twitch', label: 'TW', color: '#9146FF' },
   { key: 'x', label: 'X', color: '#1DA1F2' },
   { key: 'ig', label: 'IG', color: '#E1306C' },
-  { key: 'tt', label: 'TT', color: '#000000' },
+  { key: 'tt', label: 'TT', color: '#e8e8f0' },
   { key: 'kick', label: 'Kick', color: '#53FC18' },
 ] as const;
 
@@ -23,7 +23,7 @@ type SortState = { field: SortField; dir: SortDir };
 
 // ── Component ────────────────────────────────────────────────────────
 
-export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) {
+export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }): React.ReactElement {
   const [search, setSearch] = useState('');
   const [activePlatforms, setActivePlatforms] = useState<Set<string>>(new Set());
   const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'public' | 'internal'>('all');
@@ -50,14 +50,14 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
 
   const hasFilters = search || activePlatforms.size > 0 || visibilityFilter !== 'all' || gameFilter;
 
-  const clearAll = () => {
+  const clearAll = (): void => {
     setSearch('');
     setActivePlatforms(new Set());
     setVisibilityFilter('all');
     setGameFilter('');
   };
 
-  const togglePlatform = (key: string) => {
+  const togglePlatform = (key: string): void => {
     setActivePlatforms((prev) => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
@@ -137,7 +137,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
 
   // ── Sort toggle handler ────────────────────────────────────────────
 
-  const toggleSort = (field: SortField) => {
+  const toggleSort = (field: SortField): void => {
     setSort((prev) => {
       if (prev.field === field) {
         return { field, dir: prev.dir === 'desc' ? 'asc' : 'desc' };
@@ -148,7 +148,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
     });
   };
 
-  const sortIndicator = (field: SortField) => {
+  const sortIndicator = (field: SortField): string | null => {
     if (sort.field !== field) return null;
     return sort.dir === 'asc' ? ' ↑' : ' ↓';
   };
@@ -158,13 +158,13 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
   return (
     <div className="space-y-0">
       {/* ── Toolbar ─────────────────────────────────────────────────── */}
-      <div className="rounded-t-xl bg-white border border-sp-border border-b-0">
+      <div className="rounded-t-xl bg-sp-admin-card border border-sp-admin-border border-b-0">
         {/* Row 1: Search + filters + count */}
-        <div className="flex items-center gap-3 px-5 py-3 border-b border-sp-border/60 flex-wrap">
+        <div className="flex items-center gap-3 px-5 py-3 border-b border-sp-admin-border flex-wrap">
           {/* Search */}
           <div className="relative flex-1 min-w-[180px] max-w-xs">
             <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-sp-muted pointer-events-none"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-sp-admin-muted pointer-events-none"
               fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
             >
               <circle cx={11} cy={11} r={8} />
@@ -175,7 +175,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
               placeholder="Buscar creador..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-sp-off rounded-lg pl-9 pr-3 py-2 text-sm text-sp-dark placeholder:text-sp-muted/50 focus:outline-none focus:ring-1 focus:ring-sp-orange/40 transition-all"
+              className="w-full bg-sp-admin-bg rounded-lg pl-9 pr-3 py-2 text-sm text-sp-admin-text placeholder:text-sp-admin-muted/50 focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40 transition-all"
             />
           </div>
 
@@ -184,7 +184,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
             <select
               value={gameFilter}
               onChange={(e) => setGameFilter(e.target.value)}
-              className="rounded-lg bg-sp-off border-0 px-3 py-2 text-xs font-semibold text-sp-dark focus:outline-none focus:ring-1 focus:ring-sp-orange/40"
+              className="rounded-lg bg-sp-admin-bg border-0 px-3 py-2 text-xs font-semibold text-sp-admin-text focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40"
             >
               <option value="">Todos los juegos</option>
               {games.map((g) => (
@@ -194,21 +194,21 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
           )}
 
           {/* Visibility pills */}
-          <div className="flex items-center gap-1 border-l border-sp-border/60 pl-3">
+          <div className="flex items-center gap-1 border-l border-sp-admin-border pl-3">
             {(['all', 'public', 'internal'] as const).map((v) => {
               const active = visibilityFilter === v;
-              const label = v === 'all' ? 'Todos' : v === 'public' ? 'Público' : 'Interno';
+              const label = v === 'all' ? 'Todos' : v === 'public' ? 'Publico' : 'Interno';
               const count = v === 'all' ? creators.length : visCounts[v];
               return (
                 <button
                   key={v}
                   onClick={() => setVisibilityFilter(v)}
                   className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
-                    active ? 'bg-sp-dark text-white' : 'text-sp-muted hover:text-sp-dark'
+                    active ? 'bg-sp-admin-accent text-sp-admin-bg' : 'text-sp-admin-muted hover:text-sp-admin-text'
                   }`}
                 >
                   {label}
-                  <span className={`text-[10px] tabular-nums ${active ? 'text-white/50' : 'text-sp-muted/40'}`}>
+                  <span className={`text-[10px] tabular-nums ${active ? 'text-sp-admin-bg/50' : 'text-sp-admin-muted/40'}`}>
                     {count}
                   </span>
                 </button>
@@ -221,8 +221,8 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
             onClick={() => setShowGrowth((p) => !p)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-semibold border transition-all ${
               showGrowth
-                ? 'bg-sp-dark text-white border-sp-dark'
-                : 'bg-white text-sp-muted border-sp-border hover:text-sp-dark hover:border-sp-dark/30'
+                ? 'bg-sp-admin-accent text-sp-admin-bg border-sp-admin-accent'
+                : 'bg-sp-admin-card text-sp-admin-muted border-sp-admin-border hover:text-sp-admin-text hover:border-sp-admin-muted/30'
             }`}
           >
             +30d
@@ -230,13 +230,13 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
 
           {/* Count + clear */}
           <div className="flex items-center gap-2 ml-auto">
-            <span className="text-xs text-sp-muted tabular-nums">
-              <span className="font-bold text-sp-dark">{filtered.length}</span> de {creators.length}
+            <span className="text-xs text-sp-admin-muted tabular-nums">
+              <span className="font-bold text-sp-admin-text">{filtered.length}</span> de {creators.length}
             </span>
             {hasFilters && (
               <button
                 onClick={clearAll}
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-sp-orange hover:bg-sp-orange/10 transition-colors"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-sp-admin-accent hover:bg-sp-admin-accent/10 transition-colors"
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
@@ -248,8 +248,8 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
         </div>
 
         {/* Row 2: Platform filter */}
-        <div className="flex items-center gap-1.5 px-5 py-2.5 bg-sp-off/50">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-muted/60 mr-2 shrink-0">
+        <div className="flex items-center gap-1.5 px-5 py-2.5 bg-sp-admin-bg/50">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted/60 mr-2 shrink-0">
             Plataforma
           </span>
           {PLATFORMS.map((p) => {
@@ -262,7 +262,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
                 className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
                   active
                     ? 'text-white shadow-sm'
-                    : 'bg-white text-sp-dark border border-sp-border/60 hover:border-sp-dark/30'
+                    : 'bg-sp-admin-card text-sp-admin-text border border-sp-admin-border hover:border-sp-admin-muted/30'
                 }`}
                 style={active ? { backgroundColor: p.color } : undefined}
               >
@@ -271,7 +271,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
                   style={{ backgroundColor: active ? 'rgba(255,255,255,0.8)' : p.color }}
                 />
                 {p.label}
-                <span className={`text-[10px] ${active ? 'text-white/60' : 'text-sp-muted/50'}`}>
+                <span className={`text-[10px] ${active ? 'text-white/60' : 'text-sp-admin-muted/50'}`}>
                   {count}
                 </span>
               </button>
@@ -280,7 +280,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
           {activePlatforms.size > 0 && (
             <button
               onClick={() => setActivePlatforms(new Set())}
-              className="ml-1 text-[10px] font-semibold text-sp-muted hover:text-sp-orange transition-colors"
+              className="ml-1 text-[10px] font-semibold text-sp-admin-muted hover:text-sp-admin-accent transition-colors"
             >
               Todas
             </button>
@@ -289,10 +289,10 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
       </div>
 
       {/* ── Table ───────────────────────────────────────────────────── */}
-      <div className="rounded-b-xl border border-sp-border border-t-0 bg-white overflow-x-auto">
+      <div className="rounded-b-xl border border-sp-admin-border border-t-0 bg-sp-admin-card overflow-x-auto">
         <table className="w-full text-left text-sm min-w-[900px]">
           <thead>
-            <tr className="border-b border-sp-border bg-sp-off/50">
+            <tr className="border-b border-sp-admin-border bg-sp-admin-bg/50">
               <Th className="w-8 text-center">#</Th>
               <Th sortable field="name" sort={sort} onSort={toggleSort} indicator={sortIndicator}>
                 Creador
@@ -330,19 +330,19 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-sp-border/40">
+          <tbody className="divide-y divide-sp-admin-border/60">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={99} className="px-5 py-16 text-center text-sp-muted">
-                  Sin resultados para esta búsqueda
+                <td colSpan={99} className="px-5 py-16 text-center text-sp-admin-muted">
+                  Sin resultados para esta busqueda
                 </td>
               </tr>
             ) : (
               filtered.map((creator, i) => {
                 const total = totalFollowersForCreator(creator.socials);
                 return (
-                  <tr key={creator.id} className="transition-colors hover:bg-sp-orange/[0.03] group">
-                    <td className="px-3 py-2.5 text-center text-[11px] text-sp-muted tabular-nums">
+                  <tr key={creator.id} className="transition-colors hover:bg-sp-admin-hover group">
+                    <td className="px-3 py-2.5 text-center text-[11px] text-sp-admin-muted tabular-nums">
                       {i + 1}
                     </td>
                     <td className="px-4 py-2.5">
@@ -355,21 +355,21 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
                         >
                           {creator.initials}
                         </div>
-                        <span className="font-semibold text-sp-dark text-[13px] group-hover:text-sp-orange transition-colors">
+                        <span className="font-semibold text-sp-admin-text text-[13px] group-hover:text-sp-admin-accent transition-colors">
                           {creator.name}
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-sp-muted">
+                    <td className="px-4 py-2.5 text-xs text-sp-admin-muted">
                       {creator.game ?? '--'}
                     </td>
                     <td className="px-3 py-2.5 text-center">
                       {creator.visibility === 'public' ? (
-                        <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 text-emerald-600">
+                        <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-900/30 text-emerald-400">
                           PUB
                         </span>
                       ) : (
-                        <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold bg-sp-off text-sp-muted/60">
+                        <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold bg-sp-admin-border text-sp-admin-muted">
                           INT
                         </span>
                       )}
@@ -378,13 +378,13 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
                       const social = creator.socials.find((s) => s.platform === p.key);
                       if (!social) {
                         return (
-                          <td key={p.key} className="px-3 py-2.5 text-center text-[11px] text-sp-muted/25 tabular-nums">
+                          <td key={p.key} className="px-3 py-2.5 text-center text-[11px] text-sp-admin-muted/25 tabular-nums">
                             --
                           </td>
                         );
                       }
                       return (
-                        <td key={p.key} className="px-3 py-2.5 text-center text-[11px] font-medium text-sp-dark tabular-nums">
+                        <td key={p.key} className="px-3 py-2.5 text-center text-[11px] font-medium text-sp-admin-text tabular-nums">
                           {social.profileUrl ? (
                             <a
                               href={social.profileUrl}
@@ -401,7 +401,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }) 
                         </td>
                       );
                     })}
-                    <td className="px-4 py-2.5 text-right text-[11px] font-bold text-sp-dark tabular-nums">
+                    <td className="px-4 py-2.5 text-right text-[11px] font-bold text-sp-admin-text tabular-nums">
                       {total > 0 ? formatCompact(total) : '--'}
                     </td>
                     {showGrowth && (
@@ -430,15 +430,15 @@ function getFollowersForPlatform(creator: AdminRosterRow, platformKey: string): 
 }
 
 function getGrowthPct(growth: GrowthData[], platform: string): number | null {
-  const g = growth.find((g) => g.platform === platform);
+  const g = growth.find((item) => item.platform === platform);
   return g?.growthPct ?? null;
 }
 
-function GrowthCell({ growth, platform }: { growth: GrowthData[]; platform: string }) {
+function GrowthCell({ growth, platform }: { growth: GrowthData[]; platform: string }): React.ReactElement {
   const g = growth.find((item) => item.platform === platform);
   if (!g || g.growthPct === null) {
     return (
-      <td className="px-3 py-2.5 text-center text-[11px] text-sp-muted/25 tabular-nums">--</td>
+      <td className="px-3 py-2.5 text-center text-[11px] text-sp-admin-muted/25 tabular-nums">--</td>
     );
   }
   const positive = g.growthPct > 0;
@@ -446,7 +446,7 @@ function GrowthCell({ growth, platform }: { growth: GrowthData[]; platform: stri
   return (
     <td
       className={`px-3 py-2.5 text-center text-[11px] font-semibold tabular-nums ${
-        neutral ? 'text-sp-muted' : positive ? 'text-emerald-600' : 'text-red-500'
+        neutral ? 'text-sp-admin-muted' : positive ? 'text-emerald-400' : 'text-red-400'
       }`}
     >
       {positive ? '+' : ''}{g.growthPct.toFixed(1)}%
@@ -467,8 +467,8 @@ type ThProps = {
   indicator?: (field: SortField) => string | null;
 };
 
-function Th({ children, className = '', style, sortable, field, sort, onSort, indicator }: ThProps) {
-  const base = `px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-muted whitespace-nowrap ${className}`;
+function Th({ children, className = '', style, sortable, field, sort, onSort, indicator }: ThProps): React.ReactElement {
+  const base = `px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted whitespace-nowrap ${className}`;
 
   if (!sortable || !field || !onSort) {
     return <th className={base} style={style}>{children}</th>;
@@ -482,11 +482,11 @@ function Th({ children, className = '', style, sortable, field, sort, onSort, in
       <button
         onClick={() => onSort(field)}
         className={`inline-flex items-center gap-0.5 transition-colors ${
-          isActive ? 'text-sp-dark' : 'hover:text-sp-dark'
+          isActive ? 'text-sp-admin-text' : 'hover:text-sp-admin-text'
         }`}
       >
         {children}
-        {arrow && <span className="text-sp-orange">{arrow}</span>}
+        {arrow && <span className="text-sp-admin-accent">{arrow}</span>}
       </button>
     </th>
   );

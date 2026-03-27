@@ -12,7 +12,7 @@ type GrowthReportProps = {
   snapshots: TalentMetricSnapshot[];
 }
 
-export function GrowthReport({ talentName, talentPhoto, from, to, snapshots }: GrowthReportProps) {
+export function GrowthReport({ talentName, talentPhoto, from, to, snapshots }: GrowthReportProps): React.ReactElement {
   // Group by platform
   const byPlatform = new Map<string, TalentMetricSnapshot[]>();
   for (const s of snapshots) {
@@ -49,8 +49,8 @@ export function GrowthReport({ talentName, talentPhoto, from, to, snapshots }: G
       <div className="flex items-center gap-6 mb-8 print:mb-6">
         <div>
           <div className="font-display text-sm font-bold uppercase gradient-text mb-1">SocialPro</div>
-          <div className="font-display text-3xl font-black uppercase text-sp-dark">{talentName}</div>
-          <div className="text-sm text-sp-muted mt-1">
+          <div className="font-display text-3xl font-black uppercase text-sp-admin-text">{talentName}</div>
+          <div className="text-sm text-sp-admin-muted mt-1">
             Growth Report: {fromFormatted} &mdash; {toFormatted}
           </div>
         </div>
@@ -58,7 +58,7 @@ export function GrowthReport({ talentName, talentPhoto, from, to, snapshots }: G
           <img
             src={talentPhoto}
             alt={talentName}
-            className="w-16 h-16 rounded-full object-cover border-2 border-sp-border"
+            className="w-16 h-16 rounded-full object-cover border-2 border-sp-admin-border"
           />
         )}
       </div>
@@ -66,22 +66,22 @@ export function GrowthReport({ talentName, talentPhoto, from, to, snapshots }: G
       {/* Per-platform sections */}
       {platforms.map(({ platform, label, first, last, days, pct, chartData }) => (
         <div key={platform} className="mb-10 print:mb-8">
-          <h2 className="font-display text-xl font-bold uppercase text-sp-dark mb-4">{label}</h2>
+          <h2 className="font-display text-xl font-bold uppercase text-sp-admin-text mb-4">{label}</h2>
 
           {/* Stats row */}
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="rounded-xl bg-sp-off p-4">
-              <div className="text-xs text-sp-muted">Start</div>
-              <div className="font-display text-2xl font-black text-sp-dark">{formatCompact(first.value)}</div>
+            <div className="rounded-xl bg-sp-admin-card border border-sp-admin-border p-4">
+              <div className="text-xs text-sp-admin-muted">Start</div>
+              <div className="font-display text-2xl font-black text-sp-admin-text">{formatCompact(first.value)}</div>
             </div>
-            <div className="rounded-xl bg-sp-off p-4">
-              <div className="text-xs text-sp-muted">Current</div>
-              <div className="font-display text-2xl font-black text-sp-dark">{formatCompact(last.value)}</div>
+            <div className="rounded-xl bg-sp-admin-card border border-sp-admin-border p-4">
+              <div className="text-xs text-sp-admin-muted">Current</div>
+              <div className="font-display text-2xl font-black text-sp-admin-text">{formatCompact(last.value)}</div>
             </div>
-            <div className="rounded-xl bg-sp-off p-4">
-              <div className="text-xs text-sp-muted">Growth</div>
+            <div className="rounded-xl bg-sp-admin-card border border-sp-admin-border p-4">
+              <div className="text-xs text-sp-admin-muted">Growth</div>
               <div className={`font-display text-2xl font-black ${
-                (pct ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'
+                (pct ?? 0) >= 0 ? 'text-emerald-400' : 'text-red-400'
               }`}>
                 {pct !== null ? `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%` : `+${formatCompact(last.value - first.value)}`}
               </div>
@@ -89,7 +89,7 @@ export function GrowthReport({ talentName, talentPhoto, from, to, snapshots }: G
           </div>
 
           {/* Chart */}
-          <div className="rounded-xl border border-sp-border p-4 bg-white print:border-0">
+          <div className="rounded-xl border border-sp-admin-border p-4 bg-sp-admin-card print:border-0">
             <MetricsChart
               data={chartData}
               lines={[{
@@ -102,7 +102,7 @@ export function GrowthReport({ talentName, talentPhoto, from, to, snapshots }: G
           </div>
 
           {/* Summary sentence */}
-          <p className="text-sm text-sp-muted mt-3">
+          <p className="text-sm text-sp-admin-muted mt-3">
             {label} grew from {formatCompact(first.value)} to {formatCompact(last.value)}
             {pct !== null ? ` (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)` : ''} in {days} days.
           </p>
@@ -110,7 +110,7 @@ export function GrowthReport({ talentName, talentPhoto, from, to, snapshots }: G
       ))}
 
       {/* Footer */}
-      <div className="border-t border-sp-border pt-4 mt-8 text-xs text-sp-muted print:mt-4">
+      <div className="border-t border-sp-admin-border pt-4 mt-8 text-xs text-sp-admin-muted print:mt-4">
         Generated by SocialPro on {new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
       </div>
     </div>

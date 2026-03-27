@@ -1,7 +1,7 @@
 import { getAdminRosterWithGrowth } from '@/lib/queries/talents';
 import { RosterSpreadsheet } from './RosterSpreadsheet';
 
-export default async function AdminTalentsPage() {
+export default async function AdminTalentsPage(): Promise<React.ReactElement> {
   const creators = await getAdminRosterWithGrowth();
 
   const platformSet = new Set<string>();
@@ -12,8 +12,8 @@ export default async function AdminTalentsPage() {
     <div>
       {/* Compact header */}
       <div className="flex items-baseline gap-4 mb-6">
-        <h1 className="font-display text-3xl font-black uppercase text-sp-dark">Roster</h1>
-        <span className="text-xs text-sp-muted tabular-nums">
+        <h1 className="font-display text-3xl font-black uppercase text-sp-admin-text">Roster</h1>
+        <span className="text-xs text-sp-admin-muted tabular-nums">
           {creators.length} creadores · {platformSet.size} plataformas
         </span>
       </div>

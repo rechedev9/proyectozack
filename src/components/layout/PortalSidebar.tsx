@@ -16,13 +16,22 @@ type PortalSidebarProps = {
   navItems: NavItem[];
   userEmail: string;
   logoutHref: string;
+  variant?: 'light' | 'dark';
 }
 
-export function PortalSidebar({ title, subtitle, navItems, userEmail, logoutHref }: PortalSidebarProps) {
+export function PortalSidebar({
+  title,
+  subtitle,
+  navItems,
+  userEmail,
+  logoutHref,
+  variant = 'light',
+}: PortalSidebarProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const dark = variant === 'dark';
 
-  function isActive(href: string) {
+  function isActive(href: string): boolean {
     if (href === '/admin' || href === '/marcas') return pathname === href;
     return pathname.startsWith(href);
   }
@@ -30,14 +39,18 @@ export function PortalSidebar({ title, subtitle, navItems, userEmail, logoutHref
   return (
     <>
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between bg-white px-4 h-14 border-b border-sp-border">
+      <div className={`md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 h-14 border-b ${
+        dark
+          ? 'bg-sp-admin-sidebar border-sp-admin-border'
+          : 'bg-white border-sp-border'
+      }`}>
         <Link href="/" className="font-display text-lg font-black uppercase gradient-text">
           {title}
         </Link>
         <button
           onClick={() => setOpen(!open)}
-          className="text-sp-dark p-2"
-          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+          className={`p-2 ${dark ? 'text-sp-admin-text' : 'text-sp-dark'}`}
+          aria-label={open ? 'Cerrar menu' : 'Abrir menu'}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             {open ? (
@@ -59,22 +72,26 @@ export function PortalSidebar({ title, subtitle, navItems, userEmail, logoutHref
       {/* Backdrop */}
       {open && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-black/20"
+          className="md:hidden fixed inset-0 z-40 bg-black/40"
           onClick={() => setOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <nav className={`
-        fixed md:static z-50 top-0 left-0 h-full w-56 bg-white border-r border-sp-border flex flex-col shrink-0
+        fixed md:static z-50 top-0 left-0 h-full w-56 flex flex-col shrink-0
         transition-transform duration-200 ease-out
         ${open ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+        ${dark
+          ? 'bg-sp-admin-sidebar border-r border-sp-admin-border'
+          : 'bg-white border-r border-sp-border'
+        }
       `}>
-        <div className="p-6 border-b border-sp-border/60">
+        <div className={`p-6 border-b ${dark ? 'border-sp-admin-border' : 'border-sp-border/60'}`}>
           <Link href="/" className="font-display text-xl font-black uppercase gradient-text hover:opacity-80 transition-opacity">
             {title}
           </Link>
-          <p className="text-[11px] text-sp-muted mt-1">{subtitle}</p>
+          <p className={`text-[11px] mt-1 ${dark ? 'text-sp-admin-muted' : 'text-sp-muted'}`}>{subtitle}</p>
         </div>
         <div className="flex-1 p-3 space-y-0.5 mt-2">
           {navItems.map(({ href, label, icon }) => {
@@ -85,27 +102,43 @@ export function PortalSidebar({ title, subtitle, navItems, userEmail, logoutHref
                 href={href}
                 onClick={() => setOpen(false)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
-                  active
-                    ? 'bg-sp-off text-sp-dark'
-                    : 'text-sp-muted hover:text-sp-dark hover:bg-sp-off/60'
+                  dark
+                    ? active
+                      ? 'bg-sp-admin-accent/10 text-sp-admin-accent'
+                      : 'text-sp-admin-muted hover:text-sp-admin-text hover:bg-sp-admin-hover'
+                    : active
+                      ? 'bg-sp-off text-sp-dark'
+                      : 'text-sp-muted hover:text-sp-dark hover:bg-sp-off/60'
                 }`}
               >
-                {icon && <span className="w-5 h-5 shrink-0 text-sp-muted">{icon}</span>}
+                {icon && (
+                  <span className={`w-5 h-5 shrink-0 ${
+                    dark
+                      ? active ? 'text-sp-admin-accent' : 'text-sp-admin-muted'
+                      : 'text-sp-muted'
+                  }`}>{icon}</span>
+                )}
                 {label}
                 {active && (
-                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-sp-orange" />
+                  <span className={`ml-auto w-1.5 h-1.5 rounded-full ${
+                    dark ? 'bg-sp-admin-accent' : 'bg-sp-orange'
+                  }`} />
                 )}
               </Link>
             );
           })}
         </div>
-        <div className="p-4 border-t border-sp-border/60">
-          <p className="text-[11px] text-sp-muted truncate">{userEmail}</p>
+        <div className={`p-4 border-t ${dark ? 'border-sp-admin-border' : 'border-sp-border/60'}`}>
+          <p className={`text-[11px] truncate ${dark ? 'text-sp-admin-muted' : 'text-sp-muted'}`}>{userEmail}</p>
           <Link
             href={logoutHref}
-            className="mt-1.5 block text-[11px] text-sp-muted hover:text-sp-dark transition-colors"
+            className={`mt-1.5 block text-[11px] transition-colors ${
+              dark
+                ? 'text-sp-admin-muted hover:text-sp-admin-text'
+                : 'text-sp-muted hover:text-sp-dark'
+            }`}
           >
-            Cerrar sesión
+            Cerrar sesion
           </Link>
         </div>
       </nav>
