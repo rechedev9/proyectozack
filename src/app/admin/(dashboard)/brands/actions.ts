@@ -9,7 +9,7 @@ import { env } from '@/lib/env';
 import { auth } from '@/lib/auth';
 import { requireRole } from '@/lib/auth-guard';
 
-interface InviteState {
+type InviteState = {
   error?: string;
   success?: boolean;
 }
@@ -25,7 +25,7 @@ export async function inviteBrandAction(_prev: InviteState, formData: FormData):
 
   // Check if email already exists
   const existing = await db.select({ id: userTable.id }).from(userTable).where(eq(userTable.email, email));
-  if (existing.length > 0) return { error: 'Este email ya esta registrado' };
+  if (existing.length > 0) return { error: 'Este email ya está registrado' };
 
   // Generate a random temp password (brand will set their own via invite link)
   const tempPassword = crypto.randomUUID();
