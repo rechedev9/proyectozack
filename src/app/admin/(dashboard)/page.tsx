@@ -5,6 +5,7 @@ import {
   getRecentContacts,
 } from '@/lib/queries/dashboard';
 import { formatCompact } from '@/lib/format';
+import { platformMatchesKey, SOCIAL_PLATFORMS } from '@/lib/platform';
 import {
   TalentIcon,
   BrandIcon,
@@ -19,15 +20,6 @@ import {
 
 import type { ReactElement, ReactNode } from 'react';
 
-const PLATFORM_ORDER = [
-  { key: 'yt', label: 'YT', color: '#FF0000' },
-  { key: 'twitch', label: 'TW', color: '#9146FF' },
-  { key: 'x', label: 'X', color: '#1DA1F2' },
-  { key: 'ig', label: 'IG', color: '#E1306C' },
-  { key: 'tt', label: 'TT', color: '#e8e8f0' },
-  { key: 'kick', label: 'Kick', color: '#53FC18' },
-] as const;
-
 // ── Stat card config ─────────────────────────────────────────────────
 
 type StatCard = {
@@ -41,7 +33,7 @@ type StatCard = {
 function buildStatCards(stats: Awaited<ReturnType<typeof getAdminDashboardStats>>): StatCard[] {
   return [
     { label: 'Creadores', value: stats.talentCount, href: '/admin/talents', icon: <TalentIcon />, accent: '#53fc18' },
-    { label: 'Publico', value: stats.publicCount, href: '/admin/talents', icon: <UsersIcon />, accent: '#53fc18' },
+    { label: 'Público', value: stats.publicCount, href: '/admin/talents', icon: <UsersIcon />, accent: '#53fc18' },
     { label: 'Interno', value: stats.internalCount, href: '/admin/talents', icon: <UsersIcon />, accent: '#7a7a9a' },
     { label: 'Agencia', value: stats.agencyCount, href: '/admin/talents', icon: <AgencyIcon />, accent: '#9146FF' },
     { label: 'Marcas', value: stats.activeBrandCount, href: '/admin/brands', icon: <BrandIcon />, accent: '#1DA1F2' },
@@ -71,23 +63,23 @@ export default async function AdminDashboardPage(): Promise<ReactElement> {
       </div>
 
       {/* ── Stat cards ──────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-        {statCards.map(({ label, value, href, icon, accent }) => (
-          <Link
-            key={label}
-            href={href}
-            className="rounded-xl bg-sp-admin-card border border-sp-admin-border px-4 py-3 hover:bg-sp-admin-hover transition-colors group"
-          >
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="w-4 h-4 shrink-0" style={{ color: accent }}>{icon}</span>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-sp-admin-muted group-hover:text-sp-admin-text transition-colors truncate">
-                {label}
-              </span>
-            </div>
-            <div className="font-display text-2xl font-black text-sp-admin-text tabular-nums">{value}</div>
-          </Link>
-        ))}
-      </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+          {statCards.map(({ label, value, href, icon, accent }) => (
+            <Link
+              key={label}
+              href={href}
+              className="rounded-xl bg-sp-admin-card border border-sp-admin-border px-4 py-3 hover:bg-sp-admin-hover transition-colors group"
+            >
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="w-4 h-4 shrink-0" style={{ color: accent }}>{icon}</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-sp-admin-muted group-hover:text-sp-admin-text transition-colors truncate">
+                  {label}
+                </span>
+              </div>
+              <div className="font-display text-2xl font-black text-sp-admin-text tabular-nums">{formatCompact(value)}</div>
+            </Link>
+          ))}
+        </div>
 
       {/* ── Followers por plataforma — full width ───────────────────── */}
       <section className="rounded-xl bg-sp-admin-card border border-sp-admin-border">
@@ -98,7 +90,7 @@ export default async function AdminDashboardPage(): Promise<ReactElement> {
           </h2>
         </div>
         <div className="grid grid-cols-3 sm:grid-cols-6 divide-x divide-sp-admin-border">
-          {PLATFORM_ORDER.map((p) => {
+          {SOCIAL_PLATFORMS.map((p) => {
             const count = stats.followersByPlatform[p.key] ?? 0;
             return (
               <div key={p.key} className="px-4 py-4 text-center">
@@ -174,8 +166,8 @@ export default async function AdminDashboardPage(): Promise<ReactElement> {
               <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-sp-admin-border/30 flex items-center justify-center">
                 <span className="w-5 h-5 text-sp-admin-muted"><ContactIcon /></span>
               </div>
-              <p className="text-sm font-medium text-sp-admin-muted">Sin contactos todavia</p>
-              <p className="text-[11px] text-sp-admin-muted/60 mt-1">Los nuevos contactos del formulario apareceran aqui</p>
+              <p className="text-sm font-medium text-sp-admin-muted">Sin contactos todavía</p>
+              <p className="text-[11px] text-sp-admin-muted/60 mt-1">Los nuevos contactos del formulario aparecerán aquí</p>
             </div>
           ) : (
             <div className="divide-y divide-sp-admin-border">
@@ -222,7 +214,7 @@ export default async function AdminDashboardPage(): Promise<ReactElement> {
               <tr className="border-b border-sp-admin-border bg-sp-admin-bg/50">
                 <th className="px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-sp-admin-muted w-8">#</th>
                 <th className="px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-sp-admin-muted">Creador</th>
-                {PLATFORM_ORDER.map((p) => (
+                {SOCIAL_PLATFORMS.map((p) => (
                   <th
                     key={p.key}
                     className="px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-center w-16"
@@ -239,8 +231,8 @@ export default async function AdminDashboardPage(): Promise<ReactElement> {
                 <tr key={creator.slug} className="hover:bg-sp-admin-hover transition-colors">
                   <td className="px-5 py-2.5 text-xs text-sp-admin-muted tabular-nums">{i + 1}</td>
                   <td className="px-5 py-2.5 font-semibold text-sp-admin-text text-[13px]">{creator.name}</td>
-                  {PLATFORM_ORDER.map((p) => {
-                    const social = creator.socials.find((s) => s.platform === p.key);
+                  {SOCIAL_PLATFORMS.map((p) => {
+                    const social = creator.socials.find((s) => platformMatchesKey(s.platform, p.key));
                     return (
                       <td key={p.key} className="px-3 py-2.5 text-center text-xs tabular-nums text-sp-admin-text">
                         {social ? social.followersDisplay : <span className="text-sp-admin-muted/30">--</span>}

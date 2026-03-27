@@ -7,7 +7,7 @@ export default async function AdminCasesPage(): Promise<React.ReactElement> {
 
   return (
     <div>
-      <h1 className="font-display text-4xl font-black uppercase text-sp-admin-text mb-8">Casos de exito</h1>
+      <h1 className="font-display text-4xl font-black uppercase text-sp-admin-text mb-8">Casos de éxito</h1>
       <div className="space-y-3">
         {cases.map((c) => (
           <div

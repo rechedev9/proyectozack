@@ -7,6 +7,7 @@ import {
   giveaways,
   user,
 } from '@/db/schema';
+import { getSocialPlatformKey } from '@/lib/platform';
 import { countAgencyCreators } from './agencyCreators';
 import { getAllTalents } from './talents';
 import { parseFollowers, formatCompact, totalFollowersForCreator } from '@/lib/format';
@@ -52,8 +53,9 @@ export async function getAdminDashboardStats(): Promise<DashboardStats> {
   const followersByPlatform: Record<string, number> = {};
   for (const t of allTalents) {
     for (const s of t.socials) {
+      const key = getSocialPlatformKey(s.platform) ?? s.platform;
       const parsed = parseFollowers(s.followersDisplay);
-      followersByPlatform[s.platform] = (followersByPlatform[s.platform] ?? 0) + parsed;
+      followersByPlatform[key] = (followersByPlatform[key] ?? 0) + parsed;
     }
   }
 

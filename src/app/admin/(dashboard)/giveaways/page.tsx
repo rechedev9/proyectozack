@@ -72,7 +72,7 @@ export default async function AdminGiveawaysPage({ searchParams }: PageProps): P
             </select>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-sp-admin-muted mb-1">Titulo del premio</label>
+            <label className="block text-sm font-semibold text-sp-admin-muted mb-1">Título del premio</label>
             <input name="title" required maxLength={200} className="w-full rounded-lg border border-sp-admin-border bg-sp-admin-bg px-3 py-2 text-sm text-sp-admin-text" />
           </div>
           <div>
@@ -96,7 +96,7 @@ export default async function AdminGiveawaysPage({ searchParams }: PageProps): P
             <input name="brandLogo" type="url" className="w-full rounded-lg border border-sp-admin-border bg-sp-admin-bg px-3 py-2 text-sm text-sp-admin-text" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-sp-admin-muted mb-1">Descripcion</label>
+            <label className="block text-sm font-semibold text-sp-admin-muted mb-1">Descripción</label>
             <input name="description" className="w-full rounded-lg border border-sp-admin-border bg-sp-admin-bg px-3 py-2 text-sm text-sp-admin-text" />
           </div>
           <div>
@@ -174,11 +174,11 @@ export default async function AdminGiveawaysPage({ searchParams }: PageProps): P
       )}
 
       {/* Codes section */}
-      <h1 className="font-display text-4xl font-black uppercase text-sp-admin-text mb-8 mt-16">Codigos de Creadores</h1>
+      <h1 className="font-display text-4xl font-black uppercase text-sp-admin-text mb-8 mt-16">Códigos de Creadores</h1>
 
       {/* Create code form */}
       <div className="rounded-2xl bg-sp-admin-card border border-sp-admin-border p-6 mb-8">
-        <h2 className="font-display text-lg font-bold uppercase text-sp-admin-text mb-4">Crear Codigo</h2>
+        <h2 className="font-display text-lg font-bold uppercase text-sp-admin-text mb-4">Crear Código</h2>
         <form action={createCodeAction} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-sp-admin-muted mb-1">Creador</label>
@@ -190,7 +190,7 @@ export default async function AdminGiveawaysPage({ searchParams }: PageProps): P
             </select>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-sp-admin-muted mb-1">Codigo</label>
+            <label className="block text-sm font-semibold text-sp-admin-muted mb-1">Código</label>
             <input name="code" required maxLength={100} placeholder="TODOCS2" className="w-full rounded-lg border border-sp-admin-border bg-sp-admin-bg px-3 py-2 text-sm text-sp-admin-text placeholder:text-sp-admin-muted/40" />
           </div>
           <div>
@@ -198,7 +198,7 @@ export default async function AdminGiveawaysPage({ searchParams }: PageProps): P
             <input name="brandName" required maxLength={150} className="w-full rounded-lg border border-sp-admin-border bg-sp-admin-bg px-3 py-2 text-sm text-sp-admin-text" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-sp-admin-muted mb-1">URL de redireccion</label>
+            <label className="block text-sm font-semibold text-sp-admin-muted mb-1">URL de redirección</label>
             <input name="redirectUrl" type="url" required className="w-full rounded-lg border border-sp-admin-border bg-sp-admin-bg px-3 py-2 text-sm text-sp-admin-text" />
           </div>
           <div>
@@ -206,12 +206,12 @@ export default async function AdminGiveawaysPage({ searchParams }: PageProps): P
             <input name="brandLogo" type="url" className="w-full rounded-lg border border-sp-admin-border bg-sp-admin-bg px-3 py-2 text-sm text-sp-admin-text" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-sp-admin-muted mb-1">Descripcion</label>
+            <label className="block text-sm font-semibold text-sp-admin-muted mb-1">Descripción</label>
             <input name="description" maxLength={300} className="w-full rounded-lg border border-sp-admin-border bg-sp-admin-bg px-3 py-2 text-sm text-sp-admin-text" />
           </div>
           <div className="md:col-span-2">
             <button type="submit" className="px-6 py-2 rounded-lg bg-sp-admin-accent text-sp-admin-bg text-sm font-bold hover:opacity-90 transition-opacity">
-              Crear Codigo
+              Crear Código
             </button>
           </div>
         </form>
@@ -219,13 +219,13 @@ export default async function AdminGiveawaysPage({ searchParams }: PageProps): P
 
       {/* Codes list */}
       {allCodes.length === 0 ? (
-        <p className="text-sm text-sp-admin-muted">No hay codigos. Crea el primero.</p>
+        <p className="text-sm text-sp-admin-muted">No hay códigos. Crea el primero.</p>
       ) : (
         <div className="rounded-2xl bg-sp-admin-card border border-sp-admin-border overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-sp-admin-border bg-sp-admin-bg/50">
-                <th className="text-left px-6 py-3 font-semibold text-sp-admin-muted text-[11px] uppercase tracking-wider">Codigo</th>
+                <th className="text-left px-6 py-3 font-semibold text-sp-admin-muted text-[11px] uppercase tracking-wider">Código</th>
                 <th className="text-left px-6 py-3 font-semibold text-sp-admin-muted text-[11px] uppercase tracking-wider">Creador</th>
                 <th className="text-left px-6 py-3 font-semibold text-sp-admin-muted text-[11px] uppercase tracking-wider">Marca</th>
                 <th className="text-left px-6 py-3 font-semibold text-sp-admin-muted text-[11px] uppercase tracking-wider">URL</th>

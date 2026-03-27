@@ -3,17 +3,9 @@
 import { useState, useMemo } from 'react';
 import type { AdminRosterRow, GrowthData } from '@/lib/queries/talents';
 import { parseFollowers, formatCompact, totalFollowersForCreator } from '@/lib/format';
+import { platformMatchesKey, SOCIAL_PLATFORMS } from '@/lib/platform';
 
 // ── Platform config ──────────────────────────────────────────────────
-
-const PLATFORMS = [
-  { key: 'yt', label: 'YT', color: '#FF0000' },
-  { key: 'twitch', label: 'TW', color: '#9146FF' },
-  { key: 'x', label: 'X', color: '#1DA1F2' },
-  { key: 'ig', label: 'IG', color: '#E1306C' },
-  { key: 'tt', label: 'TT', color: '#e8e8f0' },
-  { key: 'kick', label: 'Kick', color: '#53FC18' },
-] as const;
 
 // ── Sort types ───────────────────────────────────────────────────────
 
@@ -84,11 +76,11 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
 
     // Multi-platform: creator must have ALL selected platforms
     if (activePlatforms.size > 0)
-      result = result.filter((c) =>
-        [...activePlatforms].every((pKey) =>
-          c.socials.some((s) => s.platform === pKey),
-        ),
-      );
+        result = result.filter((c) =>
+          [...activePlatforms].every((pKey) =>
+            c.socials.some((s) => platformMatchesKey(s.platform, pKey)),
+          ),
+        );
 
     // Sort
     result = [...result].sort((a, b) => {
@@ -197,7 +189,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
           <div className="flex items-center gap-1 border-l border-sp-admin-border pl-3">
             {(['all', 'public', 'internal'] as const).map((v) => {
               const active = visibilityFilter === v;
-              const label = v === 'all' ? 'Todos' : v === 'public' ? 'Publico' : 'Interno';
+              const label = v === 'all' ? 'Todos' : v === 'public' ? 'Público' : 'Interno';
               const count = v === 'all' ? creators.length : visCounts[v];
               return (
                 <button
@@ -252,8 +244,8 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
           <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted/60 mr-2 shrink-0">
             Plataforma
           </span>
-          {PLATFORMS.map((p) => {
-            const count = creators.filter((c) => c.socials.some((s) => s.platform === p.key)).length;
+          {SOCIAL_PLATFORMS.map((p) => {
+            const count = creators.filter((c) => c.socials.some((s) => platformMatchesKey(s.platform, p.key))).length;
             const active = activePlatforms.has(p.key);
             return (
               <button
@@ -301,7 +293,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
                 Juego
               </Th>
               <Th className="w-14 text-center">Vis.</Th>
-              {PLATFORMS.map((p) => (
+              {SOCIAL_PLATFORMS.map((p) => (
                 <Th
                   key={p.key}
                   sortable
@@ -334,7 +326,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
             {filtered.length === 0 ? (
               <tr>
                 <td colSpan={99} className="px-5 py-16 text-center text-sp-admin-muted">
-                  Sin resultados para esta busqueda
+                  Sin resultados para esta búsqueda
                 </td>
               </tr>
             ) : (
@@ -374,8 +366,8 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
                         </span>
                       )}
                     </td>
-                    {PLATFORMS.map((p) => {
-                      const social = creator.socials.find((s) => s.platform === p.key);
+                    {SOCIAL_PLATFORMS.map((p) => {
+                      const social = creator.socials.find((s) => platformMatchesKey(s.platform, p.key));
                       if (!social) {
                         return (
                           <td key={p.key} className="px-3 py-2.5 text-center text-[11px] text-sp-admin-muted/25 tabular-nums">
@@ -424,7 +416,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
 // ── Helpers ──────────────────────────────────────────────────────────
 
 function getFollowersForPlatform(creator: AdminRosterRow, platformKey: string): number {
-  const social = creator.socials.find((s) => s.platform === platformKey);
+  const social = creator.socials.find((s) => platformMatchesKey(s.platform, platformKey));
   if (!social) return 0;
   return parseFollowers(social.followersDisplay);
 }

@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { motion } from 'motion/react';
+import { normalizePlatform } from '@/lib/platform';
 import type { TalentWithRelations } from '@/types';
 
 type CreatorHeroProps = {
@@ -18,7 +19,7 @@ const socialIcons: Record<string, string> = {
 };
 
 function SocialButton({ platform, url, color }: { platform: string; url: string; color: string }) {
-  const path = socialIcons[platform.toLowerCase()];
+  const path = socialIcons[normalizePlatform(platform) ?? ''];
   if (!path) return null;
 
   return (

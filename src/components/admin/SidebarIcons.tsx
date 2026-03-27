@@ -53,7 +53,7 @@ export function GiveawayIcon() {
   return (
     <svg {...s}>
       <path d="M10 2a2 2 0 0 1 4 0v2h3a2 2 0 0 1 2 2v2H5V6a2 2 0 0 1 2-2h3V2z" />
-      <rect x="4" y="8" width="16" height="10" rx="2" />
+      <rect x="5" y="8" width="14" height="10" rx="2" />
       <path d="M12 8v10" />
     </svg>
   );
@@ -95,7 +95,7 @@ export function UsersIcon() {
       <circle cx="7" cy="7" r="2.5" />
       <circle cx="14" cy="7" r="2.5" />
       <path d="M2 17c0-2.8 2.2-5 5-5s5 2.2 5 5" />
-      <path d="M12 14.5c1-.9 2.3-1.5 3.5-1.5 2.5 0 4.5 2.2 4.5 5" />
+      <path d="M12 14.5c1-.9 2.1-1.5 3.2-1.5 2.1 0 3.8 2.2 3.8 5" />
     </svg>
   );
 }

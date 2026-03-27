@@ -1,6 +1,7 @@
-import { eq, and, gte, lte, inArray, asc, sql, or } from 'drizzle-orm';
+import { eq, and, gte, lte, inArray, asc, sql } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { talentMetricSnapshots, talentSocials } from '@/db/schema';
+import { normalizeTrackablePlatform, TRACKABLE_SOCIAL_PLATFORM_KEYS } from '@/lib/platform';
 import type { TalentMetricSnapshot } from '@/types';
 
 /** Fetch all talent_socials rows that have a platformId for YouTube or Twitch */
@@ -15,19 +16,23 @@ export async function getTrackableSocials() {
     .where(
       and(
         sql`${talentSocials.platformId} IS NOT NULL`,
-        or(
-          eq(talentSocials.platform, 'yt'),
-          eq(talentSocials.platform, 'youtube'),
-          eq(talentSocials.platform, 'twitch'),
-        ),
+        inArray(talentSocials.platform, [...TRACKABLE_SOCIAL_PLATFORM_KEYS]),
       ),
     );
 
-  return rows.map((r) => ({
-    talentId: r.talentId,
-    platform: r.platform === 'yt' || r.platform === 'youtube' ? 'youtube' as const : 'twitch' as const,
-    platformId: r.platformId!,
-  }));
+  return rows.flatMap((r) => {
+    const platform = normalizeTrackablePlatform(r.platform);
+
+    if (!platform) {
+      return [];
+    }
+
+    return [{
+      talentId: r.talentId,
+      platform,
+      platformId: r.platformId!,
+    }];
+  });
 }
 
 /** Insert a snapshot, ignoring duplicates */
@@ -170,11 +175,7 @@ export async function countTrackedTalents(): Promise<number> {
     .where(
       and(
         sql`${talentSocials.platformId} IS NOT NULL`,
-        or(
-          eq(talentSocials.platform, 'yt'),
-          eq(talentSocials.platform, 'youtube'),
-          eq(talentSocials.platform, 'twitch'),
-        ),
+        inArray(talentSocials.platform, [...TRACKABLE_SOCIAL_PLATFORM_KEYS]),
       ),
     );
   return rows[0]?.count ?? 0;

@@ -1,3 +1,5 @@
+import { getSocialPlatformKey } from '@/lib/platform';
+
 export function formatCompact(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
   if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
@@ -31,6 +33,13 @@ export function totalFollowersForCreator(
   platforms?: Set<string>,
 ): number {
   return socials
-    .filter((s) => !platforms || platforms.size === 0 || platforms.has(s.platform))
+    .filter((s) => {
+      if (!platforms || platforms.size === 0) {
+        return true;
+      }
+
+      const key = getSocialPlatformKey(s.platform);
+      return key ? platforms.has(key) : platforms.has(s.platform);
+    })
     .reduce((sum, s) => sum + parseFollowers(s.followersDisplay), 0);
 }

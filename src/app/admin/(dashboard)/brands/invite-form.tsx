@@ -23,7 +23,7 @@ export function InviteBrandForm(): React.ReactElement {
         </button>
       </form>
       {state.error && <p className="text-xs text-red-400 mt-2">{state.error}</p>}
-      {state.success && <p className="text-xs text-emerald-400 mt-2">Invitacion enviada correctamente.</p>}
+      {state.success && <p className="text-xs text-emerald-400 mt-2">Invitación enviada correctamente.</p>}
     </div>
   );
 }
