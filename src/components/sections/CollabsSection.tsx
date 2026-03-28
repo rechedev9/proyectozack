@@ -6,13 +6,11 @@ import { GradientText } from '@/components/ui/GradientText';
 import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
 import { gradientStyle } from '@/lib/gradient';
 
-import type { JSX } from 'react';
-
 type CollabsSectionProps = {
   collaborators: Collaborator[];
 }
 
-export function CollabsSection({ collaborators }: CollabsSectionProps): JSX.Element {
+export function CollabsSection({ collaborators }: CollabsSectionProps) {
   return (
     <section className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -30,11 +28,11 @@ export function CollabsSection({ collaborators }: CollabsSectionProps): JSX.Elem
             return (
               <FadeInOnScroll key={c.id} delay={i * 0.1}>
                 <div
-                  className="group flex flex-col items-center overflow-hidden rounded-2xl border border-sp-border bg-white p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className="rounded-2xl border border-sp-border bg-white overflow-hidden hover:shadow-lg transition-shadow p-6 flex flex-col items-center text-center"
                 >
                   {/* Circular photo */}
                   <div
-                    className="mb-4 flex h-24 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-black/6 shadow-sm transition-transform duration-300 group-hover:scale-[1.03]"
+                    className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 mb-4 flex items-center justify-center"
                     style={{ background: grad }}
                   >
                     {c.photoUrl ? (
