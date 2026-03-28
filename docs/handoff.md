@@ -6,97 +6,62 @@ read_when:
   - Handing off to another agent
 ---
 
-# Handoff — 2026-03-19 (session 5)
+# Handoff — 2026-03-23 (session 7)
 
 ## 1. Scope / Status
 
-- **Task:** SEO + GEO (Generative Engine Optimization) improvement
-- **Phase:** Brainstorming — design not yet written
-- **Done this session:**
-  - Full SEO/GEO audit of the codebase (see findings below)
-  - Brainstorming started — 3 of ~6 clarifying questions answered
-- **Decisions locked:**
-  - Goal: Both SEO + GEO (traditional search + AI engine citations)
-  - Entity priority: Agency (A) > Talents (B) > Blog (D) > Cases (C)
-  - Geographic scope: Spain + LATAM equally (broad Spanish-speaking)
-- **Pending decision:** Does user have domain live + GSC? (question was asked, not answered)
+- **Task:** Admin dashboard refactor — COMPLETE
+  - Replaced over-engineered analytics charts with spreadsheet-first UI
+  - Dashboard (`/admin`): 5 stat cards, followers by platform, top 5 creators table, recent contacts
+  - Roster (`/admin/talents`): full spreadsheet with per-platform follower columns (YT/TW/X/IG/TT/Kick), sortable headers, +30d growth toggle, search/filter by game/visibility/platform
+  - Removed Analytics page + nav item (growth data now in Roster +30d toggle)
+  - Removed Casos tab from sidebar
+  - Deleted 9 unused files (~1400 LOC removed), created 2 new files (`RosterSpreadsheet.tsx`, `dashboard.ts`)
+  - Extracted `parseFollowers()` + `totalFollowersForCreator()` to shared `src/lib/format.ts`
+  - `npm run build` passes clean
 - **Blockers:** None
 
 ## 2. Working Tree
 
-- `## master...origin/master` — appears in sync now (prev session had 2 ahead)
-- Modified: `docs/handoff.md` (this file)
-- Untracked:
-  - `docs/superpowers/plans/2026-03-19-dark-light-theme.md`
-  - `docs/superpowers/specs/`
+- Branch: `master`, up to date with `origin/master`
+- Dirty (pre-existing, not from this session): `.gitignore`, `CLAUDE.md`, `docs/handoff.md`, `scripts/committer`, `brands/actions.ts`
+- Untracked: `docs/superpowers/plans/2026-03-20-agency-creators-admin.md`, `docs/superpowers/plans/2026-03-20-giveaway-winners.md`
 
 ## 3. Branch / PR
 
-- Branch: `master`
-- No PR abierto
-- CI: N/A
+- Branch: `master` (direct push, no PR)
+- CI: Vercel auto-deploys from master
+- Latest commits: `184c01a` remove Casos tab, `eda52c7` spreadsheet-first refactor
 
 ## 4. Dev Server
 
-- Unknown — may need restart: `cd socialpro && npm run dev`
+- Was running on port 3000, likely still active in background
+- `npm run dev` to restart
 
 ## 5. Tests
 
-- No tests run this session (brainstorming only, no code changes)
-- Last known: tsc, lint, build all passing
+- `npx tsc --noEmit` passes clean
+- `npm run build` passes clean
+- Unit/e2e tests not run this session
 
 ## 6. Database
 
-- No migrations pending
-- No schema changes
+- No schema changes, no pending migrations
+- Growth report route (`/admin/analytics/report/[talentSlug]`) still works — uses existing `talentMetricSnapshots`
 
-## 7. SEO/GEO Audit Summary (key findings)
+## 7. Next Steps
 
-**What exists (7/10 baseline):**
-- Root metadata + OG/Twitter in layout.tsx
-- Dynamic generateMetadata on /talentos/[slug], /casos/[slug], /blog/[slug]
-- Dynamic sitemap.ts with DB-driven slugs
-- robots.ts (allow /, disallow /admin/, /api/)
-- JSON-LD: Organization, WebSite, LocalBusiness (root), Person (talents), Article (cases), BlogPosting (blog)
-- RSS feed at /blog/feed.xml
-- next/image with alt text throughout
-
-**Bugs found:**
-- Case studies have hardcoded `datePublished: '2025-01-01'` in JSON-LD (casos/[slug]/page.tsx:67)
-- Sitemap includes anchor links (/#talentos, /#servicios) — engines won't crawl these
-- Sitemap lastModified always `new Date()` instead of actual DB timestamps
-
-**Missing for SEO:**
-- No breadcrumb JSON-LD on dynamic pages
-- No FAQ schema (FaqSection component exists, no structured data)
-- Empty next.config.ts (no security headers, no redirects, no image config)
-- No canonical URLs explicit (metadataBase handles implicitly)
-- /marcas/ not disallowed in robots (auth-gated portal)
-- No metadata on /admin/login or /marcas/login
-
-**Missing for GEO:**
-- No GEO strategy at all — no entity-defining content, no authoritative Q&A, no citation-friendly structure
-- No "About" or "Methodology" page with clear entity statements for AI engines
-- Blog lacks topical clustering / internal linking strategy
-- No FAQ content optimized for AI snippet extraction
-
-## 8. Next Steps
-
-1. **Resume brainstorming** — pick up from GSC question, then ~2-3 more questions
-2. **Remaining questions to explore:**
-   - Domain/GSC status
-   - Keyword targets (what queries should SocialPro rank for?)
-   - Content strategy (new pages vs optimize existing?)
-   - Technical SEO budget (how much refactoring is acceptable?)
-3. **After brainstorming:** write spec → plan → implement
-4. **Still pending from prior sessions:**
-   - Change admin password from `admin12345`
+1. **Giveaways admin** — team mentioned organizing the giveaways section
+2. `/admin/cases` page still exists but no sidebar link — delete if truly unneeded
+3. **Still pending from prior sessions:**
    - Add KEVO/LUNA photos
    - Dark/light theme plan exists but unexecuted
+   - Leaderboard + recent winners sidebar for `/giveaways` hub
 
-## 9. Risks / Gotchas
+## 8. Risks / Gotchas
 
-- Admin password still `admin12345` — change before production
-- `docs/superpowers/plans/2026-03-19-dark-light-theme.md` untracked — prior plan, not executed
+- `AnalyticsIcon` still exported from `SidebarIcons.tsx` (dead code, harmless)
+- Growth columns show `--` for most creators — need more snapshot data from `scripts/sync-followers.ts`
+- `talentSocials.platform` uses `yt` but `talentMetricSnapshots.platform` uses `youtube` — the merge function in `getAdminRosterWithGrowth()` handles this
+- Admin password needs changing before production
 - Migration 0003 SQL has CREATE TABLE for auth tables that already exist — don't re-run without editing
-- Comparison page loads all talents client-side — ok at 15, watch at scale

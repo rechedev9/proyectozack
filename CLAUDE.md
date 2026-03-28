@@ -13,19 +13,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-The production app lives in `socialpro/` — a Next.js 16 app being built for a gaming/esports talent agency (SocialPro). The migration plan and phase tracking live in `roadmap.md`. Read it before any work.
+A Next.js 16 app for a gaming/esports talent agency (SocialPro). All code lives at the repo root. The migration plan and phase tracking live in `roadmap.md`. Read it before any work.
 
 ## Running the Project
 
 ```bash
-cd socialpro
 npm run dev          # dev server (port 3000)
 npm run build        # production build
 npm run lint         # eslint
 npx tsc --noEmit     # type-check
 
 # Database
-cd socialpro
 npx drizzle-kit generate   # generate migration SQL
 npx drizzle-kit migrate    # run migrations against DATABASE_URL
 npx tsx scripts/seed.ts    # seed data (run after extract-images.mjs)
@@ -37,7 +35,7 @@ npm run test:e2e            # playwright e2e
 npm run test:coverage
 ```
 
-## Next.js App Architecture (`socialpro/`)
+## Next.js App Architecture
 
 **Stack:** Next.js 16 · React 19 · TypeScript strict · Tailwind v4 · Drizzle ORM · Neon Postgres · Better Auth · Resend · shadcn/ui · Zod v4 · react-hook-form · @vercel/blob
 
@@ -50,7 +48,7 @@ npm run test:coverage
 ### File Structure (target — being built out)
 
 ```
-socialpro/src/
+src/
   app/
     layout.tsx                   # Root: fonts, metadata, Nav, globals
     page.tsx                     # Home: Server Component, Promise.all, revalidate=3600
