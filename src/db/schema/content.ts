@@ -8,6 +8,7 @@ export const collaborators = pgTable('collaborators', {
   name: varchar('name', { length: 100 }).notNull(),
   description: varchar('description', { length: 200 }).notNull(),
   badge: varchar('badge', { length: 100 }).notNull(),
+  profileUrl: varchar('profile_url', { length: 500 }),
   photoUrl: varchar('photo_url', { length: 500 }),
   gradientC1: varchar('gradient_c1', { length: 7 }).notNull(),
   gradientC2: varchar('gradient_c2', { length: 7 }).notNull(),

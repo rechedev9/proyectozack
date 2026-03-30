@@ -1,0 +1,1 @@
+ALTER TABLE "collaborators" ADD COLUMN "profile_url" varchar(500);

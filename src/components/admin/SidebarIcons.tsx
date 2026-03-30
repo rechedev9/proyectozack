@@ -49,6 +49,17 @@ export function AnalyticsIcon() {
   );
 }
 
+export function TeamIcon() {
+  return (
+    <svg {...s}>
+      <circle cx="7" cy="7" r="2.5" />
+      <circle cx="13" cy="7" r="2.5" />
+      <path d="M1 17c0-2.8 2.2-5 5-5h2" />
+      <path d="M11 12h2c2.8 0 5 2.2 5 5" />
+    </svg>
+  );
+}
+
 export function GiveawayIcon() {
   return (
     <svg {...s}>

@@ -92,6 +92,13 @@
       "when": 1774038263472,
       "tag": "0012_clear_psynapse",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1774607481470,
+      "tag": "0013_goofy_jackal",
+      "breakpoints": true
     }
   ]
 }

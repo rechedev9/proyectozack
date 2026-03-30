@@ -1,6 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import Lenis from 'lenis';
+import { WhatsAppWidget } from './WhatsAppWidget';
 import type { ReactNode } from 'react';
 
 const PORTAL_PREFIXES = ['/admin', '/marcas', '/creadores', '/giveaways'];
@@ -26,6 +29,25 @@ export function PublicChrome({ nav, footer, children }: PublicChromeProps) {
   const pathname = usePathname();
   const isPortal = isPortalRoute(pathname);
 
+  useEffect(() => {
+    if (isPortal) return;
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
+  }, [isPortal]);
+
   if (isPortal) {
     return <>{children}</>;
   }
@@ -35,6 +57,7 @@ export function PublicChrome({ nav, footer, children }: PublicChromeProps) {
       {nav}
       <main className="pt-16">{children}</main>
       {footer}
+      <WhatsAppWidget />
     </>
   );
 }

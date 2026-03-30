@@ -172,11 +172,41 @@
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee 30s linear infinite;
+  animation: marquee 20s linear infinite;
+  will-change: transform;
+  contain: layout style;
 }
 
-.marquee-track:hover {
+.marquee-track--slow {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+  will-change: transform;
+  contain: layout style;
+}
+
+.marquee-track:hover,
+.marquee-track--slow:hover {
   animation-play-state: paused;
+}
+
+/* ── Hero aura animations (CSS-driven, no JS rAF) ────────────────────────── */
+@keyframes hero-aura-pink {
+  0%, 100% { transform: translate(-50%, -50%) scale(1);   opacity: 0.15; }
+  50%       { transform: translate(-50%, -50%) scale(1.1); opacity: 0.25; }
+}
+@keyframes hero-aura-orange {
+  0%, 100% { transform: scale(1.1); opacity: 0.1; }
+  50%       { transform: scale(1);   opacity: 0.2; }
+}
+
+.hero-aura-pink {
+  animation: hero-aura-pink 10s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+.hero-aura-orange {
+  animation: hero-aura-orange 15s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 /* ── Gradient text utility ───────────────────────────────────────────────── */

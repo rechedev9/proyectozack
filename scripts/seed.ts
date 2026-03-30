@@ -295,26 +295,6 @@ const TALENTS_DATA: TalentData[] = [
     ],
   },
   {
-    slug: 'annablue', name: 'ANNA BLUE', role: 'Variety Streamer', game: 'Variety',
-    platform: 'twitch', status: 'active',
-    bio: 'Streamer variety con comunidad fiel. Entretenimiento, gaming casual y colaboraciones con marcas de iGaming y lifestyle.',
-    gradientC1: '#8b3aad', gradientC2: '#5b9bd5', initials: 'AB',
-    photoUrl: '/images/talents/annablue.jpg',
-    tags: ['Variety', 'Twitch', 'iGaming', 'LatAm'],
-    stats: [
-      { icon: '🟣', value: '55K', label: 'Twitch' },
-      { icon: '✖', value: '20K', label: 'Twitter' },
-      { icon: '📸', value: '35K', label: 'Instagram' },
-      { icon: '▶', value: '25K', label: 'YouTube' },
-    ],
-    socials: [
-      { platform: 'twitch', handle: 'annablue', followersDisplay: '55K', profileUrl: 'https://twitch.tv/annablue', hexColor: '#9146FF' },
-      { platform: 'twitter', handle: 'annablue', followersDisplay: '20K', profileUrl: 'https://twitter.com/annablue', hexColor: '#1DA1F2' },
-      { platform: 'instagram', handle: 'annablue', followersDisplay: '35K', profileUrl: 'https://instagram.com/annablue', hexColor: '#E1306C' },
-      { platform: 'youtube', handle: 'annablue', followersDisplay: '25K', profileUrl: 'https://youtube.com/@annablue', hexColor: '#FF0000' },
-    ],
-  },
-  {
     slug: 'eruby', name: 'ERUBY', role: 'CS2 Content Creator', game: 'CS2',
     platform: 'youtube', status: 'active',
     bio: 'Creador de contenido especializado en CS2. Highlights, tutoriales y colaboraciones con marcas de skins y plataformas gaming.',
@@ -340,17 +320,32 @@ const COLLABORATORS_DATA = [
   {
     slug: 'andrechini', name: 'Andrechini', description: 'Streamer & Content Creator',
     badge: 'Twitch · YouTube', photoUrl: '/images/collabs/andrechini.jpg',
+    profileUrl: 'https://twitch.tv/andrechini',
     gradientC1: '#e03070', gradientC2: '#c42880', initials: 'AN', sortOrder: 0,
   },
   {
     slug: 'imantado', name: 'Imantado', description: 'Gaming & Variety Streamer',
     badge: 'Twitch · CS2', photoUrl: '/images/collabs/imantado.jpg',
+    profileUrl: 'https://twitch.tv/imantado',
     gradientC1: '#f5632a', gradientC2: '#8b3aad', initials: 'IM', sortOrder: 1,
   },
   {
     slug: 'imicaelax', name: 'Imicaelax', description: 'Content Creator',
     badge: 'YouTube · Twitch', photoUrl: '/images/collabs/imicaelax.jpg',
+    profileUrl: 'https://twitch.tv/imicaelax',
     gradientC1: '#8b3aad', gradientC2: '#5b9bd5', initials: 'IC', sortOrder: 2,
+  },
+  {
+    slug: 'manolito', name: 'Manolito', description: 'La Casa de los Gemelos',
+    badge: 'Twitch · YouTube · TikTok', photoUrl: '/images/talents/manolito.jpg',
+    profileUrl: 'https://twitch.tv/manolito',
+    gradientC1: '#f5632a', gradientC2: '#c42880', initials: 'MA', sortOrder: 3,
+  },
+  {
+    slug: 'therealfer', name: 'The Real Fer', description: 'Streamer & Content Creator',
+    badge: 'Twitch · X · YouTube', photoUrl: '/images/talents/Therealfer.jpg',
+    profileUrl: 'https://twitch.tv/therealfer',
+    gradientC1: '#5b9bd5', gradientC2: '#8b3aad', initials: 'RF', sortOrder: 4,
   },
 ];
 
@@ -409,7 +404,7 @@ const CASES_DATA: CaseData[] = [
       'Este tipo de acciones permiten a las marcas conectar de forma natural con audiencias gaming activas, mostrando los productos en el entorno donde realmente se utilizan: el setup diario de los creadores.',
     ],
     tags: ['Gaming Hardware', 'Twitch', 'YouTube', 'Instagram', 'TikTok', 'Periféricos', 'Multicanal', '13 creadores'],
-    creators: ['IreneRAWR', 'Deqiuv', 'Anna Blue', 'Rinna', 'The Real Fer', 'Goked', 'Naow', 'Vityshow', 'Todocs2', 'Eruby', 'Joanpau', 'Dess', 'D3stri'],
+    creators: ['IreneRAWR', 'Deqiuv', 'Rinna', 'The Real Fer', 'Goked', 'Naow', 'Vityshow', 'Todocs2', 'Eruby', 'Joanpau', 'Dess', 'D3stri'],
   },
   {
     slug: 'onewin', brandName: '1WIN',
