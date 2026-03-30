@@ -13,7 +13,7 @@ export default async function EquipoAdminPage() {
       <div className="mb-8">
         <h1 className="font-display text-3xl font-black uppercase text-sp-dark">Fotos del Equipo</h1>
         <p className="text-sm text-sp-muted mt-1">
-          Sube o actualiza las fotos del equipo. Se muestran en la sección "Nosotros" de la web.
+          Sube o actualiza las fotos del equipo. Se muestran en la sección &ldquo;Nosotros&rdquo; de la web.
         </p>
       </div>
 
