@@ -54,6 +54,7 @@ export function Nav() {
             <Image
               src="/images/logos/2.png"
               alt=""
+              aria-hidden="true"
               width={28}
               height={28}
               className="h-7 w-auto object-contain"

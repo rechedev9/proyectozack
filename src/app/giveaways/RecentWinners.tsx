@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'motion/react';
 import type { GiveawayWinnerWithGiveaway } from '@/types';
 
@@ -36,8 +37,7 @@ export function RecentWinners({ winners }: RecentWinnersProps) {
             transition={{ delay: i * 0.04 }}
           >
             {w.winnerAvatar ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={w.winnerAvatar} alt={w.winnerName} className="w-7 h-7 rounded-full object-cover border border-white/10 shrink-0" />
+              <Image src={w.winnerAvatar} alt={w.winnerName} width={28} height={28} className="w-7 h-7 rounded-full object-cover border border-white/10 shrink-0" />
             ) : (
               <div className="w-7 h-7 rounded-full bg-sp-pink/20 flex items-center justify-center text-[10px] font-black text-sp-pink shrink-0">
                 {w.winnerName.charAt(0).toUpperCase()}

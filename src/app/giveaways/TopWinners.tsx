@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'motion/react';
 
 type TopWinnersProps = {
@@ -29,8 +30,7 @@ export function TopWinners({ winners }: TopWinnersProps) {
               {i < 3 ? medals[i] : <span className="text-[11px] text-white/30 font-bold">{i + 1}</span>}
             </span>
             {w.winnerAvatar ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={w.winnerAvatar} alt={w.winnerName} className="w-7 h-7 rounded-full object-cover border border-white/10" />
+              <Image src={w.winnerAvatar} alt={w.winnerName} width={28} height={28} className="w-7 h-7 rounded-full object-cover border border-white/10" />
             ) : (
               <div className="w-7 h-7 rounded-full bg-sp-orange/20 flex items-center justify-center text-[10px] font-black text-sp-orange">
                 {w.winnerName.charAt(0).toUpperCase()}
