@@ -320,26 +320,31 @@ const COLLABORATORS_DATA = [
   {
     slug: 'andrechini', name: 'Andrechini', description: 'Streamer & Content Creator',
     badge: 'Twitch · YouTube', photoUrl: '/images/collabs/andrechini.jpg',
+    profileUrl: 'https://twitch.tv/andrechini',
     gradientC1: '#e03070', gradientC2: '#c42880', initials: 'AN', sortOrder: 0,
   },
   {
     slug: 'imantado', name: 'Imantado', description: 'Gaming & Variety Streamer',
     badge: 'Twitch · CS2', photoUrl: '/images/collabs/imantado.jpg',
+    profileUrl: 'https://twitch.tv/imantado',
     gradientC1: '#f5632a', gradientC2: '#8b3aad', initials: 'IM', sortOrder: 1,
   },
   {
     slug: 'imicaelax', name: 'Imicaelax', description: 'Content Creator',
     badge: 'YouTube · Twitch', photoUrl: '/images/collabs/imicaelax.jpg',
+    profileUrl: 'https://twitch.tv/imicaelax',
     gradientC1: '#8b3aad', gradientC2: '#5b9bd5', initials: 'IC', sortOrder: 2,
   },
   {
     slug: 'manolito', name: 'Manolito', description: 'La Casa de los Gemelos',
-    badge: 'Twitch · YouTube · TikTok', photoUrl: '/images/collabs/manolito.jpg',
+    badge: 'Twitch · YouTube · TikTok', photoUrl: '/images/talents/manolito.jpg',
+    profileUrl: 'https://twitch.tv/manolito',
     gradientC1: '#f5632a', gradientC2: '#c42880', initials: 'MA', sortOrder: 3,
   },
   {
     slug: 'therealfer', name: 'The Real Fer', description: 'Streamer & Content Creator',
-    badge: 'Twitch · X · YouTube', photoUrl: null,
+    badge: 'Twitch · X · YouTube', photoUrl: '/images/talents/Therealfer.jpg',
+    profileUrl: 'https://twitch.tv/therealfer',
     gradientC1: '#5b9bd5', gradientC2: '#8b3aad', initials: 'RF', sortOrder: 4,
   },
 ];
