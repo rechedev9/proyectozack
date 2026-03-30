@@ -41,14 +41,6 @@ export const metadata: Metadata = {
     siteName: 'SocialPro',
     locale: 'es_ES',
     type: 'website',
-    images: [
-      {
-        url: '/images/logos/4.png',
-        width: 140,
-        height: 35,
-        alt: 'SocialPro — Agencia Gaming & Esports',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
