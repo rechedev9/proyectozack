@@ -57,7 +57,7 @@ export function TalentCard({ talent, onOpen }: TalentCardProps) {
         </div>
 
         {/* Socials */}
-        <div className="flex items-center gap-2">
+        <nav aria-label="Redes sociales" className="flex items-center gap-2">
           {talent.socials.slice(0, 4).map((s) => (
             <a
               key={s.id}
@@ -72,7 +72,7 @@ export function TalentCard({ talent, onOpen }: TalentCardProps) {
               <SocialIcon type={s.platform} color={s.hexColor} size={12} />
             </a>
           ))}
-        </div>
+        </nav>
       </div>
     </button>
   );

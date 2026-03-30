@@ -162,9 +162,9 @@ export function ServicesSection() {
 
         {/* Advantages — replaces comparison table */}
         <FadeInOnScroll>
-          <h4 className="font-display text-xl font-black uppercase text-sp-dark text-center mb-8">
+          <h3 className="font-display text-xl font-black uppercase text-sp-dark text-center mb-8">
             ¿Por qué <GradientText>SocialPro</GradientText>?
-          </h4>
+          </h3>
         </FadeInOnScroll>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {ADVANTAGES.map(({ title, desc }, i) => (

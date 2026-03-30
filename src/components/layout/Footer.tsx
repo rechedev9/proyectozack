@@ -86,7 +86,7 @@ export function Footer() {
     <footer className="bg-sp-black text-white">
 
       {/* Stats strip */}
-      <div className="border-t border-b border-white/5" style={{ background: 'linear-gradient(90deg,rgba(245,99,42,0.04) 0%,rgba(139,58,173,0.04) 100%)' }}>
+      <section aria-label="Métricas de la agencia" className="border-t border-b border-white/5" style={{ background: 'linear-gradient(90deg,rgba(245,99,42,0.04) 0%,rgba(139,58,173,0.04) 100%)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-wrap justify-center gap-12 sm:gap-24">
           {STATS.map(({ value, label }) => (
             <div key={label} className="text-center">
@@ -102,7 +102,7 @@ export function Footer() {
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -125,7 +125,7 @@ export function Footer() {
             </p>
 
             {/* Contact */}
-            <div className="space-y-2">
+            <address className="space-y-2 not-italic">
               <a
                 href="mailto:marketing@socialpro.es"
                 className="flex items-center gap-2.5 text-sm text-white/40 hover:text-white transition-colors group"
@@ -146,10 +146,10 @@ export function Footer() {
                 </svg>
                 +34 604 868 426
               </a>
-            </div>
+            </address>
 
             {/* Socials */}
-            <div className="flex gap-3">
+            <nav aria-label="Redes sociales" className="flex gap-3">
               {SOCIALS.map(({ label, href, icon }) => (
                 <a
                   key={label}
@@ -162,7 +162,7 @@ export function Footer() {
                   {icon}
                 </a>
               ))}
-            </div>
+            </nav>
           </div>
 
           {/* Nav columns */}

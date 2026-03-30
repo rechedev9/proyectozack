@@ -138,9 +138,9 @@ export default function MetodologiaPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {KPIS.map((kpi) => (
               <div key={kpi.label} className="bg-white rounded-2xl p-6 border border-sp-border">
-                <h4 className="font-display text-lg font-bold uppercase text-sp-dark mb-2">
+                <h3 className="font-display text-lg font-bold uppercase text-sp-dark mb-2">
                   {kpi.label}
-                </h4>
+                </h3>
                 <p className="text-sm text-sp-muted leading-relaxed">{kpi.desc}</p>
               </div>
             ))}

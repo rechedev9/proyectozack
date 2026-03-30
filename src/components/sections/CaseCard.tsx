@@ -32,7 +32,7 @@ export function CaseCard({ caseStudy }: CaseCardProps) {
         className="group rounded-2xl overflow-hidden border border-sp-border bg-white flex flex-col h-full"
       >
         {/* Dark header with brand logo */}
-        <div className="h-20 bg-sp-dark flex items-center justify-between px-5 flex-shrink-0">
+        <header className="h-20 bg-sp-dark flex items-center justify-between px-5 flex-shrink-0">
           <div className="flex items-center">
             {logoSrc ? (
               <Image
@@ -53,10 +53,10 @@ export function CaseCard({ caseStudy }: CaseCardProps) {
             <div className="w-px h-5 bg-white/20" />
             <span className="font-display text-sm font-black text-white/30">×</span>
           </div>
-        </div>
+        </header>
 
         {/* White body */}
-        <div className="p-5 flex flex-col flex-1">
+        <article className="p-5 flex flex-col flex-1">
           <p className="text-[10px] font-bold uppercase tracking-widest text-sp-orange mb-2">
             {caseStudy.brandName} × SocialPro
           </p>
@@ -117,7 +117,7 @@ export function CaseCard({ caseStudy }: CaseCardProps) {
               Leer más
             </span>
           </div>
-        </div>
+        </article>
       </m.div>
     </Link>
   );

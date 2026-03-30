@@ -25,13 +25,19 @@ export function TalentModal({ talent, onClose }: TalentModalProps) {
   const grad = gradientStyle(talent.gradientC1, talent.gradientC2);
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div
+      className="modal-backdrop"
+      onClick={onClose}
+    >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="talent-modal-name"
         className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header image */}
-        <div className="relative h-56" style={{ background: grad }}>
+        <header className="relative h-56" style={{ background: grad }}>
           {talent.photoUrl && (
             <Image
               src={talent.photoUrl}
@@ -51,17 +57,17 @@ export function TalentModal({ talent, onClose }: TalentModalProps) {
           </button>
           <div className="absolute bottom-4 left-4 flex items-end gap-3">
             <div>
-              <h2 className="font-display text-3xl font-black uppercase text-white leading-none">
+              <h2 id="talent-modal-name" className="font-display text-3xl font-black uppercase text-white leading-none">
                 {talent.name}
               </h2>
               <p className="text-white/80 text-sm">{talent.role}</p>
             </div>
             <StatusBadge status={talent.status} className="mb-0.5" />
           </div>
-        </div>
+        </header>
 
         {/* Content */}
-        <div className="p-6 space-y-5">
+        <section className="p-6 space-y-5">
           {/* Bio */}
           <p className="text-sp-muted text-sm leading-relaxed">{talent.bio}</p>
 
@@ -133,7 +139,7 @@ export function TalentModal({ talent, onClose }: TalentModalProps) {
           >
             Contactar para colaboración
           </a>
-        </div>
+        </section>
       </div>
     </div>
   );

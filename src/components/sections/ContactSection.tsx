@@ -226,7 +226,8 @@ export function ContactSection() {
                         style={{ transformOrigin: 'top' }}
                         className="overflow-hidden"
                       >
-                        <div className="space-y-4">
+                        <fieldset className="space-y-4 border-0 p-0 m-0">
+                          <legend className={labelClasses}>Datos de campaña</legend>
                           <div className="grid sm:grid-cols-2 gap-4">
                             <div>
                               <label className={labelClasses}>Presupuesto estimado</label>
@@ -259,7 +260,7 @@ export function ContactSection() {
                               className={inputClasses}
                             />
                           </div>
-                        </div>
+                        </fieldset>
                       </m.div>
                     )}
                   </AnimatePresence>
@@ -276,7 +277,8 @@ export function ContactSection() {
                         style={{ transformOrigin: 'top' }}
                         className="overflow-hidden"
                       >
-                        <div className="space-y-4">
+                        <fieldset className="space-y-4 border-0 p-0 m-0">
+                          <legend className={labelClasses}>Tu canal</legend>
                           <div className="grid sm:grid-cols-2 gap-4">
                             <div>
                               <label className={labelClasses}>Plataforma principal</label>
@@ -306,7 +308,7 @@ export function ContactSection() {
                               className={inputClasses}
                             />
                           </div>
-                        </div>
+                        </fieldset>
                       </m.div>
                     )}
                   </AnimatePresence>
