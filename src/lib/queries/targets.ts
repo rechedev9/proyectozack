@@ -4,6 +4,12 @@ import { targets } from '@/db/schema';
 import type { Target } from '@/types';
 import type { CreateTargetInput, CsvTargetRow } from '@/lib/schemas/target';
 
+// xmax is a Postgres system column: '0' on freshly inserted rows, non-zero on conflict-updated rows
+function countUpsertResults(rows: Array<{ xmax: string }>): { inserted: number; updated: number } {
+  const inserted = rows.filter((r) => r.xmax === '0').length;
+  return { inserted, updated: rows.length - inserted };
+}
+
 export async function getAllTargets(): Promise<Target[]> {
   return db.select().from(targets).orderBy(desc(targets.createdAt));
 }
@@ -86,10 +92,7 @@ export async function upsertTargetsFromCSV(
     })
     .returning({ id: targets.id, xmax: sql<string>`xmax::text` });
 
-  const inserted = result.filter((r) => r.xmax === '0').length;
-  const updated = result.length - inserted;
-
-  return { inserted, updated };
+  return countUpsertResults(result);
 }
 
 export async function updateTargetStatus(
@@ -194,9 +197,7 @@ export async function bulkUpsertTargets(
     })
     .returning({ id: targets.id, xmax: sql<string>`xmax::text` });
 
-  const inserted = result.filter((r) => r.xmax === '0').length;
-  const updated = result.length - inserted;
-  return { inserted, updated };
+  return countUpsertResults(result);
 }
 
 export async function bulkUpdateStatus(
