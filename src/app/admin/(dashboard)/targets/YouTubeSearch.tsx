@@ -3,24 +3,44 @@
 import { useState, useTransition } from 'react';
 import { formatCompact } from '@/lib/format';
 import type { YouTubeChannelPreview } from '@/lib/services/youtube';
-import { searchYouTubeAction, importYouTubeChannelsAction } from './youtube-actions';
+import {
+  searchYouTubeAction,
+  importYouTubeChannelsAction,
+} from './youtube-actions';
+
+import type {
+  YouTubeSearchParams,
+} from './youtube-actions';
+
+const DEFAULT_PARAMS: YouTubeSearchParams = {
+  query: '',
+  minSubscribers: 0,
+  maxSubscribers: 0,
+  requiresHandle: false,
+  description: '',
+  limit: 10,
+};
 
 export function YouTubeSearch(): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState('');
+  const [params, setParams] = useState<YouTubeSearchParams>(DEFAULT_PARAMS);
   const [results, setResults] = useState<YouTubeChannelPreview[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [importResult, setImportResult] = useState<{ imported: number; updated: number } | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const set = <K extends keyof YouTubeSearchParams>(key: K, value: YouTubeSearchParams[K]): void => {
+    setParams((prev) => ({ ...prev, [key]: value }));
+  };
+
   const handleSearch = (): void => {
-    if (!query.trim()) return;
+    if (!params.query.trim()) return;
     setError(null);
     setImportResult(null);
     startTransition(async () => {
       try {
-        const result = await searchYouTubeAction(query.trim());
+        const result = await searchYouTubeAction(params);
         if (!result.ok) {
           setError(result.error ?? 'Error buscando en YouTube');
           setResults([]);
@@ -64,7 +84,7 @@ export function YouTubeSearch(): React.ReactElement {
         setImportResult(result);
         setResults([]);
         setSelected(new Set());
-        setQuery('');
+        setParams(DEFAULT_PARAMS);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error importando canales');
       }
@@ -99,24 +119,91 @@ export function YouTubeSearch(): React.ReactElement {
 
       {isOpen && (
         <div className="border-t border-sp-admin-border">
-          {/* ── Search bar ───────────────────────────────────────────────── */}
-          <div className="flex items-center gap-2 px-5 py-4">
+          {/* ── Search filters ───────────────────────────────────────────── */}
+          <div className="px-5 py-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             <input
+              id="youtube-query"
               type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              value={params.query}
+              onChange={(e) => set('query', e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
               placeholder="Nombre de canal, tema, handle..."
-              className="flex-1 bg-sp-admin-bg rounded-lg px-3 py-2 text-sm text-sp-admin-text placeholder:text-sp-admin-muted/40 border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/40"
+              className="col-span-2 sm:col-span-3 lg:col-span-4 bg-sp-admin-bg rounded-lg px-3 py-2 text-sm text-sp-admin-text placeholder:text-sp-admin-muted/40 border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/40"
             />
-            <button
-              type="button"
-              onClick={handleSearch}
-              disabled={isPending || !query.trim()}
-              className="px-4 py-2 rounded-lg bg-[#FF0000] text-white text-[12px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-              {isPending ? 'Buscando...' : 'Buscar'}
-            </button>
+            <div>
+              <label htmlFor="youtube-min-subs" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
+                Min. suscriptores
+              </label>
+              <input
+                id="youtube-min-subs"
+                type="number"
+                min="0"
+                value={params.minSubscribers || ''}
+                onChange={(e) => set('minSubscribers', parseInt(e.target.value, 10) || 0)}
+                placeholder="0"
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/40 placeholder:text-sp-admin-muted/40"
+              />
+            </div>
+            <div>
+              <label htmlFor="youtube-max-subs" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
+                Max. suscriptores
+              </label>
+              <input
+                id="youtube-max-subs"
+                type="number"
+                min="0"
+                value={params.maxSubscribers || ''}
+                onChange={(e) => set('maxSubscribers', parseInt(e.target.value, 10) || 0)}
+                placeholder="ilimitado"
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/40 placeholder:text-sp-admin-muted/40"
+              />
+            </div>
+            <div>
+              <label htmlFor="youtube-description" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
+                Descripcion contiene
+              </label>
+              <input
+                id="youtube-description"
+                type="text"
+                value={params.description}
+                onChange={(e) => set('description', e.target.value)}
+                placeholder="casino, betting..."
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/40 placeholder:text-sp-admin-muted/40"
+              />
+            </div>
+            <div>
+              <label htmlFor="youtube-limit" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
+                Limite
+              </label>
+              <input
+                id="youtube-limit"
+                type="number"
+                min="1"
+                max="25"
+                value={params.limit}
+                onChange={(e) => set('limit', parseInt(e.target.value, 10) || 10)}
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/40"
+              />
+            </div>
+            <div className="col-span-2 sm:col-span-3 lg:col-span-4 flex items-center gap-4">
+              <label className="flex items-center gap-2 text-[12px] text-sp-admin-muted cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={params.requiresHandle}
+                  onChange={(e) => set('requiresHandle', e.target.checked)}
+                  className="rounded border-sp-admin-border bg-sp-admin-bg accent-sp-admin-accent"
+                />
+                Solo con handle
+              </label>
+              <button
+                type="button"
+                onClick={handleSearch}
+                disabled={isPending || !params.query.trim()}
+                className="ml-auto px-4 py-2 rounded-lg bg-[#FF0000] text-white text-[12px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {isPending ? 'Buscando...' : 'Buscar'}
+              </button>
+            </div>
           </div>
 
           {/* ── Error ────────────────────────────────────────────────────── */}

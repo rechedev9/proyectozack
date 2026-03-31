@@ -10,6 +10,11 @@ const IG_RED = '#E1306C';
 const DEFAULT_PARAMS: InstascoutSearchParams = {
   minFollowers: 10000,
   maxFollowers: 0,
+  country: '',
+  bio: '',
+  isVerified: false,
+  isBusiness: false,
+  isPrivate: null,
   isCreator: null,
   enrichedOnly: false,
   source: '',
@@ -81,16 +86,18 @@ export function InstascoutSearch(): React.ReactElement {
     <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-hidden">
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <button
+        type="button"
         onClick={() => setIsOpen((p) => !p)}
         className="w-full flex items-center justify-between px-5 py-3 text-sm font-semibold text-sp-admin-text hover:bg-sp-admin-hover transition-colors"
       >
         <span className="flex items-center gap-2">
-          <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill={IG_RED}>
+          <svg aria-hidden="true" className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill={IG_RED}>
             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
           </svg>
           Buscar perfiles en instascout
         </span>
         <svg
+          aria-hidden="true"
           className={`w-4 h-4 text-sp-admin-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
         >
@@ -104,10 +111,11 @@ export function InstascoutSearch(): React.ReactElement {
           <div className="px-5 py-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
 
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
+              <label htmlFor="instascout-min-followers" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
                 Min. seguidores
               </label>
               <input
+                id="instascout-min-followers"
                 type="number"
                 min="0"
                 value={params.minFollowers || ''}
@@ -118,10 +126,11 @@ export function InstascoutSearch(): React.ReactElement {
             </div>
 
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
+              <label htmlFor="instascout-max-followers" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
                 Max. seguidores
               </label>
               <input
+                id="instascout-max-followers"
                 type="number"
                 min="0"
                 value={params.maxFollowers || ''}
@@ -132,10 +141,39 @@ export function InstascoutSearch(): React.ReactElement {
             </div>
 
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
+              <label htmlFor="instascout-country" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
+                Pais / region
+              </label>
+              <input
+                id="instascout-country"
+                type="text"
+                value={params.country}
+                onChange={(e) => set('country', e.target.value)}
+                placeholder="spain, oregon"
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40 placeholder:text-sp-admin-muted/40"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="instascout-bio" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
+                Bio contiene
+              </label>
+              <input
+                id="instascout-bio"
+                type="text"
+                value={params.bio}
+                onChange={(e) => set('bio', e.target.value)}
+                placeholder="casino OR betting"
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40 placeholder:text-sp-admin-muted/40"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="instascout-source" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
                 Fuente (hashtag:gambling)
               </label>
               <input
+                id="instascout-source"
                 type="text"
                 value={params.source}
                 onChange={(e) => set('source', e.target.value)}
@@ -145,10 +183,11 @@ export function InstascoutSearch(): React.ReactElement {
             </div>
 
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
+              <label htmlFor="instascout-limit" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted mb-1">
                 Límite
               </label>
               <input
+                id="instascout-limit"
                 type="number"
                 min="1"
                 max="500"
@@ -162,11 +201,38 @@ export function InstascoutSearch(): React.ReactElement {
               <label className="flex items-center gap-2 text-[12px] text-sp-admin-muted cursor-pointer select-none">
                 <input
                   type="checkbox"
+                  checked={params.isVerified}
+                  onChange={(e) => set('isVerified', e.target.checked)}
+                  className="rounded border-sp-admin-border bg-sp-admin-bg accent-sp-admin-accent"
+                />
+                Verificados
+              </label>
+              <label className="flex items-center gap-2 text-[12px] text-sp-admin-muted cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={params.isBusiness}
+                  onChange={(e) => set('isBusiness', e.target.checked)}
+                  className="rounded border-sp-admin-border bg-sp-admin-bg accent-sp-admin-accent"
+                />
+                Negocio
+              </label>
+              <label className="flex items-center gap-2 text-[12px] text-sp-admin-muted cursor-pointer select-none">
+                <input
+                  type="checkbox"
                   checked={params.isCreator === true}
                   onChange={(e) => set('isCreator', e.target.checked ? true : null)}
                   className="rounded border-sp-admin-border bg-sp-admin-bg accent-sp-admin-accent"
                 />
                 Solo creators
+              </label>
+              <label className="flex items-center gap-2 text-[12px] text-sp-admin-muted cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={params.isPrivate === true}
+                  onChange={(e) => set('isPrivate', e.target.checked ? true : null)}
+                  className="rounded border-sp-admin-border bg-sp-admin-bg accent-sp-admin-accent"
+                />
+                Solo privados
               </label>
               <label className="flex items-center gap-2 text-[12px] text-sp-admin-muted cursor-pointer select-none">
                 <input
@@ -178,6 +244,7 @@ export function InstascoutSearch(): React.ReactElement {
                 Solo enriquecidos
               </label>
               <button
+                type="button"
                 onClick={handleSearch}
                 disabled={isPending}
                 className="ml-auto px-4 py-2 rounded-lg text-[12px] font-bold text-white hover:opacity-90 transition-opacity disabled:opacity-50"
@@ -220,6 +287,7 @@ export function InstascoutSearch(): React.ReactElement {
                   </label>
                   {selected.size > 0 && (
                     <button
+                      type="button"
                       onClick={handleImport}
                       disabled={isPending}
                       className="px-3 py-1.5 rounded-lg text-white text-[11px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"

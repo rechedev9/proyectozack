@@ -29,6 +29,11 @@ type InstascoutProfile = {
 export type InstascoutSearchParams = {
   readonly minFollowers: number;
   readonly maxFollowers: number;
+  readonly country: string;
+  readonly bio: string;
+  readonly isVerified: boolean;
+  readonly isBusiness: boolean;
+  readonly isPrivate: boolean | null;
   readonly isCreator: boolean | null;
   readonly enrichedOnly: boolean;
   readonly source: string;
@@ -60,6 +65,11 @@ function buildInstascoutUrl(params: InstascoutSearchParams): string {
   const q = new URLSearchParams({ format: 'json', limit: String(params.limit) });
   if (params.minFollowers > 0) q.set('min_followers', String(params.minFollowers));
   if (params.maxFollowers > 0) q.set('max_followers', String(params.maxFollowers));
+  if (params.country.trim()) q.set('country', params.country.trim());
+  if (params.bio.trim()) q.set('bio', params.bio.trim());
+  if (params.isVerified) q.set('is_verified', '1');
+  if (params.isBusiness) q.set('is_business', '1');
+  if (params.isPrivate !== null) q.set('is_private', params.isPrivate ? '1' : '0');
   if (params.isCreator !== null) q.set('is_creator', params.isCreator ? '1' : '0');
   if (params.enrichedOnly) q.set('enriched_only', '1');
   if (params.source) q.set('source', params.source);

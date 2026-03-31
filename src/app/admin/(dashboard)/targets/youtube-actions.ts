@@ -15,6 +15,45 @@ export type YouTubeSearchResult = {
   readonly error: string | null;
 };
 
+export type YouTubeSearchParams = {
+  readonly query: string;
+  readonly minSubscribers: number;
+  readonly maxSubscribers: number;
+  readonly requiresHandle: boolean;
+  readonly description: string;
+  readonly limit: number;
+};
+
+function filterYouTubeResults(
+  results: YouTubeChannelPreview[],
+  params: YouTubeSearchParams,
+): YouTubeChannelPreview[] {
+  const descriptionNeedle = params.description.trim().toLowerCase();
+
+  return results
+    .filter((channel) => {
+      if (params.minSubscribers > 0 && channel.subscriberCount < params.minSubscribers) {
+        return false;
+      }
+
+      if (params.maxSubscribers > 0 && channel.subscriberCount > params.maxSubscribers) {
+        return false;
+      }
+
+      if (params.requiresHandle && !channel.handle) {
+        return false;
+      }
+
+      if (descriptionNeedle && !channel.description.toLowerCase().includes(descriptionNeedle)) {
+        return false;
+      }
+
+      return true;
+    })
+    .sort((a, b) => b.subscriberCount - a.subscriberCount)
+    .slice(0, params.limit);
+}
+
 function getYouTubeSearchError(err: unknown): string {
   if (!(err instanceof Error)) return 'Error buscando en YouTube';
   if (err.message === 'YOUTUBE_API_KEY is not set') {
@@ -29,10 +68,10 @@ function getYouTubeSearchError(err: unknown): string {
 }
 
 export async function searchYouTubeAction(
-  query: string,
+  params: YouTubeSearchParams,
 ): Promise<YouTubeSearchResult> {
   await requireRole('admin', '/admin/login');
-  if (!query.trim()) {
+  if (!params.query.trim()) {
     return { ok: true, results: [], error: null };
   }
 
@@ -45,7 +84,8 @@ export async function searchYouTubeAction(
   }
 
   try {
-    const results = await searchYouTubeChannels(query.trim(), 10);
+    const fetched = await searchYouTubeChannels(params.query.trim(), Math.min(Math.max(params.limit, 10), 25));
+    const results = filterYouTubeResults(fetched, params);
     return { ok: true, results, error: null };
   } catch (err) {
     return { ok: false, results: [], error: getYouTubeSearchError(err) };
