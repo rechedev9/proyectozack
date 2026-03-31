@@ -118,3 +118,16 @@ export function StarIcon() {
     </svg>
   );
 }
+
+export function TargetsIcon() {
+  return (
+    <svg {...s}>
+      <circle cx="10" cy="10" r="7" />
+      <circle cx="10" cy="10" r="3.5" />
+      <line x1="10" y1="1" x2="10" y2="4" />
+      <line x1="10" y1="16" x2="10" y2="19" />
+      <line x1="1" y1="10" x2="4" y2="10" />
+      <line x1="16" y1="10" x2="19" y2="10" />
+    </svg>
+  );
+}

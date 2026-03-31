@@ -6,6 +6,7 @@ import {
   BrandIcon,
   GiveawayIcon,
   TeamIcon,
+  TargetsIcon,
 } from '@/components/admin/SidebarIcons';
 import type { ReactNode } from 'react';
 
@@ -27,6 +28,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           { href: '/admin/talents', label: 'Roster', icon: <TalentIcon /> },
           { href: '/admin/brands', label: 'Marcas', icon: <BrandIcon /> },
           { href: '/admin/equipo', label: 'Equipo', icon: <TeamIcon /> },
+          { href: '/admin/targets', label: 'Targets', icon: <TargetsIcon /> },
           { href: '/admin/giveaways', label: 'Giveaways', icon: <GiveawayIcon /> },
         ]}
         userEmail={session.user.email}
