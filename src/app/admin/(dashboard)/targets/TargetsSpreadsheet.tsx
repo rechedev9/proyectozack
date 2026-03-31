@@ -12,7 +12,6 @@ import {
   bulkStatusAction,
 } from './actions';
 import { YouTubeSearch } from './YouTubeSearch';
-import { TargetsDiagnostics } from './TargetsDiagnostics';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -622,59 +621,6 @@ export function TargetsSpreadsheet({
             )}
           </tbody>
         </table>
-      </div>
-
-      {/* ── Service Diagnostics ─────────────────────────────────────────────── */}
-      <TargetsDiagnostics />
-
-      {/* ── CSV Import ─────────────────────────────────────────────────────── */}
-      <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-hidden">
-        <button
-          onClick={() => setShowImport((p) => !p)}
-          className="w-full flex items-center justify-between px-5 py-3 text-sm font-semibold text-sp-admin-text hover:bg-sp-admin-hover transition-colors"
-        >
-          <span className="flex items-center gap-2">
-            <svg className="w-4 h-4 text-sp-admin-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1M16 12l-4 4m0 0-4-4m4 4V4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Importar CSV de instascout
-          </span>
-          <svg
-            className={`w-4 h-4 text-sp-admin-muted transition-transform ${showImport ? 'rotate-180' : ''}`}
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-          >
-            <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        {showImport && (
-          <div className="px-5 pb-5 border-t border-sp-admin-border">
-            <form onSubmit={handleImport} className="flex items-center gap-3 mt-4 flex-wrap">
-              <input
-                ref={fileInputRef}
-                type="file"
-                name="file"
-                accept=".csv"
-                required
-                className="text-sm text-sp-admin-text file:mr-3 file:px-3 file:py-1.5 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-sp-admin-accent/20 file:text-sp-admin-accent hover:file:bg-sp-admin-accent/30 transition-colors"
-              />
-              <button
-                type="submit"
-                disabled={isPending}
-                className="px-4 py-2 rounded-lg bg-sp-admin-accent text-sp-admin-bg text-[12px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
-              >
-                {isPending ? 'Importando...' : 'Importar'}
-              </button>
-            </form>
-            {importResult && (
-              <div className="mt-3 flex items-center gap-4 text-xs">
-                <span className="text-sp-admin-muted">Total: <strong className="text-sp-admin-text">{importResult.total}</strong></span>
-                <span className="text-emerald-400">Nuevos: <strong>{importResult.inserted}</strong></span>
-                <span className="text-blue-400">Actualizados: <strong>{importResult.updated}</strong></span>
-                {importResult.errors > 0 && <span className="text-red-400">Errores: <strong>{importResult.errors}</strong></span>}
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       {/* ── YouTube Search ────────────────────────────────────────────────── */}
