@@ -82,6 +82,7 @@ export async function previewInstascoutAction(
   params: InstascoutSearchParams,
 ): Promise<InstascoutPreviewRow[]> {
   await requireRole('admin', '/admin/login');
+  if (!process.env.INSTASCOUT_URL || !process.env.INSTASCOUT_SECRET) return [];
 
   const profiles = await fetchInstascout(params);
   return profiles.map((p) => ({

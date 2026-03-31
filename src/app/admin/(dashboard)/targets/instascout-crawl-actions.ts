@@ -2,6 +2,10 @@
 
 import { requireRole } from '@/lib/auth-guard';
 
+function instascoutConfigured(): boolean {
+  return !!(process.env.INSTASCOUT_URL && process.env.INSTASCOUT_SECRET);
+}
+
 function instascoutFetch(path: string, init?: RequestInit): Promise<Response> {
   const base = process.env.INSTASCOUT_URL;
   const secret = process.env.INSTASCOUT_SECRET;
@@ -35,6 +39,9 @@ type RawStatus = {
 
 export async function getJobStatusAction(): Promise<JobStatus> {
   await requireRole('admin', '/admin/login');
+  if (!instascoutConfigured()) {
+    return { readOnly: true, active: false, id: '', type: '', status: '', elapsed: '', error: '' };
+  }
   const res = await instascoutFetch('/api/status');
   if (!res.ok) throw new Error(`instascout status error (${res.status})`);
   const raw: RawStatus = await res.json();
@@ -54,6 +61,7 @@ export async function startCrawlHashtagAction(
 ): Promise<{ ok: boolean; error: string }> {
   await requireRole('admin', '/admin/login');
 
+  if (!instascoutConfigured()) return { ok: false, error: 'instascout no configurado' };
   const tag = (formData.get('tag') as string | null)?.trim();
   const limit = formData.get('limit') as string | null;
   if (!tag) return { ok: false, error: 'hashtag requerido' };
@@ -77,6 +85,7 @@ export async function startEnrichAction(
 ): Promise<{ ok: boolean; error: string }> {
   await requireRole('admin', '/admin/login');
 
+  if (!instascoutConfigured()) return { ok: false, error: 'instascout no configurado' };
   const limit = formData.get('limit') as string | null;
   const minFollowers = formData.get('min_followers') as string | null;
   const body = new URLSearchParams({
@@ -99,6 +108,7 @@ export async function startEnrichAction(
 
 export async function cancelJobAction(): Promise<{ ok: boolean; error: string }> {
   await requireRole('admin', '/admin/login');
+  if (!instascoutConfigured()) return { ok: false, error: 'instascout no configurado' };
 
   const res = await instascoutFetch('/api/jobs/cancel', { method: 'POST' });
   if (!res.ok) {
