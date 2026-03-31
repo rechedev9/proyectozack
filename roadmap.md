@@ -5,33 +5,7 @@
 
 ---
 
-## 🔴 Blocked — Needs env / external action
-
-### Apply DB migration (targets table)
-- Migration SQL already generated: `drizzle/0014_steep_guardsmen.sql`
-- **NOT YET APPLIED** to Neon — the `targets` table does not exist in prod yet
-- Blocked on: `DATABASE_URL` available in env
-- Command to run: `npx drizzle-kit migrate`
-- Until this runs, `/admin/targets` will throw at runtime
-
----
-
 ## 🟡 In Progress / Next Up
-
-### Targets — Phase 3: YouTube search from admin
-Search YouTube channels directly from the admin and import them as targets.
-
-**Files to create:**
-- `src/app/admin/(dashboard)/targets/youtube-actions.ts` — server action: calls YouTube `search.list` + `channels.list`, returns preview rows
-- `src/app/admin/(dashboard)/targets/YouTubeSearch.tsx` — client component: search field, results table, checkboxes, "Import selected" button
-
-**Files to extend:**
-- `src/lib/services/youtube.ts` — add `searchYouTubeChannels(query, maxResults)` using `search.list` (type=channel) and `getChannelDetails(channelIds[])` using `channels.list` (part=snippet,statistics). The API key (`YOUTUBE_API_KEY`) and 50-ID batching pattern already exist there.
-
-**Notes:**
-- `YOUTUBE_API_KEY` is already in `.env.local` and used by `fetchYouTubeSubscriberCounts()`
-- YouTube channel IDs extracted via `parseYouTubeUrl()` in `scripts/sync-followers.ts:53-82`
-- Imported targets get `platform='youtube'`, `profileUrl='https://youtube.com/@{handle}'`, `status='pendiente'`
 
 ### Targets — Phase 4: Promote target → talent (future)
 Pattern already proven by `scripts/migrate-agency-to-talents.ts`:
