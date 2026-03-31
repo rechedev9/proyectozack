@@ -46,15 +46,22 @@ export function InstascoutCrawl(): React.ReactElement {
     });
   }, []);
 
-  // Poll every 5s while panel is open and a job is running
+  const isRunning = status?.active ?? false;
+
+  // Fetch once when panel opens
   useEffect(() => {
     if (!isOpen) return;
     refreshStatus();
+  }, [isOpen, refreshStatus]);
+
+  // Poll every 5s only while a job is running
+  useEffect(() => {
+    if (!isOpen || !isRunning) return;
     const interval = setInterval(() => {
       refreshStatus();
     }, 5000);
     return () => clearInterval(interval);
-  }, [isOpen, refreshStatus]);
+  }, [isOpen, isRunning, refreshStatus]);
 
   const handleCrawl = (e: React.SyntheticEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -86,8 +93,6 @@ export function InstascoutCrawl(): React.ReactElement {
       refreshStatus();
     });
   };
-
-  const isRunning = status?.active ?? false;
 
   return (
     <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-hidden">

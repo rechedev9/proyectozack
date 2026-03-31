@@ -49,6 +49,7 @@ const targetFields = z.object({
   businessCategory: z.string().max(200).optional(),
   notes: z.string().optional(),
   discoveredVia: z.string().max(200).optional(),
+  enrichedAt: z.coerce.date().optional(),
 });
 
 export const createTargetSchema = targetFields;

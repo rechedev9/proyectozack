@@ -84,12 +84,9 @@ export async function upsertTargetsFromCSV(
         // status and notes are intentionally NOT updated on conflict
       },
     })
-    .returning({ id: targets.id, createdAt: targets.createdAt });
+    .returning({ id: targets.id, xmax: sql<string>`xmax::text` });
 
-  const now = new Date();
-  // rows where createdAt is within a few seconds of now were inserted (not updated)
-  const threshold = new Date(now.getTime() - 5000);
-  const inserted = result.filter((r) => r.createdAt >= threshold).length;
+  const inserted = result.filter((r) => r.xmax === '0').length;
   const updated = result.length - inserted;
 
   return { inserted, updated };
@@ -156,8 +153,17 @@ export async function bulkUpsertTargets(
     profileUrl: r.profileUrl,
     profilePicUrl: r.profilePicUrl ?? null,
     followers: r.followers ?? 0,
+    following: r.following ?? null,
+    posts: r.posts ?? null,
     bio: r.bio ?? null,
+    externalUrl: r.externalUrl ?? null,
+    isPrivate: r.isPrivate ?? null,
+    isVerified: r.isVerified ?? null,
+    isBusiness: r.isBusiness ?? null,
+    isCreator: r.isCreator ?? null,
+    businessCategory: r.businessCategory ?? null,
     discoveredVia: r.discoveredVia ?? null,
+    enrichedAt: r.enrichedAt ?? null,
     status: 'pendiente' as const,
     notes: r.notes ?? null,
   }));
@@ -171,17 +177,24 @@ export async function bulkUpsertTargets(
         fullName: sql`excluded.full_name`,
         profilePicUrl: sql`excluded.profile_pic_url`,
         followers: sql`excluded.followers`,
+        following: sql`excluded.following`,
+        posts: sql`excluded.posts`,
         bio: sql`excluded.bio`,
+        externalUrl: sql`excluded.external_url`,
+        isPrivate: sql`excluded.is_private`,
+        isVerified: sql`excluded.is_verified`,
+        isBusiness: sql`excluded.is_business`,
+        isCreator: sql`excluded.is_creator`,
+        businessCategory: sql`excluded.business_category`,
         discoveredVia: sql`excluded.discovered_via`,
+        enrichedAt: sql`excluded.enriched_at`,
         updatedAt: new Date(),
         // status and notes intentionally NOT updated on conflict
       },
     })
-    .returning({ id: targets.id, createdAt: targets.createdAt });
+    .returning({ id: targets.id, xmax: sql<string>`xmax::text` });
 
-  const now = new Date();
-  const threshold = new Date(now.getTime() - 5000);
-  const inserted = result.filter((r) => r.createdAt >= threshold).length;
+  const inserted = result.filter((r) => r.xmax === '0').length;
   const updated = result.length - inserted;
   return { inserted, updated };
 }

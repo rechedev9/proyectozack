@@ -40,10 +40,17 @@ export type InstascoutPreviewRow = {
   readonly fullName: string;
   readonly bio: string;
   readonly followers: number;
+  readonly following: number;
+  readonly posts: number;
   readonly isVerified: boolean;
   readonly isCreator: boolean;
+  readonly isBusiness: boolean;
+  readonly isPrivate: boolean;
+  readonly businessCategory: string;
+  readonly externalUrl: string;
   readonly profilePicUrl: string;
   readonly discoveredVia: string;
+  readonly enrichedAt: string | null;
 };
 
 function buildInstascoutUrl(params: InstascoutSearchParams): string {
@@ -82,7 +89,9 @@ export async function previewInstascoutAction(
   params: InstascoutSearchParams,
 ): Promise<InstascoutPreviewRow[]> {
   await requireRole('admin', '/admin/login');
-  if (!process.env.INSTASCOUT_URL || !process.env.INSTASCOUT_SECRET) return [];
+  if (!process.env.INSTASCOUT_URL || !process.env.INSTASCOUT_SECRET) {
+    throw new Error('instascout no configurado — revisa INSTASCOUT_URL y INSTASCOUT_SECRET');
+  }
 
   const profiles = await fetchInstascout(params);
   return profiles.map((p) => ({
@@ -90,10 +99,17 @@ export async function previewInstascoutAction(
     fullName: p.full_name,
     bio: p.biography,
     followers: p.followers,
+    following: p.following,
+    posts: p.posts,
     isVerified: p.is_verified,
     isCreator: p.is_creator,
+    isBusiness: p.is_business,
+    isPrivate: p.is_private,
+    businessCategory: p.business_category,
+    externalUrl: p.external_url,
     profilePicUrl: p.profile_pic_url,
     discoveredVia: p.discovered_via,
+    enrichedAt: p.enriched_at || null,
   }));
 }
 
@@ -128,8 +144,17 @@ export async function importInstascoutAction(
       profileUrl: `https://www.instagram.com/${encodeURIComponent(username)}/`,
       profilePicUrl: typeof p.profilePicUrl === 'string' ? p.profilePicUrl : undefined,
       followers: typeof p.followers === 'number' ? p.followers : 0,
+      following: typeof p.following === 'number' ? p.following : undefined,
+      posts: typeof p.posts === 'number' ? p.posts : undefined,
       bio: typeof p.bio === 'string' && p.bio ? p.bio : undefined,
+      externalUrl: typeof p.externalUrl === 'string' && p.externalUrl ? p.externalUrl : undefined,
+      isPrivate: typeof p.isPrivate === 'boolean' ? p.isPrivate : undefined,
+      isVerified: typeof p.isVerified === 'boolean' ? p.isVerified : undefined,
+      isBusiness: typeof p.isBusiness === 'boolean' ? p.isBusiness : undefined,
+      isCreator: typeof p.isCreator === 'boolean' ? p.isCreator : undefined,
+      businessCategory: typeof p.businessCategory === 'string' && p.businessCategory ? p.businessCategory : undefined,
       discoveredVia: typeof p.discoveredVia === 'string' ? p.discoveredVia : 'instascout',
+      enrichedAt: typeof p.enrichedAt === 'string' && p.enrichedAt ? new Date(p.enrichedAt) : undefined,
     });
   }
 

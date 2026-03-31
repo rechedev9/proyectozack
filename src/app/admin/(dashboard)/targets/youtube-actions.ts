@@ -38,23 +38,17 @@ export async function importYouTubeChannelsAction(
   for (const ch of parsed) {
     if (typeof ch !== 'object' || ch === null) continue;
     const c = ch as Record<string, unknown>;
-    const handle =
-      typeof c.handle === 'string' && c.handle
-        ? c.handle
-        : typeof c.channelId === 'string'
-          ? c.channelId
-          : null;
-    if (!handle) continue;
+    const channelId = typeof c.channelId === 'string' ? c.channelId : null;
+    if (!channelId) continue;
 
-    const channelId = typeof c.channelId === 'string' ? c.channelId : handle;
+    const handle = typeof c.handle === 'string' && c.handle ? c.handle : null;
     rows.push({
-      username: handle,
+      username: channelId,
       fullName: typeof c.title === 'string' ? c.title : undefined,
       platform: 'youtube',
-      profileUrl:
-        handle !== channelId
-          ? `https://youtube.com/@${handle}`
-          : `https://youtube.com/channel/${channelId}`,
+      profileUrl: handle
+        ? `https://youtube.com/@${handle}`
+        : `https://youtube.com/channel/${channelId}`,
       profilePicUrl:
         typeof c.thumbnailUrl === 'string' ? c.thumbnailUrl : undefined,
       followers:
