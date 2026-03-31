@@ -98,11 +98,12 @@ export function InstascoutCrawl(): React.ReactElement {
     <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-hidden">
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <button
+        type="button"
         onClick={() => setIsOpen((p) => !p)}
         className="w-full flex items-center justify-between px-5 py-3 text-sm font-semibold text-sp-admin-text hover:bg-sp-admin-hover transition-colors"
       >
         <span className="flex items-center gap-2">
-          <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke={IG_RED} strokeWidth={2}>
+          <svg aria-hidden="true" className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke={IG_RED} strokeWidth={2}>
             <path d="M12 5v14M5 12h14" strokeLinecap="round" />
           </svg>
           Lanzar crawl de instascout
@@ -114,6 +115,7 @@ export function InstascoutCrawl(): React.ReactElement {
           )}
         </span>
         <svg
+          aria-hidden="true"
           className={`w-4 h-4 text-sp-admin-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
         >
@@ -128,10 +130,12 @@ export function InstascoutCrawl(): React.ReactElement {
           <div className="px-5 py-3 flex items-center gap-4 bg-sp-admin-bg/40">
             {status === null ? (
               <span className="text-xs text-sp-admin-muted">Cargando estado...</span>
+            ) : !status.configured ? (
+              <span className="text-xs text-red-400 font-semibold">Instascout no configurado</span>
             ) : status.readOnly ? (
-              <span className="text-xs text-red-400 font-semibold">Read-only — cookies no disponibles</span>
+              <span className="text-xs text-red-400 font-semibold">Instascout conectado, pero sin cookies validas</span>
             ) : !status.id ? (
-              <span className="text-xs text-sp-admin-muted">Sin job activo</span>
+              <span className="text-xs text-emerald-400 font-semibold">Instascout listo - cookies cargadas</span>
             ) : (
               <>
                 <span className="text-xs font-semibold text-sp-admin-text">
@@ -154,7 +158,18 @@ export function InstascoutCrawl(): React.ReactElement {
               </>
             )}
             <div className="ml-auto flex items-center gap-2">
+              {status?.dashboardUrl && (
+                <a
+                  href={status.dashboardUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[11px] text-sp-admin-muted hover:text-sp-admin-text transition-colors"
+                >
+                  Abrir instascout
+                </a>
+              )}
               <button
+                type="button"
                 onClick={refreshStatus}
                 disabled={isPending}
                 className="text-[11px] text-sp-admin-muted hover:text-sp-admin-text transition-colors disabled:opacity-40"
@@ -163,6 +178,7 @@ export function InstascoutCrawl(): React.ReactElement {
               </button>
               {isRunning && (
                 <button
+                  type="button"
                   onClick={handleCancel}
                   disabled={isPending}
                   className="px-3 py-1 rounded text-[11px] font-semibold text-red-400 hover:bg-red-900/20 transition-colors disabled:opacity-40"
@@ -185,8 +201,9 @@ export function InstascoutCrawl(): React.ReactElement {
             </p>
             <form onSubmit={handleCrawl} className="flex items-end gap-3 flex-wrap">
               <div className="flex-1 min-w-[140px]">
-                <label className="block text-[10px] text-sp-admin-muted/70 mb-1">Hashtag (sin #)</label>
+                <label htmlFor="instascout-crawl-tag" className="block text-[10px] text-sp-admin-muted/70 mb-1">Hashtag (sin #)</label>
                 <input
+                  id="instascout-crawl-tag"
                   name="tag"
                   type="text"
                   required
@@ -197,8 +214,9 @@ export function InstascoutCrawl(): React.ReactElement {
                 />
               </div>
               <div className="w-24">
-                <label className="block text-[10px] text-sp-admin-muted/70 mb-1">Límite</label>
+                <label htmlFor="instascout-crawl-limit" className="block text-[10px] text-sp-admin-muted/70 mb-1">Límite</label>
                 <input
+                  id="instascout-crawl-limit"
                   name="limit"
                   type="number"
                   min="10"
@@ -226,8 +244,9 @@ export function InstascoutCrawl(): React.ReactElement {
             </p>
             <form onSubmit={handleEnrich} className="flex items-end gap-3 flex-wrap">
               <div className="w-28">
-                <label className="block text-[10px] text-sp-admin-muted/70 mb-1">Límite</label>
+                <label htmlFor="instascout-enrich-limit" className="block text-[10px] text-sp-admin-muted/70 mb-1">Límite</label>
                 <input
+                  id="instascout-enrich-limit"
                   name="limit"
                   type="number"
                   min="1"
@@ -238,8 +257,9 @@ export function InstascoutCrawl(): React.ReactElement {
                 />
               </div>
               <div className="w-32">
-                <label className="block text-[10px] text-sp-admin-muted/70 mb-1">Min. seguidores</label>
+                <label htmlFor="instascout-enrich-min-followers" className="block text-[10px] text-sp-admin-muted/70 mb-1">Min. seguidores</label>
                 <input
+                  id="instascout-enrich-min-followers"
                   name="min_followers"
                   type="number"
                   min="0"

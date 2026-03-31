@@ -9,12 +9,47 @@ import type { CreateTargetInput } from '@/lib/schemas/target';
 
 const REVALIDATE = '/admin/targets';
 
+export type YouTubeSearchResult = {
+  readonly ok: boolean;
+  readonly results: YouTubeChannelPreview[];
+  readonly error: string | null;
+};
+
+function getYouTubeSearchError(err: unknown): string {
+  if (!(err instanceof Error)) return 'Error buscando en YouTube';
+  if (err.message === 'YOUTUBE_API_KEY is not set') {
+    return 'YouTube no configurado - revisa YOUTUBE_API_KEY';
+  }
+
+  if (err.message.includes('(400)') || err.message.includes('(403)')) {
+    return 'YouTube rechazo la clave API - revisa YOUTUBE_API_KEY, sus restricciones y YouTube Data API v3';
+  }
+
+  return 'Error buscando en YouTube';
+}
+
 export async function searchYouTubeAction(
   query: string,
-): Promise<YouTubeChannelPreview[]> {
+): Promise<YouTubeSearchResult> {
   await requireRole('admin', '/admin/login');
-  if (!query.trim()) return [];
-  return searchYouTubeChannels(query.trim(), 10);
+  if (!query.trim()) {
+    return { ok: true, results: [], error: null };
+  }
+
+  if (!process.env.YOUTUBE_API_KEY) {
+    return {
+      ok: false,
+      results: [],
+      error: 'YouTube no configurado - revisa YOUTUBE_API_KEY',
+    };
+  }
+
+  try {
+    const results = await searchYouTubeChannels(query.trim(), 10);
+    return { ok: true, results, error: null };
+  } catch (err) {
+    return { ok: false, results: [], error: getYouTubeSearchError(err) };
+  }
 }
 
 export async function importYouTubeChannelsAction(

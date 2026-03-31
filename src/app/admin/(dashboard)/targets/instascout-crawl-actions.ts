@@ -18,6 +18,8 @@ function instascoutFetch(path: string, init?: RequestInit): Promise<Response> {
 }
 
 export type JobStatus = {
+  readonly configured: boolean;
+  readonly dashboardUrl: string;
   readonly readOnly: boolean;
   readonly active: boolean;
   readonly id: string;
@@ -40,12 +42,24 @@ type RawStatus = {
 export async function getJobStatusAction(): Promise<JobStatus> {
   await requireRole('admin', '/admin/login');
   if (!instascoutConfigured()) {
-    return { readOnly: true, active: false, id: '', type: '', status: '', elapsed: '', error: '' };
+    return {
+      configured: false,
+      dashboardUrl: '',
+      readOnly: true,
+      active: false,
+      id: '',
+      type: '',
+      status: '',
+      elapsed: '',
+      error: 'Instascout no configurado - revisa INSTASCOUT_URL y INSTASCOUT_SECRET',
+    };
   }
   const res = await instascoutFetch('/api/status');
   if (!res.ok) throw new Error(`instascout status error (${res.status})`);
   const raw: RawStatus = await res.json();
   return {
+    configured: true,
+    dashboardUrl: process.env.INSTASCOUT_URL ?? '',
     readOnly: raw.read_only,
     active: raw.active,
     id: raw.id ?? '',

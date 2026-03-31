@@ -20,8 +20,14 @@ export function YouTubeSearch(): React.ReactElement {
     setImportResult(null);
     startTransition(async () => {
       try {
-        const rows = await searchYouTubeAction(query.trim());
-        setResults(rows);
+        const result = await searchYouTubeAction(query.trim());
+        if (!result.ok) {
+          setError(result.error ?? 'Error buscando en YouTube');
+          setResults([]);
+          return;
+        }
+
+        setResults(result.results);
         setSelected(new Set());
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error buscando en YouTube');
@@ -69,16 +75,18 @@ export function YouTubeSearch(): React.ReactElement {
     <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-hidden">
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <button
+        type="button"
         onClick={() => setIsOpen((p) => !p)}
         className="w-full flex items-center justify-between px-5 py-3 text-sm font-semibold text-sp-admin-text hover:bg-sp-admin-hover transition-colors"
       >
         <span className="flex items-center gap-2">
-          <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#FF0000">
+          <svg aria-hidden="true" className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#FF0000">
             <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z" />
           </svg>
           Buscar canales en YouTube
         </span>
         <svg
+          aria-hidden="true"
           className={`w-4 h-4 text-sp-admin-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
@@ -102,6 +110,7 @@ export function YouTubeSearch(): React.ReactElement {
               className="flex-1 bg-sp-admin-bg rounded-lg px-3 py-2 text-sm text-sp-admin-text placeholder:text-sp-admin-muted/40 border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/40"
             />
             <button
+              type="button"
               onClick={handleSearch}
               disabled={isPending || !query.trim()}
               className="px-4 py-2 rounded-lg bg-[#FF0000] text-white text-[12px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
@@ -148,6 +157,7 @@ export function YouTubeSearch(): React.ReactElement {
                   </label>
                   {selected.size > 0 && (
                     <button
+                      type="button"
                       onClick={handleImport}
                       disabled={isPending}
                       className="px-3 py-1.5 rounded-lg bg-[#FF0000] text-white text-[11px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"

@@ -14,6 +14,7 @@ import {
 import { YouTubeSearch } from './YouTubeSearch';
 import { InstascoutSearch } from './InstascoutSearch';
 import { InstascoutCrawl } from './InstascoutCrawl';
+import { TargetsDiagnostics } from './TargetsDiagnostics';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -624,6 +625,9 @@ export function TargetsSpreadsheet({
           </tbody>
         </table>
       </div>
+
+      {/* ── Service Diagnostics ─────────────────────────────────────────────── */}
+      <TargetsDiagnostics />
 
       {/* ── CSV Import ─────────────────────────────────────────────────────── */}
       <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-hidden">
