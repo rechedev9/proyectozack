@@ -11,6 +11,7 @@ import {
   deleteTargetsAction,
   bulkStatusAction,
 } from './actions';
+import { YouTubeSearch } from './YouTubeSearch';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -671,6 +672,9 @@ export function TargetsSpreadsheet({
           </div>
         )}
       </div>
+
+      {/* ── YouTube Search ────────────────────────────────────────────────── */}
+      <YouTubeSearch />
 
       {/* ── Manual Create ──────────────────────────────────────────────────── */}
       <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-hidden">

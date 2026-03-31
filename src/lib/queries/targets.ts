@@ -144,6 +144,48 @@ export async function deleteTargets(ids: number[]): Promise<void> {
   await db.delete(targets).where(inArray(targets.id, ids));
 }
 
+export async function bulkUpsertTargets(
+  rows: CreateTargetInput[],
+): Promise<{ inserted: number; updated: number }> {
+  if (rows.length === 0) return { inserted: 0, updated: 0 };
+
+  const values = rows.map((r) => ({
+    username: r.username,
+    fullName: r.fullName ?? null,
+    platform: r.platform,
+    profileUrl: r.profileUrl,
+    profilePicUrl: r.profilePicUrl ?? null,
+    followers: r.followers ?? 0,
+    bio: r.bio ?? null,
+    discoveredVia: r.discoveredVia ?? null,
+    status: 'pendiente' as const,
+    notes: r.notes ?? null,
+  }));
+
+  const result = await db
+    .insert(targets)
+    .values(values)
+    .onConflictDoUpdate({
+      target: [targets.platform, targets.username],
+      set: {
+        fullName: sql`excluded.full_name`,
+        profilePicUrl: sql`excluded.profile_pic_url`,
+        followers: sql`excluded.followers`,
+        bio: sql`excluded.bio`,
+        discoveredVia: sql`excluded.discovered_via`,
+        updatedAt: new Date(),
+        // status and notes intentionally NOT updated on conflict
+      },
+    })
+    .returning({ id: targets.id, createdAt: targets.createdAt });
+
+  const now = new Date();
+  const threshold = new Date(now.getTime() - 5000);
+  const inserted = result.filter((r) => r.createdAt >= threshold).length;
+  const updated = result.length - inserted;
+  return { inserted, updated };
+}
+
 export async function bulkUpdateStatus(
   ids: number[],
   status: 'pendiente' | 'contactado' | 'finalizado',
