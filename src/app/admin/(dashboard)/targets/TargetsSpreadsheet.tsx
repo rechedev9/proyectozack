@@ -13,6 +13,7 @@ import {
 } from './actions';
 import { YouTubeSearch } from './YouTubeSearch';
 import { InstascoutSearch } from './InstascoutSearch';
+import { InstascoutCrawl } from './InstascoutCrawl';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -676,6 +677,9 @@ export function TargetsSpreadsheet({
 
       {/* ── YouTube Search ────────────────────────────────────────────────── */}
       <YouTubeSearch />
+
+      {/* ── Instascout Crawl ──────────────────────────────────────────────── */}
+      <InstascoutCrawl />
 
       {/* ── Instascout Search ─────────────────────────────────────────────── */}
       <InstascoutSearch />
