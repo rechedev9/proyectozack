@@ -12,6 +12,7 @@ import {
   bulkStatusAction,
 } from './actions';
 import { YouTubeSearch } from './YouTubeSearch';
+import { InstascoutSearch } from './InstascoutSearch';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -675,6 +676,9 @@ export function TargetsSpreadsheet({
 
       {/* ── YouTube Search ────────────────────────────────────────────────── */}
       <YouTubeSearch />
+
+      {/* ── Instascout Search ─────────────────────────────────────────────── */}
+      <InstascoutSearch />
 
       {/* ── Manual Create ──────────────────────────────────────────────────── */}
       <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-hidden">
