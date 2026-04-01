@@ -1,17 +1,37 @@
-import { eq, desc, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { targets } from '@/db/schema';
 import type { Target } from '@/types';
 import type { CreateTargetInput, CsvTargetRow } from '@/lib/schemas/target';
 
 // xmax is a Postgres system column: '0' on freshly inserted rows, non-zero on conflict-updated rows
-function countUpsertResults(rows: Array<{ xmax: string }>): { inserted: number; updated: number } {
+function countUpsertResults(rows: Array<{ id: number; xmax: string }>): { inserted: number; updated: number; ids: number[] } {
   const inserted = rows.filter((r) => r.xmax === '0').length;
-  return { inserted, updated: rows.length - inserted };
+  return { inserted, updated: rows.length - inserted, ids: rows.map((r) => r.id) };
 }
 
 export async function getAllTargets(): Promise<Target[]> {
   return db.select().from(targets).orderBy(desc(targets.createdAt));
+}
+
+export async function getTargetsByPlatformAndUsernames(
+  platform: 'instagram' | 'youtube',
+  usernames: string[],
+): Promise<Array<{ id: number; username: string }>> {
+  if (usernames.length === 0) return [];
+
+  return db
+    .select({ id: targets.id, username: targets.username })
+    .from(targets)
+    .where(and(eq(targets.platform, platform), inArray(targets.username, usernames)));
+}
+
+export async function getBrandTargets(brandUserId: string): Promise<Target[]> {
+  return db
+    .select()
+    .from(targets)
+    .where(eq(targets.brandUserId, brandUserId))
+    .orderBy(desc(targets.updatedAt), desc(targets.createdAt));
 }
 
 export async function getTargetStats(): Promise<{
@@ -40,8 +60,8 @@ export async function getTargetStats(): Promise<{
 export async function upsertTargetsFromCSV(
   rows: CsvTargetRow[],
   batchId: string,
-): Promise<{ inserted: number; updated: number }> {
-  if (rows.length === 0) return { inserted: 0, updated: 0 };
+): Promise<{ inserted: number; updated: number; ids: number[] }> {
+  if (rows.length === 0) return { inserted: 0, updated: 0, ids: [] };
 
   const values = rows.map((r) => ({
     username: r.username,
@@ -146,8 +166,8 @@ export async function deleteTargets(ids: number[]): Promise<void> {
 
 export async function bulkUpsertTargets(
   rows: CreateTargetInput[],
-): Promise<{ inserted: number; updated: number }> {
-  if (rows.length === 0) return { inserted: 0, updated: 0 };
+): Promise<{ inserted: number; updated: number; ids: number[] }> {
+  if (rows.length === 0) return { inserted: 0, updated: 0, ids: [] };
 
   const values = rows.map((r) => ({
     username: r.username,
@@ -198,6 +218,57 @@ export async function bulkUpsertTargets(
     .returning({ id: targets.id, xmax: sql<string>`xmax::text` });
 
   return countUpsertResults(result);
+}
+
+export async function assignTargetsToBrand(
+  brandUserId: string,
+  targetIds: number[],
+): Promise<{ assigned: number }> {
+  if (targetIds.length === 0) return { assigned: 0 };
+
+  const result = await db
+    .update(targets)
+    .set({ brandUserId, updatedAt: new Date() })
+    .where(inArray(targets.id, targetIds))
+    .returning({ id: targets.id });
+
+  return { assigned: result.length };
+}
+
+export async function updateBrandTargetStatus(
+  brandUserId: string,
+  targetId: number,
+  status: 'pendiente' | 'contactado' | 'finalizado',
+): Promise<void> {
+  await db
+    .update(targets)
+    .set({
+      status,
+      contactedAt: status === 'contactado' ? new Date() : undefined,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(targets.id, targetId),
+        eq(targets.brandUserId, brandUserId),
+      ),
+    );
+}
+
+export async function updateBrandTargetNotes(
+  brandUserId: string,
+  targetId: number,
+  notes: string,
+): Promise<void> {
+  await db
+    .update(targets)
+    .set({ notes, updatedAt: new Date() })
+    .where(
+      and(
+        eq(targets.id, targetId),
+        eq(targets.brandUserId, brandUserId),
+      ),
+    );
 }
 
 export async function bulkUpdateStatus(

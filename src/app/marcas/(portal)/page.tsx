@@ -63,12 +63,20 @@ export default async function BrandDashboardPage() {
 
       {/* Quick action */}
       <div className="mt-8">
-        <Link
-          href="/marcas/talentos"
-          className="inline-block px-8 py-3 rounded-full text-sm font-bold text-white bg-sp-grad hover:opacity-90 transition-opacity"
-        >
-          Explorar talentos
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/marcas/targets"
+            className="inline-block px-8 py-3 rounded-full text-sm font-bold text-white bg-sp-grad hover:opacity-90 transition-opacity"
+          >
+            Abrir targets
+          </Link>
+          <Link
+            href="/marcas/talentos"
+            className="inline-block px-8 py-3 rounded-full text-sm font-bold text-sp-dark border border-sp-border bg-white hover:bg-sp-off transition-colors"
+          >
+            Explorar talentos
+          </Link>
+        </div>
       </div>
     </div>
   );

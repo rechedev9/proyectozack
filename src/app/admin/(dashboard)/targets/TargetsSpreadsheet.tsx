@@ -7,8 +7,11 @@ import {
   updateStatusAction,
   updateNotesAction,
   deleteTargetsAction,
+  assignTargetsToBrandAction,
 } from './actions';
 import { YouTubeSearch } from './YouTubeSearch';
+import { InstascoutSearch } from './InstascoutSearch';
+import type { BrandUserRow } from '@/lib/queries/brandUsers';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -39,14 +42,17 @@ const STATUS_LABELS: Record<StatusValue, string> = {
 
 export function TargetsSpreadsheet({
   targets,
+  brands = [],
 }: {
   targets: Target[];
+  brands?: BrandUserRow[];
 }): React.ReactElement {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortState>({ field: 'createdAt', dir: 'desc' });
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [editingNotes, setEditingNotes] = useState<number | null>(null);
   const [notesValue, setNotesValue] = useState('');
+  const [brandUserId, setBrandUserId] = useState('');
   const [isPending, startTransition] = useTransition();
 
   // ── Filter ────────────────────────────────────────────────────────────────
@@ -143,7 +149,7 @@ export function TargetsSpreadsheet({
   };
 
   const handleDelete = (ids: number[]): void => {
-    if (!confirm(`¿Eliminar ${ids.length} canal${ids.length > 1 ? 'es' : ''}?`)) return;
+    if (!confirm(`¿Eliminar ${ids.length} target${ids.length > 1 ? 's' : ''}?`)) return;
     const fd = new FormData();
     fd.set('ids', ids.join(','));
     startTransition(async () => {
@@ -153,6 +159,17 @@ export function TargetsSpreadsheet({
         for (const id of ids) next.delete(id);
         return next;
       });
+    });
+  };
+
+  const handleAssignToBrand = (): void => {
+    if (!brandUserId || selectedIds.length === 0) return;
+    const fd = new FormData();
+    fd.set('brandUserId', brandUserId);
+    fd.set('ids', selectedIds.join(','));
+    startTransition(async () => {
+      await assignTargetsToBrandAction(fd);
+      setSelected(new Set());
     });
   };
 
@@ -189,6 +206,7 @@ export function TargetsSpreadsheet({
 
       {/* ── YouTube Search (primary action) ─────────────────────────────── */}
       <YouTubeSearch />
+      <InstascoutSearch brands={brands} />
 
       {/* ── Filter row ──────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3">
@@ -203,7 +221,7 @@ export function TargetsSpreadsheet({
           </svg>
           <input
             type="text"
-            placeholder="Filtrar canales..."
+            placeholder="Filtrar targets..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-sp-admin-card rounded-lg pl-9 pr-3 py-2 text-sm text-sp-admin-text placeholder:text-sp-admin-muted/40 border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40 transition-all"
@@ -212,7 +230,7 @@ export function TargetsSpreadsheet({
         <span className="text-xs text-sp-admin-muted tabular-nums ml-auto">
           <span className="font-bold text-sp-admin-text">{filtered.length}</span>
           {filtered.length !== targets.length && ` de ${targets.length}`}{' '}
-          {filtered.length === 1 ? 'canal' : 'canales'}
+          {filtered.length === 1 ? 'target' : 'targets'}
         </span>
         <button
           type="button"
@@ -229,6 +247,33 @@ export function TargetsSpreadsheet({
           <span className="text-xs font-semibold text-sp-admin-accent tabular-nums">
             {selected.size} seleccionado{selected.size > 1 ? 's' : ''}
           </span>
+          <span className="text-[11px] text-sp-admin-muted">
+            Asigna los seleccionados a la marca correcta para que aparezcan en su spreadsheet.
+          </span>
+          {brands.length > 0 && (
+            <>
+              <select
+                value={brandUserId}
+                onChange={(e) => setBrandUserId(e.target.value)}
+                className="min-w-[220px] bg-sp-admin-bg rounded px-3 py-1.5 text-[11px] text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40"
+              >
+                <option value="">Asignar a marca...</option>
+                {brands.map((brand) => (
+                  <option key={brand.id} value={brand.id}>
+                    {brand.name} ({brand.email})
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={handleAssignToBrand}
+                disabled={isPending || !brandUserId}
+                className="px-3 py-1 rounded text-[11px] font-semibold text-sp-admin-text hover:bg-sp-admin-hover transition-colors disabled:opacity-40"
+              >
+                Asignar
+              </button>
+            </>
+          )}
           <button
             type="button"
             onClick={() => handleDelete(selectedIds)}
@@ -265,10 +310,10 @@ export function TargetsSpreadsheet({
               </th>
               <Th className="w-8 text-center">#</Th>
               <Th sortable field="username" sort={sort} onSort={toggleSort} arrow={sortArrow}>
-                Canal
+                Perfil
               </Th>
               <Th sortable field="followers" sort={sort} onSort={toggleSort} arrow={sortArrow} className="w-28 text-right">
-                Suscriptores
+                Audiencia
               </Th>
               <Th className="max-w-[240px]">Descripción</Th>
               <Th sortable field="status" sort={sort} onSort={toggleSort} arrow={sortArrow} className="w-28">
@@ -283,7 +328,7 @@ export function TargetsSpreadsheet({
               <tr>
                 <td colSpan={8} className="px-5 py-16 text-center text-sp-admin-muted text-sm">
                   {targets.length === 0
-                    ? 'Usa el buscador de arriba para encontrar e importar canales'
+                    ? 'Usa el sourcing de arriba para encontrar e importar targets'
                     : 'Sin resultados'}
                 </td>
               </tr>

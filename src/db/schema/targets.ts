@@ -11,6 +11,8 @@ import {
   unique,
 } from 'drizzle-orm/pg-core';
 
+import { user } from './auth';
+
 export const targetStatusEnum = pgEnum('target_status', [
   'pendiente',
   'contactado',
@@ -49,6 +51,7 @@ export const targets = pgTable(
     businessCategory: varchar('business_category', { length: 200 }),
 
     // Outreach workflow
+    brandUserId: text('brand_user_id').references(() => user.id, { onDelete: 'set null' }),
     status: targetStatusEnum('status').notNull().default('pendiente'),
     notes: text('notes'),
 
@@ -64,6 +67,7 @@ export const targets = pgTable(
   },
   (t) => [
     index('targets_platform_idx').on(t.platform),
+    index('targets_brand_user_idx').on(t.brandUserId),
     index('targets_status_idx').on(t.status),
     index('targets_followers_idx').on(t.followers),
     index('targets_created_at_idx').on(t.createdAt),

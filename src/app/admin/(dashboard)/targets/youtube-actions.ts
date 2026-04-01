@@ -12,7 +12,10 @@ const REVALIDATE = '/admin/targets';
 export type YouTubeSearchResult = {
   readonly ok: boolean;
   readonly results: YouTubeChannelPreview[];
+  readonly fetchedResults: YouTubeChannelPreview[];
   readonly error: string | null;
+  readonly fetchedCount: number;
+  readonly filteredCount: number;
 };
 
 export type YouTubeSearchParams = {
@@ -24,11 +27,19 @@ export type YouTubeSearchParams = {
   readonly limit: number;
 };
 
+function parseKeywords(input: string): string[] {
+  return input
+    .toLowerCase()
+    .split(/[\n,]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
 function filterYouTubeResults(
   results: YouTubeChannelPreview[],
   params: YouTubeSearchParams,
 ): YouTubeChannelPreview[] {
-  const descriptionNeedle = params.description.trim().toLowerCase();
+  const descriptionTerms = parseKeywords(params.description);
 
   return results
     .filter((channel) => {
@@ -44,7 +55,10 @@ function filterYouTubeResults(
         return false;
       }
 
-      if (descriptionNeedle && !channel.description.toLowerCase().includes(descriptionNeedle)) {
+      if (
+        descriptionTerms.length > 0 &&
+        !descriptionTerms.some((term) => channel.description.toLowerCase().includes(term))
+      ) {
         return false;
       }
 
@@ -72,23 +86,41 @@ export async function searchYouTubeAction(
 ): Promise<YouTubeSearchResult> {
   await requireRole('admin', '/admin/login');
   if (!params.query.trim()) {
-    return { ok: true, results: [], error: null };
+    return { ok: true, results: [], fetchedResults: [], error: null, fetchedCount: 0, filteredCount: 0 };
   }
 
   if (!process.env.YOUTUBE_API_KEY) {
     return {
       ok: false,
       results: [],
+      fetchedResults: [],
       error: 'YouTube no configurado - revisa YOUTUBE_API_KEY',
+      fetchedCount: 0,
+      filteredCount: 0,
     };
   }
 
   try {
-    const fetched = await searchYouTubeChannels(params.query.trim(), Math.min(Math.max(params.limit, 10), 25));
+    const fetchLimit = Math.min(Math.max(params.limit * 5, 25), 50);
+    const fetched = await searchYouTubeChannels(params.query.trim(), fetchLimit);
     const results = filterYouTubeResults(fetched, params);
-    return { ok: true, results, error: null };
+    return {
+      ok: true,
+      results,
+      fetchedResults: fetched,
+      error: null,
+      fetchedCount: fetched.length,
+      filteredCount: results.length,
+    };
   } catch (err) {
-    return { ok: false, results: [], error: getYouTubeSearchError(err) };
+    return {
+      ok: false,
+      results: [],
+      fetchedResults: [],
+      error: getYouTubeSearchError(err),
+      fetchedCount: 0,
+      filteredCount: 0,
+    };
   }
 }
 

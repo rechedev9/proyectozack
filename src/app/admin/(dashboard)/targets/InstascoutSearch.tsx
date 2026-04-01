@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { formatCompact } from '@/lib/format';
 import type { InstascoutPreviewRow, InstascoutSearchParams } from './instascout-actions';
 import { previewInstascoutAction, importInstascoutAction } from './instascout-actions';
+import type { BrandUserRow } from '@/lib/queries/brandUsers';
 
 const IG_RED = '#E1306C';
 
@@ -21,14 +22,20 @@ const DEFAULT_PARAMS: InstascoutSearchParams = {
   limit: 50,
 };
 
-export function InstascoutSearch(): React.ReactElement {
+function selectedBrandLabel(brands: BrandUserRow[], brandUserId: string): string | null {
+  return brands.find((brand) => brand.id === brandUserId)?.name ?? null;
+}
+
+export function InstascoutSearch({ brands = [] }: { brands?: BrandUserRow[] }): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   const [params, setParams] = useState<InstascoutSearchParams>(DEFAULT_PARAMS);
   const [results, setResults] = useState<InstascoutPreviewRow[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [brandUserId, setBrandUserId] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [importResult, setImportResult] = useState<{ imported: number; updated: number } | null>(null);
+  const [importResult, setImportResult] = useState<{ imported: number; updated: number; assigned: number } | null>(null);
   const [isPending, startTransition] = useTransition();
+  const brandLabel = selectedBrandLabel(brands, brandUserId);
 
   const handleSearch = (): void => {
     setError(null);
@@ -66,6 +73,7 @@ export function InstascoutSearch(): React.ReactElement {
     if (toImport.length === 0) return;
     const fd = new FormData();
     fd.set('profiles', JSON.stringify(toImport));
+    if (brandUserId) fd.set('brandUserId', brandUserId);
     setError(null);
     startTransition(async () => {
       try {
@@ -260,10 +268,25 @@ export function InstascoutSearch(): React.ReactElement {
 
           {/* ── Import feedback ──────────────────────────────────────────── */}
           {importResult && (
-            <div className="px-5 pb-3 flex items-center gap-4 text-xs">
-              <span className="text-emerald-400">Importados: <strong>{importResult.imported}</strong></span>
+            <div className="px-5 pb-3 space-y-1 text-xs">
+              <div className="flex items-center gap-4 flex-wrap">
+                <span className="text-emerald-400">Importados: <strong>{importResult.imported}</strong></span>
+                {importResult.updated > 0 && (
+                  <span className="text-blue-400">Actualizados: <strong>{importResult.updated}</strong></span>
+                )}
+                {importResult.assigned > 0 && (
+                  <span className="text-violet-400">Asignados: <strong>{importResult.assigned}</strong></span>
+                )}
+              </div>
+              {brandLabel && importResult.assigned > 0 && (
+                <p className="text-sp-admin-muted">
+                  Los perfiles seleccionados ya estan disponibles en la hoja de <strong className="text-sp-admin-text">{brandLabel}</strong>.
+                </p>
+              )}
               {importResult.updated > 0 && (
-                <span className="text-blue-400">Actualizados: <strong>{importResult.updated}</strong></span>
+                <p className="text-sp-admin-muted/80">
+                  Si un target ya existia, se han refrescado sus metricas sin tocar estados ni notas.
+                </p>
               )}
             </div>
           )}
@@ -276,6 +299,25 @@ export function InstascoutSearch(): React.ReactElement {
                   {results.length} perfiles encontrados
                 </span>
                 <div className="flex items-center gap-3">
+                  {brands.length > 0 && (
+                    <select
+                      value={brandUserId}
+                      onChange={(e) => setBrandUserId(e.target.value)}
+                      className="min-w-[220px] bg-sp-admin-bg rounded-md px-3 py-1.5 text-[11px] text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40"
+                    >
+                      <option value="">Importar sin asignar</option>
+                      {brands.map((brand) => (
+                        <option key={brand.id} value={brand.id}>
+                          {brand.name} ({brand.email})
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  {brandLabel && (
+                    <span className="text-[11px] text-sp-admin-muted">
+                      Destino: <strong className="text-sp-admin-text">{brandLabel}</strong>
+                    </span>
+                  )}
                   <label className="flex items-center gap-1.5 text-[11px] text-sp-admin-muted cursor-pointer select-none">
                     <input
                       type="checkbox"

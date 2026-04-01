@@ -16,6 +16,7 @@ export default async function BrandPortalLayout({ children }: BrandPortalLayoutP
         subtitle="Portal de Marcas"
         navItems={[
           { href: '/marcas', label: 'Dashboard' },
+          { href: '/marcas/targets', label: 'Targets' },
           { href: '/marcas/talentos', label: 'Talentos' },
           { href: '/marcas/propuestas', label: 'Propuestas' },
         ]}

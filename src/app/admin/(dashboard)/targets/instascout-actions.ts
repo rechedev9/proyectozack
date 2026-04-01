@@ -2,7 +2,10 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireRole } from '@/lib/auth-guard';
-import { bulkUpsertTargets } from '@/lib/queries/targets';
+import {
+  assignTargetsToBrand,
+  bulkUpsertTargets,
+} from '@/lib/queries/targets';
 import type { CreateTargetInput } from '@/lib/schemas/target';
 
 const REVALIDATE = '/admin/targets';
@@ -125,20 +128,21 @@ export async function previewInstascoutAction(
 
 export async function importInstascoutAction(
   formData: FormData,
-): Promise<{ imported: number; updated: number }> {
+): Promise<{ imported: number; updated: number; assigned: number }> {
   await requireRole('admin', '/admin/login');
 
   const raw = formData.get('profiles') as string | null;
-  if (!raw) return { imported: 0, updated: 0 };
+  const brandUserId = (formData.get('brandUserId') as string | null)?.trim() ?? '';
+  if (!raw) return { imported: 0, updated: 0, assigned: 0 };
 
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
   } catch {
-    return { imported: 0, updated: 0 };
+    return { imported: 0, updated: 0, assigned: 0 };
   }
 
-  if (!Array.isArray(parsed)) return { imported: 0, updated: 0 };
+  if (!Array.isArray(parsed)) return { imported: 0, updated: 0, assigned: 0 };
 
   const rows: CreateTargetInput[] = [];
   for (const item of parsed) {
@@ -169,6 +173,14 @@ export async function importInstascoutAction(
   }
 
   const result = await bulkUpsertTargets(rows);
+  let assigned = 0;
+
+  if (brandUserId && result.ids.length > 0) {
+    const assignment = await assignTargetsToBrand(brandUserId, result.ids);
+    assigned = assignment.assigned;
+  }
+
   revalidatePath(REVALIDATE);
-  return { imported: result.inserted, updated: result.updated };
+  revalidatePath('/marcas');
+  return { imported: result.inserted, updated: result.updated, assigned };
 }

@@ -9,6 +9,7 @@ import {
   createTarget,
   deleteTargets,
   bulkUpdateStatus,
+  assignTargetsToBrand,
 } from '@/lib/queries/targets';
 import {
   csvTargetRowSchema,
@@ -25,15 +26,16 @@ const REVALIDATE = '/admin/targets';
 
 export async function importCSVAction(
   formData: FormData,
-): Promise<{ total: number; inserted: number; updated: number; errors: number }> {
+): Promise<{ total: number; inserted: number; updated: number; errors: number; assigned: number }> {
   await requireRole('admin', '/admin/login');
 
   const file = formData.get('file') as File | null;
-  if (!file) return { total: 0, inserted: 0, updated: 0, errors: 0 };
+  const brandUserId = (formData.get('brandUserId') as string | null)?.trim() ?? '';
+  if (!file) return { total: 0, inserted: 0, updated: 0, errors: 0, assigned: 0 };
 
   const text = await file.text();
   const lines = text.split('\n').filter((l) => l.trim());
-  if (lines.length < 2) return { total: 0, inserted: 0, updated: 0, errors: 0 };
+  if (lines.length < 2) return { total: 0, inserted: 0, updated: 0, errors: 0, assigned: 0 };
 
   const headers = parseCsvLine(lines[0]!).map((h) => h.trim());
   const batchId = randomUUID().slice(0, 8);
@@ -56,10 +58,18 @@ export async function importCSVAction(
     }
   }
 
-  const { inserted, updated } = await upsertTargetsFromCSV(validRows, batchId);
-  revalidatePath(REVALIDATE);
+  const { inserted, updated, ids } = await upsertTargetsFromCSV(validRows, batchId);
+  let assigned = 0;
 
-  return { total: validRows.length + errors, inserted, updated, errors };
+  if (brandUserId && ids.length > 0) {
+    const result = await assignTargetsToBrand(brandUserId, ids);
+    assigned = result.assigned;
+  }
+
+  revalidatePath(REVALIDATE);
+  revalidatePath('/marcas');
+
+  return { total: validRows.length + errors, inserted, updated, errors, assigned };
 }
 
 // ─── Status update ────────────────────────────────────────────────────────────
@@ -154,6 +164,26 @@ export async function bulkStatusAction(formData: FormData): Promise<void> {
 
   await bulkUpdateStatus(parsed.data.ids, parsed.data.status);
   revalidatePath(REVALIDATE);
+}
+
+export async function assignTargetsToBrandAction(
+  formData: FormData,
+): Promise<{ assigned: number; updated: number }> {
+  await requireRole('admin', '/admin/login');
+
+  const rawIds = formData.get('ids') as string | null;
+  const brandUserId = formData.get('brandUserId') as string | null;
+  if (!rawIds || !brandUserId) return { assigned: 0, updated: 0 };
+
+  const ids = rawIds
+    .split(',')
+    .map(Number)
+    .filter((n) => n > 0);
+
+  const result = await assignTargetsToBrand(brandUserId, ids);
+  revalidatePath(REVALIDATE);
+  revalidatePath('/marcas');
+  return { assigned: result.assigned, updated: 0 };
 }
 
 // ─── CSV line parser (handles quoted fields) ──────────────────────────────────
