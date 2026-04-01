@@ -25,11 +25,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         variant="dark"
         navItems={[
           { href: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
-          { href: '/admin/talents', label: 'Roster', icon: <TalentIcon /> },
+          { href: '/admin/talents', label: 'Roster', icon: <TalentIcon />, prefetch: false },
           { href: '/admin/brands', label: 'Marcas', icon: <BrandIcon /> },
           { href: '/admin/equipo', label: 'Equipo', icon: <TeamIcon /> },
-          { href: '/admin/targets', label: 'Targets', icon: <TargetsIcon /> },
-          { href: '/admin/giveaways', label: 'Giveaways', icon: <GiveawayIcon /> },
+          { href: '/admin/targets', label: 'Targets', icon: <TargetsIcon />, prefetch: false },
+          { href: '/admin/giveaways', label: 'Giveaways', icon: <GiveawayIcon />, prefetch: false },
         ]}
         userEmail={session.user.email}
         logoutHref="/api/auth/sign-out"

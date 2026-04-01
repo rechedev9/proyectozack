@@ -146,18 +146,11 @@ export async function searchTwitchChannels(
   const channels = data.data ?? [];
   if (channels.length === 0) return [];
 
-  // Enrich with follower counts
-  const followerMap = await _buildFollowerMap(
-    channels.map((c) => c.id),
-    clientId,
-    token,
-  );
-
   return channels.map((c) => ({
     broadcasterId: c.id,
     login: c.broadcaster_login,
     displayName: c.display_name,
-    followerCount: followerMap.get(c.id) ?? 0,
+    followerCount: 0,
     language: c.broadcaster_language,
     currentGame: c.game_name,
     isLive: c.is_live,
@@ -188,17 +181,11 @@ export async function getCS2LiveStreams(first = 100, language?: string): Promise
   const streams = data.data ?? [];
   if (streams.length === 0) return [];
 
-  const followerMap = await _buildFollowerMap(
-    streams.map((s) => s.user_id),
-    clientId,
-    token,
-  );
-
   return streams.map((s) => ({
     broadcasterId: s.user_id,
     login: s.user_login,
     displayName: s.user_name,
-    followerCount: followerMap.get(s.user_id) ?? 0,
+    followerCount: 0,
     language: s.language,
     currentGame: s.game_name,
     isLive: true,

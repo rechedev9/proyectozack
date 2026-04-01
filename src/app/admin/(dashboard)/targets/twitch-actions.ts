@@ -62,10 +62,11 @@ export async function searchTwitchAction(
         channels = channels.filter((c) => c.language === params.language);
       }
     }
-    if (params.minFollowers > 0) {
+    const hasFollowerCounts = channels.some((c) => c.followerCount > 0);
+    if (hasFollowerCounts && params.minFollowers > 0) {
       channels = channels.filter((c) => c.followerCount >= params.minFollowers);
     }
-    if (params.maxFollowers > 0) {
+    if (hasFollowerCounts && params.maxFollowers > 0) {
       channels = channels.filter((c) => c.followerCount <= params.maxFollowers);
     }
     if (params.minViewers > 0) {

@@ -24,7 +24,48 @@ export type DashboardStats = {
   followersByPlatform: Record<string, number>;
 };
 
-export async function getAdminDashboardStats(): Promise<DashboardStats> {
+export type TopCreator = {
+  name: string;
+  slug: string;
+  totalFollowers: number;
+  totalFormatted: string;
+  socials: Array<{ platform: string; followersDisplay: string }>;
+};
+
+export type AdminDashboardData = {
+  stats: DashboardStats;
+  topCreators: TopCreator[];
+};
+
+function buildTopCreators(limit: number, allTalents: Awaited<ReturnType<typeof getAllTalents>>): TopCreator[] {
+  return allTalents
+    .map((t) => ({
+      name: t.name,
+      slug: t.slug,
+      totalFollowers: totalFollowersForCreator(t.socials),
+      totalFormatted: formatCompact(totalFollowersForCreator(t.socials)),
+      socials: t.socials.map((s) => ({
+        platform: s.platform,
+        followersDisplay: s.followersDisplay,
+      })),
+    }))
+    .sort((a, b) => b.totalFollowers - a.totalFollowers)
+    .slice(0, limit);
+}
+
+function buildFollowersByPlatform(allTalents: Awaited<ReturnType<typeof getAllTalents>>): Record<string, number> {
+  const followersByPlatform: Record<string, number> = {};
+  for (const t of allTalents) {
+    for (const s of t.socials) {
+      const key = getSocialPlatformKey(s.platform) ?? s.platform;
+      const parsed = parseFollowers(s.followersDisplay);
+      followersByPlatform[key] = (followersByPlatform[key] ?? 0) + parsed;
+    }
+  }
+  return followersByPlatform;
+}
+
+export async function getAdminDashboardData(limit = 5): Promise<AdminDashboardData> {
   const now = new Date();
 
   const [
@@ -49,55 +90,30 @@ export async function getAdminDashboardStats(): Promise<DashboardStats> {
     getAllTalents(),
   ]);
 
-  // Aggregate followers by platform across all talents
-  const followersByPlatform: Record<string, number> = {};
-  for (const t of allTalents) {
-    for (const s of t.socials) {
-      const key = getSocialPlatformKey(s.platform) ?? s.platform;
-      const parsed = parseFollowers(s.followersDisplay);
-      followersByPlatform[key] = (followersByPlatform[key] ?? 0) + parsed;
-    }
-  }
-
   return {
-    talentCount: talentRows[0]?.count ?? 0,
-    publicCount: publicRows[0]?.count ?? 0,
-    internalCount: internalRows[0]?.count ?? 0,
-    agencyCount,
-    caseCount: caseRows[0]?.count ?? 0,
-    contactCount: contactRows[0]?.count ?? 0,
-    activeBrandCount: brandRows[0]?.count ?? 0,
-    activeGiveawayCount: giveawayRows[0]?.count ?? 0,
-    followersByPlatform,
+    stats: {
+      talentCount: talentRows[0]?.count ?? 0,
+      publicCount: publicRows[0]?.count ?? 0,
+      internalCount: internalRows[0]?.count ?? 0,
+      agencyCount,
+      caseCount: caseRows[0]?.count ?? 0,
+      contactCount: contactRows[0]?.count ?? 0,
+      activeBrandCount: brandRows[0]?.count ?? 0,
+      activeGiveawayCount: giveawayRows[0]?.count ?? 0,
+      followersByPlatform: buildFollowersByPlatform(allTalents),
+    },
+    topCreators: buildTopCreators(limit, allTalents),
   };
 }
 
-export type TopCreator = {
-  name: string;
-  slug: string;
-  totalFollowers: number;
-  totalFormatted: string;
-  socials: Array<{ platform: string; followersDisplay: string }>;
-};
+export async function getAdminDashboardStats(): Promise<DashboardStats> {
+  const { stats } = await getAdminDashboardData();
+  return stats;
+}
 
 export async function getTopCreatorsByFollowers(limit = 5): Promise<TopCreator[]> {
-  const allTalents = await getAllTalents();
-
-  const ranked = allTalents
-    .map((t) => ({
-      name: t.name,
-      slug: t.slug,
-      totalFollowers: totalFollowersForCreator(t.socials),
-      totalFormatted: formatCompact(totalFollowersForCreator(t.socials)),
-      socials: t.socials.map((s) => ({
-        platform: s.platform,
-        followersDisplay: s.followersDisplay,
-      })),
-    }))
-    .sort((a, b) => b.totalFollowers - a.totalFollowers)
-    .slice(0, limit);
-
-  return ranked;
+  const { topCreators } = await getAdminDashboardData(limit);
+  return topCreators;
 }
 
 export type RecentContact = {

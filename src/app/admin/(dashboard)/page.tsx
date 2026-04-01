@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import {
-  getAdminDashboardStats,
-  getTopCreatorsByFollowers,
+  getAdminDashboardData,
   getRecentContacts,
 } from '@/lib/queries/dashboard';
 import { formatCompact } from '@/lib/format';
@@ -30,7 +29,7 @@ type StatCard = {
   readonly accent: string;
 };
 
-function buildStatCards(stats: Awaited<ReturnType<typeof getAdminDashboardStats>>): StatCard[] {
+function buildStatCards(stats: Awaited<ReturnType<typeof getAdminDashboardData>>['stats']): StatCard[] {
   return [
     { label: 'Creadores', value: stats.talentCount, href: '/admin/talents', icon: <TalentIcon />, accent: '#53fc18' },
     { label: 'Público', value: stats.publicCount, href: '/admin/talents', icon: <UsersIcon />, accent: '#53fc18' },
@@ -46,9 +45,8 @@ function buildStatCards(stats: Awaited<ReturnType<typeof getAdminDashboardStats>
 // ── Page ─────────────────────────────────────────────────────────────
 
 export default async function AdminDashboardPage(): Promise<ReactElement> {
-  const [stats, topCreators, recentContacts] = await Promise.all([
-    getAdminDashboardStats(),
-    getTopCreatorsByFollowers(5),
+  const [{ stats, topCreators }, recentContacts] = await Promise.all([
+    getAdminDashboardData(),
     getRecentContacts(5),
   ]);
 
@@ -65,11 +63,12 @@ export default async function AdminDashboardPage(): Promise<ReactElement> {
       {/* ── Stat cards ──────────────────────────────────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
           {statCards.map(({ label, value, href, icon, accent }) => (
-            <Link
-              key={label}
-              href={href}
-              className="rounded-xl bg-sp-admin-card border border-sp-admin-border px-4 py-3 hover:bg-sp-admin-hover transition-colors group"
-            >
+              <Link
+                key={label}
+                href={href}
+                prefetch={href === '#contactos' ? null : false}
+                className="rounded-xl bg-sp-admin-card border border-sp-admin-border px-4 py-3 hover:bg-sp-admin-hover transition-colors group"
+              >
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="w-4 h-4 shrink-0" style={{ color: accent }}>{icon}</span>
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-sp-admin-muted group-hover:text-sp-admin-text transition-colors truncate">
@@ -122,6 +121,7 @@ export default async function AdminDashboardPage(): Promise<ReactElement> {
             </div>
             <Link
               href="/admin/talents"
+              prefetch={false}
               className="text-[11px] font-semibold text-sp-admin-accent hover:underline"
             >
               Ver todos
@@ -203,6 +203,7 @@ export default async function AdminDashboardPage(): Promise<ReactElement> {
           </div>
           <Link
             href="/admin/talents"
+            prefetch={false}
             className="text-[11px] font-semibold text-sp-admin-accent hover:underline"
           >
             Ver roster completo

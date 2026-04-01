@@ -8,6 +8,7 @@ type NavItem = {
   href: string;
   label: string;
   icon?: React.ReactNode;
+  prefetch?: boolean | null;
 }
 
 type PortalSidebarProps = {
@@ -48,11 +49,12 @@ export function PortalSidebar({
           {title}
         </Link>
         <button
+          type="button"
           onClick={() => setOpen(!open)}
           className={`p-2 ${dark ? 'text-sp-admin-text' : 'text-sp-dark'}`}
           aria-label={open ? 'Cerrar menu' : 'Abrir menu'}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             {open ? (
               <>
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -71,9 +73,14 @@ export function PortalSidebar({
 
       {/* Backdrop */}
       {open && (
-        <div
+        <button
+          type="button"
           className="md:hidden fixed inset-0 z-40 bg-black/40"
+          aria-label="Cerrar menu"
           onClick={() => setOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setOpen(false);
+          }}
         />
       )}
 
@@ -94,12 +101,14 @@ export function PortalSidebar({
           <p className={`text-[11px] mt-1 ${dark ? 'text-sp-admin-muted' : 'text-sp-muted'}`}>{subtitle}</p>
         </div>
         <div className="flex-1 p-3 space-y-0.5 mt-2">
-          {navItems.map(({ href, label, icon }) => {
+          {navItems.map(({ href, label, icon, prefetch }) => {
             const active = isActive(href);
+            const prefetchValue = prefetch ?? null;
             return (
               <Link
                 key={href}
                 href={href}
+                prefetch={prefetchValue}
                 onClick={() => setOpen(false)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
                   dark
