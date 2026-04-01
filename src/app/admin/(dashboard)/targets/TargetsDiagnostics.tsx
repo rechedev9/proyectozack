@@ -23,7 +23,6 @@ type ItemProps = {
   readonly status: string;
   readonly message: string;
   readonly tone: Tone;
-  readonly href?: string;
 };
 
 function DiagnosticsItem({
@@ -31,7 +30,6 @@ function DiagnosticsItem({
   status,
   message,
   tone,
-  href,
 }: ItemProps): React.ReactElement {
   return (
     <div className="rounded-lg border border-sp-admin-border bg-sp-admin-bg/40 p-4">
@@ -46,16 +44,6 @@ function DiagnosticsItem({
           {status}
         </span>
       </div>
-      {href && (
-        <a
-          href={href}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 inline-flex text-[11px] text-sp-admin-muted hover:text-sp-admin-text transition-colors"
-        >
-          Abrir servicio
-        </a>
-      )}
     </div>
   );
 }
@@ -84,20 +72,7 @@ export function TargetsDiagnostics(): React.ReactElement {
   }, [refresh]);
 
   const youtubeTone: Tone = diagnostics?.youtubeConfigured ? 'ok' : 'error';
-  const instascoutServiceTone: Tone = !diagnostics
-    ? 'warn'
-    : diagnostics.instascoutConfigured && diagnostics.instascoutReachable
-      ? 'ok'
-      : diagnostics.instascoutConfigured
-        ? 'warn'
-        : 'error';
-  const instascoutSessionTone: Tone = !diagnostics
-    ? 'warn'
-    : !diagnostics.instascoutConfigured || !diagnostics.instascoutReachable
-      ? 'warn'
-      : diagnostics.instascoutReadOnly
-        ? 'error'
-        : 'ok';
+  const twitchTone: Tone = diagnostics?.twitchConfigured ? 'ok' : 'error';
 
   return (
     <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-hidden">
@@ -105,7 +80,7 @@ export function TargetsDiagnostics(): React.ReactElement {
         <div>
           <p className="text-sm font-semibold text-sp-admin-text">Diagnostico de servicios</p>
           <p className="text-xs text-sp-admin-muted">
-            Estado en tiempo real de YouTube e Instascout
+            Estado en tiempo real de YouTube y Twitch
           </p>
         </div>
         <button
@@ -118,7 +93,7 @@ export function TargetsDiagnostics(): React.ReactElement {
         </button>
       </div>
 
-      <div className="grid gap-3 p-5 md:grid-cols-3">
+      <div className="grid gap-3 p-5 md:grid-cols-2">
         <DiagnosticsItem
           label="YouTube API"
           status={diagnostics?.youtubeConfigured ? 'OK' : 'FALTA CLAVE'}
@@ -126,39 +101,10 @@ export function TargetsDiagnostics(): React.ReactElement {
           tone={youtubeTone}
         />
         <DiagnosticsItem
-          label="Instascout servicio"
-          status={
-            diagnostics
-              ? diagnostics.instascoutConfigured && diagnostics.instascoutReachable
-                ? 'ONLINE'
-                : diagnostics.instascoutConfigured
-                  ? 'SIN RESPUESTA'
-                  : 'SIN CONFIG'
-              : 'COMPROBANDO'
-          }
-          message={
-            diagnostics?.instascoutServiceMessage ?? 'Comprobando conectividad con Instascout...'
-          }
-          tone={instascoutServiceTone}
-          {...(diagnostics?.instascoutDashboardUrl
-            ? { href: diagnostics.instascoutDashboardUrl }
-            : {})}
-        />
-        <DiagnosticsItem
-          label="Instascout sesion"
-          status={
-            diagnostics
-              ? !diagnostics.instascoutConfigured || !diagnostics.instascoutReachable
-                ? 'SIN DATOS'
-                : diagnostics.instascoutReadOnly
-                  ? 'READ-ONLY'
-                  : 'LISTO'
-              : 'COMPROBANDO'
-          }
-          message={
-            diagnostics?.instascoutSessionMessage ?? 'Comprobando cookies y sesion...'
-          }
-          tone={instascoutSessionTone}
+          label="Twitch API"
+          status={diagnostics?.twitchConfigured ? 'OK' : 'FALTA CLAVE'}
+          message={diagnostics?.twitchMessage ?? 'Comprobando configuracion...'}
+          tone={twitchTone}
         />
       </div>
     </div>

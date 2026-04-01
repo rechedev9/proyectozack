@@ -1,13 +1,12 @@
 import { z } from 'zod';
 
-// CSV booleans arrive as the string "true"/"false" from instascout's Go CSV encoder
+// CSV booleans arrive as the string "true"/"false"
 const csvBool = z
   .union([z.boolean(), z.string()])
   .transform((v) => (typeof v === 'string' ? v === 'true' : v))
   .optional();
 
-// ─── CSV row from instascout export ─────────────────────────────────────────
-// Matches the 15 columns emitted by internal/export/export.go:18-23
+// ─── CSV row from target import ─────────────────────────────────────────────
 
 export const csvTargetRowSchema = z.object({
   username: z.string().min(1).max(200),

@@ -11,7 +11,6 @@ import {
 } from './actions';
 import { YouTubeSearch } from './YouTubeSearch';
 import { TwitchSearch } from './TwitchSearch';
-import { InstascoutSearch } from './InstascoutSearch';
 import type { BrandUserRow } from '@/lib/queries/brandUsers';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -222,7 +221,6 @@ export function TargetsSpreadsheet({
       {/* ── YouTube Search (primary action) ─────────────────────────────── */}
       <YouTubeSearch />
       <TwitchSearch />
-      <InstascoutSearch brands={brands} />
 
       {/* ── Filter row ──────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3">
