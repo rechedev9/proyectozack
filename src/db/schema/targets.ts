@@ -22,6 +22,8 @@ export const targetStatusEnum = pgEnum('target_status', [
 export const targetPlatformEnum = pgEnum('target_platform', [
   'instagram',
   'youtube',
+  'twitch',
+  'kick',
 ]);
 
 export const targets = pgTable(

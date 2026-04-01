@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useMemo } from 'react';
 import { formatCompact } from '@/lib/format';
 import type { YouTubeChannelPreview } from '@/lib/services/youtube';
 import {
   searchYouTubeAction,
   importYouTubeChannelsAction,
+  enrichYouTubeAvgViewsAction,
 } from './youtube-actions';
 
 import type {
   YouTubeSearchParams,
+  AvgViewsRecord,
 } from './youtube-actions';
 
 const YT_RED = '#FF0000';
@@ -33,10 +35,36 @@ export function YouTubeSearch(): React.ReactElement {
   const [hasSearched, setHasSearched] = useState(false);
   const [searchMeta, setSearchMeta] = useState<{ fetchedCount: number; filteredCount: number } | null>(null);
   const [importResult, setImportResult] = useState<{ imported: number; updated: number } | null>(null);
+  const [avgViews, setAvgViews] = useState<AvgViewsRecord>({});
+  const [isEnriching, setIsEnriching] = useState(false);
+  const [minAvgViews, setMinAvgViews] = useState(0);
+  const [maxAvgViews, setMaxAvgViews] = useState(0);
   const [isPending, startTransition] = useTransition();
 
   const set = <K extends keyof YouTubeSearchParams>(key: K, value: YouTubeSearchParams[K]): void => {
     setParams((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleEnrichAvgViews = (): void => {
+    const visibleRows = results.length > 0 ? results : fetchedResults;
+    const ids = visibleRows.map((r) => r.channelId);
+    if (ids.length === 0) return;
+    setIsEnriching(true);
+    setError(null);
+    startTransition(async () => {
+      try {
+        const res = await enrichYouTubeAvgViewsAction(ids);
+        if (!res.ok) {
+          setError(res.error ?? 'Error al obtener vistas medias');
+        } else {
+          setAvgViews(res.data);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error al obtener vistas medias');
+      } finally {
+        setIsEnriching(false);
+      }
+    });
   };
 
   const handleSearch = (): void => {
@@ -44,6 +72,7 @@ export function YouTubeSearch(): React.ReactElement {
     setError(null);
     setImportResult(null);
     setSearchMeta(null);
+    setAvgViews({});
     setHasSearched(true);
     startTransition(async () => {
       try {
@@ -79,15 +108,27 @@ export function YouTubeSearch(): React.ReactElement {
     });
   };
 
-  const allSelected = results.length > 0 && results.every((r) => selected.has(r.channelId));
+  const displayedResults = useMemo(() => {
+    if (minAvgViews === 0 && maxAvgViews === 0) return results;
+    return results.filter((ch) => {
+      const avg = avgViews[ch.channelId]?.avgViews ?? null;
+      if (avg === null) return true;
+      if (minAvgViews > 0 && avg < minAvgViews) return false;
+      if (maxAvgViews > 0 && avg > maxAvgViews) return false;
+      return true;
+    });
+  }, [results, avgViews, minAvgViews, maxAvgViews]);
+  const hasResults = displayedResults.length > 0 || results.length > 0;
+
+  const allSelected = displayedResults.length > 0 && displayedResults.every((r) => selected.has(r.channelId));
 
   const toggleAll = (): void => {
     if (allSelected) setSelected(new Set());
-    else setSelected(new Set(results.map((r) => r.channelId)));
+    else setSelected(new Set(displayedResults.map((r) => r.channelId)));
   };
 
   const handleImport = (): void => {
-    const visibleRows = results.length > 0 ? results : fetchedResults;
+    const visibleRows = displayedResults.length > 0 ? displayedResults : fetchedResults;
     const toImport = visibleRows.filter((r) => selected.has(r.channelId));
     if (toImport.length === 0) return;
     const fd = new FormData();
@@ -102,6 +143,9 @@ export function YouTubeSearch(): React.ReactElement {
         setSelected(new Set());
         setParams(DEFAULT_PARAMS);
         setSearchMeta(null);
+        setAvgViews({});
+        setMinAvgViews(0);
+        setMaxAvgViews(0);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error importando canales');
       }
@@ -112,8 +156,6 @@ export function YouTubeSearch(): React.ReactElement {
     setResults(fetchedResults.slice(0, params.limit));
     setSelected(new Set());
   };
-
-  const hasResults = results.length > 0;
 
   return (
     <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-hidden">
@@ -249,6 +291,34 @@ export function YouTubeSearch(): React.ReactElement {
                 className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/30"
               />
             </div>
+            <div>
+              <label htmlFor="youtube-min-avg" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted/70 mb-1">
+                Min. vistas medias
+              </label>
+              <input
+                id="youtube-min-avg"
+                type="number"
+                min="0"
+                value={minAvgViews || ''}
+                onChange={(e) => setMinAvgViews(parseInt(e.target.value, 10) || 0)}
+                placeholder="0"
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/30 placeholder:text-sp-admin-muted/40"
+              />
+            </div>
+            <div>
+              <label htmlFor="youtube-max-avg" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted/70 mb-1">
+                Max. vistas medias
+              </label>
+              <input
+                id="youtube-max-avg"
+                type="number"
+                min="0"
+                value={maxAvgViews || ''}
+                onChange={(e) => setMaxAvgViews(parseInt(e.target.value, 10) || 0)}
+                placeholder="ilimitado"
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/30 placeholder:text-sp-admin-muted/40"
+              />
+            </div>
           </div>
 
           {/* ── Checkbox option ──────────────────────────────────────────────── */}
@@ -320,23 +390,33 @@ export function YouTubeSearch(): React.ReactElement {
                     Todos
                   </label>
                   <span className="text-[11px] text-sp-admin-muted tabular-nums">
-                    {results.length} canales
+                    {displayedResults.length} canales
                     {searchMeta && searchMeta.fetchedCount !== results.length && (
                       <span className="opacity-60"> · {searchMeta.fetchedCount} traídos</span>
                     )}
                   </span>
                 </div>
-                {selected.size > 0 && (
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={handleImport}
-                    disabled={isPending}
-                    className="px-3 py-1.5 rounded-lg text-white text-[11px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
-                    style={{ backgroundColor: YT_RED }}
+                    onClick={handleEnrichAvgViews}
+                    disabled={isPending || isEnriching || results.length === 0}
+                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold border border-sp-admin-border text-sp-admin-muted hover:text-sp-admin-text transition-colors disabled:opacity-40"
                   >
-                    Importar {selected.size} {selected.size === 1 ? 'canal' : 'canales'}
+                    {isEnriching ? 'Enriqueciendo…' : 'Avg. views'}
                   </button>
-                )}
+                  {selected.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleImport}
+                      disabled={isPending}
+                      className="px-3 py-1.5 rounded-lg text-white text-[11px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+                      style={{ backgroundColor: YT_RED }}
+                    >
+                      Importar {selected.size} {selected.size === 1 ? 'canal' : 'canales'}
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Results table */}
@@ -351,13 +431,16 @@ export function YouTubeSearch(): React.ReactElement {
                       <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted w-28 text-right">
                         Suscriptores
                       </th>
+                      <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted w-28 text-right">
+                        Avg. views
+                      </th>
                       <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted">
                         Descripción
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-sp-admin-border/60">
-                    {results.map((channel) => (
+                    {displayedResults.map((channel) => (
                       <tr
                         key={channel.channelId}
                         onClick={() => toggleOne(channel.channelId)}
@@ -401,6 +484,18 @@ export function YouTubeSearch(): React.ReactElement {
                           {channel.subscriberCount > 0
                             ? formatCompact(channel.subscriberCount)
                             : '--'}
+                        </td>
+                        <td className="px-4 py-2.5 text-right text-[12px] tabular-nums">
+                          {(() => {
+                            const v = avgViews[channel.channelId];
+                            if (!v) return <span className="text-sp-admin-muted/40">—</span>;
+                            return (
+                              <span className="font-semibold text-sp-admin-text">
+                                {formatCompact(v.avgViews)}
+                                <span className="text-[10px] font-normal text-sp-admin-muted ml-0.5">/{v.videoCount}v</span>
+                              </span>
+                            );
+                          })()}
                         </td>
                         <td className="px-4 py-2.5 max-w-[300px]">
                           {channel.description ? (

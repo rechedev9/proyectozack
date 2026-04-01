@@ -4,6 +4,15 @@ import { targets } from '@/db/schema';
 import type { Target } from '@/types';
 import type { CreateTargetInput, CsvTargetRow } from '@/lib/schemas/target';
 
+function buildProfileUrl(platform: 'instagram' | 'youtube' | 'twitch' | 'kick', username: string): string {
+  switch (platform) {
+    case 'youtube': return `https://www.youtube.com/channel/${encodeURIComponent(username)}`;
+    case 'twitch': return `https://www.twitch.tv/${encodeURIComponent(username)}`;
+    case 'kick': return `https://kick.com/${encodeURIComponent(username)}`;
+    default: return `https://www.instagram.com/${encodeURIComponent(username)}/`;
+  }
+}
+
 // xmax is a Postgres system column: '0' on freshly inserted rows, non-zero on conflict-updated rows
 function countUpsertResults(rows: Array<{ id: number; xmax: string }>): { inserted: number; updated: number; ids: number[] } {
   const inserted = rows.filter((r) => r.xmax === '0').length;
@@ -15,7 +24,7 @@ export async function getAllTargets(): Promise<Target[]> {
 }
 
 export async function getTargetsByPlatformAndUsernames(
-  platform: 'instagram' | 'youtube',
+  platform: 'instagram' | 'youtube' | 'twitch' | 'kick',
   usernames: string[],
 ): Promise<Array<{ id: number; username: string }>> {
   if (usernames.length === 0) return [];
@@ -63,27 +72,30 @@ export async function upsertTargetsFromCSV(
 ): Promise<{ inserted: number; updated: number; ids: number[] }> {
   if (rows.length === 0) return { inserted: 0, updated: 0, ids: [] };
 
-  const values = rows.map((r) => ({
-    username: r.username,
-    fullName: r.full_name ?? null,
-    platform: 'instagram' as const,
-    profileUrl: `https://www.instagram.com/${encodeURIComponent(r.username)}/`,
-    profilePicUrl: r.profile_pic_url ?? null,
-    followers: r.followers ?? 0,
-    following: r.following ?? null,
-    posts: r.posts ?? null,
-    bio: r.biography ?? null,
-    externalUrl: r.external_url ?? null,
-    isPrivate: r.is_private ?? null,
-    isVerified: r.is_verified ?? null,
-    isBusiness: r.is_business ?? null,
-    isCreator: r.is_creator ?? null,
-    businessCategory: r.business_category ?? null,
-    discoveredVia: r.discovered_via ?? null,
-    importBatchId: batchId,
-    enrichedAt: r.enriched_at ?? null,
-    status: 'pendiente' as const,
-  }));
+  const values = rows.map((r) => {
+    const platform = r.platform ?? 'instagram';
+    return {
+      username: r.username,
+      fullName: r.full_name ?? null,
+      platform,
+      profileUrl: buildProfileUrl(platform, r.username),
+      profilePicUrl: r.profile_pic_url ?? null,
+      followers: r.followers ?? 0,
+      following: r.following ?? null,
+      posts: r.posts ?? null,
+      bio: r.biography ?? null,
+      externalUrl: r.external_url ?? null,
+      isPrivate: r.is_private ?? null,
+      isVerified: r.is_verified ?? null,
+      isBusiness: r.is_business ?? null,
+      isCreator: r.is_creator ?? null,
+      businessCategory: r.business_category ?? null,
+      discoveredVia: r.discovered_via ?? null,
+      importBatchId: batchId,
+      enrichedAt: r.enriched_at ?? null,
+      status: 'pendiente' as const,
+    };
+  });
 
   const result = await db
     .insert(targets)

@@ -120,6 +120,13 @@
       "when": 1775047088334,
       "tag": "0016_daffy_tomas",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1775053077685,
+      "tag": "0017_shallow_black_tarantula",
+      "breakpoints": true
     }
   ]
 }

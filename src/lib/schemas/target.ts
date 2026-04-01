@@ -11,6 +11,7 @@ const csvBool = z
 
 export const csvTargetRowSchema = z.object({
   username: z.string().min(1).max(200),
+  platform: z.enum(['instagram', 'youtube', 'twitch', 'kick']).optional(),
   full_name: z.string().max(300).optional(),
   biography: z.string().optional(),
   followers: z.coerce.number().int().nonnegative().default(0),
@@ -34,7 +35,7 @@ export type CsvTargetRow = z.infer<typeof csvTargetRowSchema>;
 const targetFields = z.object({
   username: z.string().min(1).max(200),
   fullName: z.string().max(300).optional(),
-  platform: z.enum(['instagram', 'youtube']),
+  platform: z.enum(['instagram', 'youtube', 'twitch', 'kick']),
   profileUrl: z.url(),
   profilePicUrl: z.preprocess((v) => (v === '' ? undefined : v), z.url().optional()),
   followers: z.coerce.number().int().nonnegative().default(0),

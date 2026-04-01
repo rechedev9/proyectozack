@@ -2,8 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireRole } from '@/lib/auth-guard';
-import { searchYouTubeChannels } from '@/lib/services/youtube';
-import type { YouTubeChannelPreview } from '@/lib/services/youtube';
+import { searchYouTubeChannels, getChannelAvgViews } from '@/lib/services/youtube';
+import type { YouTubeChannelPreview, YouTubeAvgViewsResult } from '@/lib/services/youtube';
 import { bulkUpsertTargets } from '@/lib/queries/targets';
 import type { CreateTargetInput } from '@/lib/schemas/target';
 
@@ -171,4 +171,30 @@ export async function importYouTubeChannelsAction(
   const result = await bulkUpsertTargets(rows);
   revalidatePath(REVALIDATE);
   return { imported: result.inserted, updated: result.updated };
+}
+
+export type AvgViewsRecord = Record<string, YouTubeAvgViewsResult>;
+
+export async function enrichYouTubeAvgViewsAction(
+  channelIds: string[],
+): Promise<{ ok: boolean; data: AvgViewsRecord; error: string | null }> {
+  await requireRole('admin', '/admin/login');
+  if (channelIds.length === 0) return { ok: true, data: {}, error: null };
+
+  try {
+    const settled = await Promise.allSettled(channelIds.map((id) => getChannelAvgViews(id)));
+    const data: AvgViewsRecord = {};
+    for (const result of settled) {
+      if (result.status === 'fulfilled') {
+        data[result.value.channelId] = result.value;
+      }
+    }
+    return { ok: true, data, error: null };
+  } catch (err) {
+    return {
+      ok: false,
+      data: {},
+      error: err instanceof Error ? err.message : 'Error enriching avg views',
+    };
+  }
 }

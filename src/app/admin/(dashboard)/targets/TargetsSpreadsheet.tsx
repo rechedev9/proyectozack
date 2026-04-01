@@ -10,6 +10,7 @@ import {
   assignTargetsToBrandAction,
 } from './actions';
 import { YouTubeSearch } from './YouTubeSearch';
+import { TwitchSearch } from './TwitchSearch';
 import { InstascoutSearch } from './InstascoutSearch';
 import type { BrandUserRow } from '@/lib/queries/brandUsers';
 
@@ -19,6 +20,20 @@ type SortField = 'username' | 'followers' | 'status' | 'createdAt';
 type SortDir = 'asc' | 'desc';
 type SortState = { field: SortField; dir: SortDir };
 type StatusValue = 'pendiente' | 'contactado' | 'finalizado';
+
+const PLATFORM_COLORS: Record<string, string> = {
+  instagram: '#E1306C',
+  youtube: '#FF0000',
+  twitch: '#9146FF',
+  kick: '#53FC18',
+};
+
+const PLATFORM_LABELS: Record<string, string> = {
+  instagram: 'IG',
+  youtube: 'YT',
+  twitch: 'TW',
+  kick: 'KK',
+};
 
 const STATUS_CYCLE: Record<StatusValue, StatusValue> = {
   pendiente: 'contactado',
@@ -206,6 +221,7 @@ export function TargetsSpreadsheet({
 
       {/* ── YouTube Search (primary action) ─────────────────────────────── */}
       <YouTubeSearch />
+      <TwitchSearch />
       <InstascoutSearch brands={brands} />
 
       {/* ── Filter row ──────────────────────────────────────────────────── */}
@@ -365,8 +381,11 @@ export function TargetsSpreadsheet({
                             className="w-7 h-7 rounded-full object-cover shrink-0 bg-sp-admin-border"
                           />
                         ) : (
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0 bg-[#FF0000]">
-                            YT
+                          <div
+                            className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
+                            style={{ backgroundColor: PLATFORM_COLORS[target.platform] }}
+                          >
+                            {PLATFORM_LABELS[target.platform]}
                           </div>
                         )}
                         <div className="min-w-0">

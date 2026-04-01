@@ -3,6 +3,42 @@ type YouTubeChannelStats = {
   subscriberCount: number;
 }
 
+type YouTubeContentDetailsResponse = {
+  items?: Array<{
+    id: string;
+    contentDetails: {
+      relatedPlaylists: {
+        uploads: string;
+      };
+    };
+  }>;
+}
+
+type YouTubePlaylistItemsResponse = {
+  items?: Array<{
+    snippet: {
+      resourceId: {
+        videoId: string;
+      };
+    };
+  }>;
+}
+
+type YouTubeVideosStatsResponse = {
+  items?: Array<{
+    id: string;
+    statistics: {
+      viewCount?: string;
+    };
+  }>;
+}
+
+export type YouTubeAvgViewsResult = {
+  readonly channelId: string;
+  readonly avgViews: number;
+  readonly videoCount: number;
+}
+
 type YouTubeAPIResponse = {
   items?: Array<{
     id: string;
@@ -167,4 +203,94 @@ export async function getChannelDetails(
   }
 
   return results;
+}
+
+/**
+ * Get the uploads playlist ID for a channel.
+ * Costs 1 quota unit.
+ */
+async function getUploadsPlaylistId(channelId: string): Promise<string | null> {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) throw new Error('YOUTUBE_API_KEY is not set');
+
+  const url = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${encodeURIComponent(channelId)}&key=${apiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`YouTube channels API error (${res.status}): ${text}`);
+  }
+
+  const data: YouTubeContentDetailsResponse = await res.json();
+  return data.items?.[0]?.contentDetails.relatedPlaylists.uploads ?? null;
+}
+
+/**
+ * Get the most recent video IDs from an uploads playlist.
+ * Costs 1 quota unit per request.
+ */
+async function getRecentVideoIds(playlistId: string, count = 10): Promise<string[]> {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) throw new Error('YOUTUBE_API_KEY is not set');
+
+  const url =
+    `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet` +
+    `&playlistId=${encodeURIComponent(playlistId)}&maxResults=${count}&key=${apiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`YouTube playlistItems API error (${res.status}): ${text}`);
+  }
+
+  const data: YouTubePlaylistItemsResponse = await res.json();
+  return (data.items ?? []).map((item) => item.snippet.resourceId.videoId).filter(Boolean);
+}
+
+/**
+ * Get view counts for up to 50 video IDs.
+ * Costs 1 quota unit per 50 videos.
+ */
+async function getVideoViewCounts(videoIds: string[]): Promise<Map<string, number>> {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) throw new Error('YOUTUBE_API_KEY is not set');
+
+  const counts = new Map<string, number>();
+  if (videoIds.length === 0) return counts;
+
+  const ids = videoIds.slice(0, 50).join(',');
+  const url = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${ids}&key=${apiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`YouTube videos API error (${res.status}): ${text}`);
+  }
+
+  const data: YouTubeVideosStatsResponse = await res.json();
+  for (const item of data.items ?? []) {
+    counts.set(item.id, parseInt(item.statistics.viewCount ?? '0', 10) || 0);
+  }
+
+  return counts;
+}
+
+/**
+ * Compute average view count across the most recent N videos for a channel.
+ * Total quota cost: ~3 units (contentDetails + playlistItems + videos).
+ */
+export async function getChannelAvgViews(
+  channelId: string,
+  count = 10,
+): Promise<YouTubeAvgViewsResult> {
+  const playlistId = await getUploadsPlaylistId(channelId);
+  if (!playlistId) return { channelId, avgViews: 0, videoCount: 0 };
+
+  const videoIds = await getRecentVideoIds(playlistId, count);
+  if (videoIds.length === 0) return { channelId, avgViews: 0, videoCount: 0 };
+
+  const viewCounts = await getVideoViewCounts(videoIds);
+  const total = Array.from(viewCounts.values()).reduce((sum, v) => sum + v, 0);
+  return {
+    channelId,
+    avgViews: viewCounts.size > 0 ? Math.round(total / viewCounts.size) : 0,
+    videoCount: viewCounts.size,
+  };
 }

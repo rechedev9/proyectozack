@@ -13,13 +13,57 @@ type TalentModalProps = {
   onClose: () => void;
 }
 
+const FOCUSABLE = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
 export function TalentModal({ talent, onClose }: TalentModalProps) {
   const onCloseRef = useRef(onClose);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
+
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onCloseRef.current(); };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    // Focus first focusable element on open
+    const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE));
+    focusable[0]?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') {
+        onCloseRef.current();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+
+      const nodes = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE));
+      if (nodes.length === 0) return;
+
+      const first = nodes[0]!;
+      const last = nodes[nodes.length - 1]!;
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const grad = gradientStyle(talent.gradientC1, talent.gradientC2);
@@ -30,6 +74,7 @@ export function TalentModal({ talent, onClose }: TalentModalProps) {
       onClick={onClose}
     >
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="talent-modal-name"
