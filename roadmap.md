@@ -1,140 +1,8 @@
 # SocialPro — Pending Work
 
-> Last updated: 2026-04-01. Historical bootstrap phases (1–10) are complete.
+> Last updated: 2026-04-01. Historical bootstrap phases (1–11) are complete.
+> Instascout (Instagram) removed — only YouTube + Twitch remain.
 > Read this file at the start of every session before touching any code.
-
----
-
-## 🔴 Target Discovery — CS2/Gaming Client
-
-### Objective
-
-Build a table of potential creators to contact for a CS2/gaming campaign:
-- **Instagram**: 50K–5M followers from LATAM
-- **YouTube**: CS2 niche, 500–50K average video views
-- **Twitch**: channels streaming CS2 regularly
-- **Kick**: manual-only (no public API)
-
-### Current State
-
-- YouTube Data API v3 works. Search finds channels but has NO video-level stats (avg views).
-- Instascout (Instagram scraper) is broken — Instagram anti-bot blocks it.
-- Twitch service exists at `src/lib/services/twitch.ts` (OAuth + follower counts only). User has API credentials ready.
-- Kick has no public API. No integration possible.
-- Platform enum (`target_platform`) only allows `instagram | youtube` — must expand.
-- CSV import hardcodes `platform: 'instagram'` — must make flexible.
-
-### Constraints
-
-- YouTube API daily quota: 10,000 units. Search = 100 units. Video stats = 3 units/channel.
-- Twitch API does NOT expose historical game data per VOD — "50% CS2 in last 3 months" cannot be computed via API. Closest approximation: find channels currently streaming CS2 + keyword match.
-- Instagram has no viable automated path. Admin will research manually and import via CSV.
-
----
-
-### Phase T1: Platform enum + CSV flexibility ✅
-*Unlocks all subsequent phases — do first*
-
-**DB migration:**
-- `src/db/schema/targets.ts` — add `'twitch'` and `'kick'` to `targetPlatformEnum`
-- Generate + apply: `npx drizzle-kit generate && npx drizzle-kit migrate`
-
-**Schema + query updates:**
-- `src/lib/schemas/target.ts:37` — Zod enum: `z.enum(['instagram', 'youtube', 'twitch', 'kick'])`
-- `src/lib/schemas/target.ts:12` — add optional `platform` field to `csvTargetRowSchema` (default `'instagram'`)
-- `src/lib/queries/targets.ts` — `upsertTargetsFromCSV` reads platform from row instead of hardcoding `'instagram'`
-- Profile URL generation per platform: instagram.com, youtube.com, twitch.tv, kick.com
-
-**Checkpoint:** `npx tsc --noEmit` passes, CSV import accepts `platform` column.
-
----
-
-### Phase T2: YouTube CS2 avg video views ✅
-*Highest value — API works, just needs video-level stats*
-
-**New service functions** (`src/lib/services/youtube.ts`):
-- `getUploadsPlaylistId(channelId)` — `channels?part=contentDetails` (1 quota unit)
-- `getRecentVideoIds(playlistId, count=10)` — `playlistItems?part=snippet` (1 unit)
-- `getVideoViewCounts(videoIds[])` — `videos?part=statistics` (1 unit per 50 vids)
-- `getChannelAvgViews(channelId, count=10)` — chains the above, returns avg views
-
-**New action** (`src/app/admin/(dashboard)/targets/youtube-actions.ts`):
-- `enrichYouTubeAvgViewsAction(channelIds[])` — returns `Record<channelId, { avgViews, videoCount }>`
-
-**UI** (`src/app/admin/(dashboard)/targets/YouTubeSearch.tsx`):
-- "Avg Views" column in results table
-- "Enrich views" button — fetches avg views for selected channels
-- Min/max avg views filter inputs
-- Loading state during enrichment
-
-**On import:** avg views stored in `notes` field. No schema change needed.
-
-**Checkpoint:** search "counter strike 2", enrich avg views, filter 500–50K, import works.
-
----
-
-### Phase T3: Twitch CS2 search ✅
-*Prerequisite: add `TWITCH_CLIENT_ID` + `TWITCH_CLIENT_SECRET` to `.env.local` and Vercel*
-
-**Expand Twitch service** (`src/lib/services/twitch.ts`):
-- `searchTwitchChannels(query, liveOnly?)` — `GET /helix/search/channels`
-- `getCS2LiveStreams(first=100)` — `GET /helix/streams?game_id=32399`
-- `getTwitchChannelInfo(broadcasterIds[])` — `GET /helix/channels?broadcaster_id=...`
-- Reuse existing `fetchTwitchFollowerCounts()` and `getAppAccessToken()`
-
-**New files:**
-- `src/app/admin/(dashboard)/targets/twitch-actions.ts` — `searchTwitchCS2Action`, `importTwitchChannelsAction`
-- `src/app/admin/(dashboard)/targets/TwitchSearch.tsx` — collapsible panel (#9146FF), search input, language filter (es/pt), min followers, results table, import
-
-**Wire:** add `<TwitchSearch />` in `TargetsSpreadsheet.tsx` alongside YouTube and Instagram panels.
-
-**50% CS2 limitation:** API cannot compute this. Show current game + followers + language. Admin reviews manually.
-
-**Checkpoint:** search CS2 on Twitch, filter by language=es, import selected channels.
-
----
-
-### Phase T4: Instagram LATAM (manual workflow) ⬜
-*No code changes needed beyond Phase T1*
-
-Admin researches LATAM gaming Instagram profiles manually using public tools (Social Blade, Instagram explore, esports team rosters, competitor followers). Compiles CSV with: `username, followers, biography, full_name, platform`. Imports via existing CSV flow.
-
-Optional: use `claude-in-chrome` MCP tools during a Claude Code session for semi-automated browsing of analytics platforms.
-
----
-
-### Targets — Phase 5: Promote target → talent (future)
-Pattern already proven by `scripts/migrate-agency-to-talents.ts`:
-- Button "Promover a Roster" on a `finalizado` target
-- Creates `talent` (visibility='internal') + `talent_socials` with `platform_id`
-- Once `platform_id` exists, the daily cron (`/api/cron/snapshot-metrics`) picks it up automatically
-
----
-
-## 🟢 Pending (no blockers)
-
-### TalentModal — focus trap ✅
-`TalentModal` now has a manual focus trap — Tab/Shift+Tab cycles within the dialog, Escape closes it.
-- File: `src/components/sections/TalentModal.tsx`
-
-### KEVO / LUNA photos
-Talent profiles for KEVO (Argentina) and LUNA (México) are in the DB but using placeholder images.
-- Add real photos to `public/images/talents/`
-- Update seed or run a direct DB update with correct `photo_url`
-
-### Growth H — SEO content (ongoing)
-- Calendario editorial: 2–3 artículos/mes
-- Target keywords: "cómo conseguir sponsor como streamer", "agencia gaming España", "marketing gaming LATAM"
-- Schema already exists (`posts` table, `/blog` routes live)
-- Just needs content written and inserted
-
-### logos/3.png cleanup ✅
-Confirmed unreferenced and trashed.
-
-### Dark/light theme
-- Plan exists but unexecuted
-- Design tokens are in `tailwind.config.ts`; no implementation started
-- Low priority
 
 ---
 
@@ -151,3 +19,94 @@ Confirmed unreferenced and trashed.
 | Follower sync | `scripts/sync-followers.ts` — YouTube + Twitch via real APIs |
 | Committer | `scripts/committer "type(scope): msg" file1 file2 ...` |
 | Migration workflow | `npx drizzle-kit generate` → `npx drizzle-kit migrate` |
+
+---
+
+## Phase 11 — Target search: region/language filters ✓ DONE
+
+### Objective
+
+Enable the admin to search for Hispanic CS2 creators on YouTube (1K–100K subs, 500–50K avg views, Spain + LATAM) and Twitch (followers, viewers, language) from the Targets page.
+
+### Current state
+
+- **YouTube search** has: query, min/max subs, description-contains, handle filter, limit, avg views enrichment + min/max avg views filter. NO region or language filtering.
+- **Twitch search** has: query, language dropdown (post-filter), min followers, live-only, CS2 live mode. NO max followers, NO viewer count filters, language NOT passed to API.
+- YouTube API v3 supports `regionCode` and `relevanceLanguage` params natively.
+- Twitch Helix supports `language` on `/streams` (NOT on `/search/channels`).
+
+### Constraints
+
+- YouTube API quota: 10K units/day. Each search costs ~100 units. Multi-region parallel calls are too expensive. Use `relevanceLanguage` to bias toward Spanish globally instead.
+- Twitch `/search/channels` does NOT accept `language` param. Language filtering stays as server-side post-filter for search mode. Only `/streams` (CS2 live mode) supports API-side language filtering.
+- Files must stay under 500 LOC. `YouTubeSearch.tsx` is already 522 — needs a minor table extraction refactor first.
+
+### Step-by-step plan (bottom-up)
+
+#### Step 1 — Service: `src/lib/services/youtube.ts`
+
+Add optional `regionCode` and `relevanceLanguage` params to `searchYouTubeChannels()`. Append to the search URL conditionally. **+6 LOC.**
+
+#### Step 2 — Service: `src/lib/services/twitch.ts`
+
+Add optional `language` param to `getCS2LiveStreams()`. Append `&language=` to the streams URL conditionally. **+4 LOC.**
+
+#### Step 3 — Actions: `youtube-actions.ts`
+
+Expand `YouTubeSearchParams` with `regionCode: string` and `relevanceLanguage: string`. Pass them through to `searchYouTubeChannels()`.
+
+Region strategy (1 API call always):
+- "Hispano" preset → `relevanceLanguage=es`, no `regionCode`
+- Single country (ES, MX, AR…) → `regionCode=XX` + selected language
+- "Todas" → no filter
+
+**+10 LOC.**
+
+#### Step 4 — Actions: `twitch-actions.ts`
+
+Expand `TwitchSearchParams` with `maxFollowers`, `minViewers`, `maxViewers`. Add post-filters. In CS2 Live mode, pass `language` to `getCS2LiveStreams()`. **+15 LOC.**
+
+#### Step 5 — UI: `YouTubeSearch.tsx`
+
+Refactor: extract results table (~93 lines) into a local component in the same file. Then add two new `<select>` dropdowns to the filter grid:
+- **Región**: Todas | Hispanoamérica | España | México | Argentina | Chile | Colombia | Perú
+- **Idioma**: Todos | Español | English | Português
+
+**Target: ~490 LOC.**
+
+#### Step 6 — UI: `TwitchSearch.tsx`
+
+Add three new `<input type="number">` fields to the filter grid:
+- **Max. seguidores** (placeholder "ilimitado")
+- **Min. viewers** (placeholder "0")
+- **Max. viewers** (placeholder "ilimitado")
+
+**Target: ~450 LOC.**
+
+### Files affected
+
+| File | Change | LOC after |
+|---|---|---|
+| `src/lib/services/youtube.ts` | Add params to search function | ~302 |
+| `src/lib/services/twitch.ts` | Add language to CS2 streams | ~286 |
+| `src/app/admin/(dashboard)/targets/youtube-actions.ts` | Expand params + pass-through | ~210 |
+| `src/app/admin/(dashboard)/targets/twitch-actions.ts` | Expand params + post-filters | ~130 |
+| `src/app/admin/(dashboard)/targets/YouTubeSearch.tsx` | Refactor table + add dropdowns | ~490 |
+| `src/app/admin/(dashboard)/targets/TwitchSearch.tsx` | Add 3 filter inputs | ~450 |
+
+### Risks
+
+- **YouTube `regionCode` is not a hard filter.** It biases results toward a country, not a strict match. Combined with `relevanceLanguage=es` it works well for Hispanic targeting but is not 100% precise. The description-contains filter can further refine.
+- **Twitch viewer filters only useful for live channels.** Offline channels have `viewerCount=0`. The UI should make this obvious.
+
+### Verification
+
+1. `npx tsc --noEmit` — clean
+2. `npm run lint` — no new errors
+3. Chrome tests:
+   - YouTube: "cs2" + Hispanoamérica + Español → Spanish CS2 channels
+   - YouTube: "cs2" + España → Spanish channels from Spain
+   - YouTube: avg views enrichment → 500–50K filter works
+   - Twitch: CS2 Live + es → only Spanish streams
+   - Twitch: "cs2" + max 100K followers + min 50 viewers → filtered results
+4. Searches without new filters still return same results as before

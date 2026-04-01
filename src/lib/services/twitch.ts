@@ -169,11 +169,12 @@ export async function searchTwitchChannels(
 /**
  * Get currently live CS2 streams (game_id = 32399).
  */
-export async function getCS2LiveStreams(first = 100): Promise<TwitchChannelPreview[]> {
+export async function getCS2LiveStreams(first = 100, language?: string): Promise<TwitchChannelPreview[]> {
   const token = await getAppAccessToken();
   const clientId = process.env.TWITCH_CLIENT_ID ?? '';
 
-  const url = `https://api.twitch.tv/helix/streams?game_id=32399&first=${first}`;
+  let url = `https://api.twitch.tv/helix/streams?game_id=32399&first=${first}`;
+  if (language) url += `&language=${encodeURIComponent(language)}`;
   const res = await fetch(url, {
     headers: { 'Client-Id': clientId, Authorization: `Bearer ${token}` },
   });

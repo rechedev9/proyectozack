@@ -24,6 +24,9 @@ export type TwitchSearchParams = {
   readonly language: string;
   readonly minFollowers: number;
   readonly useCS2Live: boolean;
+  readonly maxFollowers: number;
+  readonly minViewers: number;
+  readonly maxViewers: number;
 };
 
 function getTwitchError(err: unknown): string {
@@ -51,17 +54,25 @@ export async function searchTwitchAction(
   try {
     let channels: TwitchChannelPreview[];
     if (params.useCS2Live) {
-      channels = await getCS2LiveStreams(100);
+      channels = await getCS2LiveStreams(100, params.language || undefined);
     } else {
       if (!params.query.trim()) return { ok: true, channels: [], error: null };
       channels = await searchTwitchChannels(params.query.trim(), params.liveOnly);
-    }
-
-    if (params.language) {
-      channels = channels.filter((c) => c.language === params.language);
+      if (params.language) {
+        channels = channels.filter((c) => c.language === params.language);
+      }
     }
     if (params.minFollowers > 0) {
       channels = channels.filter((c) => c.followerCount >= params.minFollowers);
+    }
+    if (params.maxFollowers > 0) {
+      channels = channels.filter((c) => c.followerCount <= params.maxFollowers);
+    }
+    if (params.minViewers > 0) {
+      channels = channels.filter((c) => c.viewerCount >= params.minViewers);
+    }
+    if (params.maxViewers > 0) {
+      channels = channels.filter((c) => c.viewerCount <= params.maxViewers);
     }
 
     return { ok: true, channels, error: null };

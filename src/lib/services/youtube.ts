@@ -132,13 +132,17 @@ export async function fetchYouTubeSubscriberCounts(
 export async function searchYouTubeChannels(
   query: string,
   maxResults = 10,
+  regionCode?: string,
+  relevanceLanguage?: string,
 ): Promise<YouTubeChannelPreview[]> {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) throw new Error('YOUTUBE_API_KEY is not set');
 
-  const searchUrl =
+  let searchUrl =
     `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel` +
     `&q=${encodeURIComponent(query)}&maxResults=${maxResults}&key=${apiKey}`;
+  if (regionCode) searchUrl += `&regionCode=${encodeURIComponent(regionCode)}`;
+  if (relevanceLanguage) searchUrl += `&relevanceLanguage=${encodeURIComponent(relevanceLanguage)}`;
 
   const searchRes = await fetch(searchUrl);
   if (!searchRes.ok) {

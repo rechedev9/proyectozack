@@ -11,6 +11,7 @@ import {
 
 import type {
   YouTubeSearchParams,
+  YouTubeRegionCode,
   AvgViewsRecord,
 } from './youtube-actions';
 
@@ -23,7 +24,88 @@ const DEFAULT_PARAMS: YouTubeSearchParams = {
   requiresHandle: false,
   description: '',
   limit: 10,
+  regionCode: '',
+  relevanceLanguage: '',
 };
+
+type YouTubeResultsTableProps = {
+  results: YouTubeChannelPreview[];
+  selected: Set<string>;
+  avgViews: AvgViewsRecord;
+  toggleOne: (channelId: string) => void;
+};
+
+function YouTubeResultsTable({ results, selected, avgViews, toggleOne }: YouTubeResultsTableProps): React.ReactElement {
+  return (
+    <div className="overflow-x-auto border-t border-sp-admin-border">
+      <table className="w-full text-left text-sm min-w-[600px]">
+        <thead>
+          <tr className="border-b border-sp-admin-border bg-sp-admin-bg/50">
+            <th className="px-3 py-2.5 w-8" />
+            <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted">Canal</th>
+            <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted w-28 text-right">Suscriptores</th>
+            <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted w-28 text-right">Avg. views</th>
+            <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted">Descripción</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-sp-admin-border/60">
+          {results.map((channel) => (
+            <tr
+              key={channel.channelId}
+              onClick={() => toggleOne(channel.channelId)}
+              className={`cursor-pointer transition-colors hover:bg-sp-admin-hover ${selected.has(channel.channelId) ? 'bg-[#FF0000]/5' : ''}`}
+            >
+              <td className="px-3 py-2.5">
+                <input
+                  type="checkbox"
+                  checked={selected.has(channel.channelId)}
+                  onChange={() => toggleOne(channel.channelId)}
+                  onClick={(e) => e.stopPropagation()}
+                  className="rounded border-sp-admin-border bg-sp-admin-bg accent-[#FF0000]"
+                />
+              </td>
+              <td className="px-4 py-2.5">
+                <div className="flex items-center gap-2.5">
+                  {channel.thumbnailUrl ? (
+                    <img src={channel.thumbnailUrl} alt={channel.title} className="w-8 h-8 rounded-full object-cover shrink-0 bg-sp-admin-border" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-[#FF0000] flex items-center justify-center text-[10px] font-bold text-white shrink-0">YT</div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-semibold text-[13px] text-sp-admin-text truncate max-w-[200px]">{channel.title}</p>
+                    {channel.handle && <p className="text-[11px] text-sp-admin-muted">@{channel.handle}</p>}
+                  </div>
+                </div>
+              </td>
+              <td className="px-4 py-2.5 text-right text-[12px] font-semibold text-sp-admin-text tabular-nums">
+                {channel.subscriberCount > 0 ? formatCompact(channel.subscriberCount) : '--'}
+              </td>
+              <td className="px-4 py-2.5 text-right text-[12px] tabular-nums">
+                {(() => {
+                  const v = avgViews[channel.channelId];
+                  if (!v) return <span className="text-sp-admin-muted/40">—</span>;
+                  return (
+                    <span className="font-semibold text-sp-admin-text">
+                      {formatCompact(v.avgViews)}
+                      <span className="text-[10px] font-normal text-sp-admin-muted ml-0.5">/{v.videoCount}v</span>
+                    </span>
+                  );
+                })()}
+              </td>
+              <td className="px-4 py-2.5 max-w-[300px]">
+                {channel.description ? (
+                  <p className="text-[11px] text-sp-admin-muted line-clamp-2 leading-relaxed">{channel.description}</p>
+                ) : (
+                  <span className="text-[11px] text-sp-admin-muted/25 italic">—</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export function YouTubeSearch(): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);
@@ -319,6 +401,42 @@ export function YouTubeSearch(): React.ReactElement {
                 className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/30 placeholder:text-sp-admin-muted/40"
               />
             </div>
+            <div>
+              <label htmlFor="youtube-region" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted/70 mb-1">
+                Región
+              </label>
+              <select
+                id="youtube-region"
+                value={params.regionCode}
+                onChange={(e) => set('regionCode', e.target.value as YouTubeRegionCode)}
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/30"
+              >
+                <option value="">Todas</option>
+                <option value="hispano">Hispanoamérica</option>
+                <option value="ES">España</option>
+                <option value="MX">México</option>
+                <option value="AR">Argentina</option>
+                <option value="CL">Chile</option>
+                <option value="CO">Colombia</option>
+                <option value="PE">Perú</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="youtube-language" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted/70 mb-1">
+                Idioma
+              </label>
+              <select
+                id="youtube-language"
+                value={params.relevanceLanguage}
+                onChange={(e) => set('relevanceLanguage', e.target.value)}
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-[#FF0000]/30"
+              >
+                <option value="">Todos</option>
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <option value="pt">Português</option>
+              </select>
+            </div>
           </div>
 
           {/* ── Checkbox option ──────────────────────────────────────────────── */}
@@ -419,100 +537,12 @@ export function YouTubeSearch(): React.ReactElement {
                 </div>
               </div>
 
-              {/* Results table */}
-              <div className="overflow-x-auto border-t border-sp-admin-border">
-                <table className="w-full text-left text-sm min-w-[600px]">
-                  <thead>
-                    <tr className="border-b border-sp-admin-border bg-sp-admin-bg/50">
-                      <th className="px-3 py-2.5 w-8" />
-                      <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted">
-                        Canal
-                      </th>
-                      <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted w-28 text-right">
-                        Suscriptores
-                      </th>
-                      <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted w-28 text-right">
-                        Avg. views
-                      </th>
-                      <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted">
-                        Descripción
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-sp-admin-border/60">
-                    {displayedResults.map((channel) => (
-                      <tr
-                        key={channel.channelId}
-                        onClick={() => toggleOne(channel.channelId)}
-                        className={`cursor-pointer transition-colors hover:bg-sp-admin-hover ${selected.has(channel.channelId) ? 'bg-[#FF0000]/5' : ''}`}
-                      >
-                        <td className="px-3 py-2.5">
-                          <input
-                            type="checkbox"
-                            checked={selected.has(channel.channelId)}
-                            onChange={() => toggleOne(channel.channelId)}
-                            onClick={(e) => e.stopPropagation()}
-                            className="rounded border-sp-admin-border bg-sp-admin-bg accent-[#FF0000]"
-                          />
-                        </td>
-                        <td className="px-4 py-2.5">
-                          <div className="flex items-center gap-2.5">
-                            {channel.thumbnailUrl ? (
-                              <img
-                                src={channel.thumbnailUrl}
-                                alt={channel.title}
-                                className="w-8 h-8 rounded-full object-cover shrink-0 bg-sp-admin-border"
-                              />
-                            ) : (
-                              <div className="w-8 h-8 rounded-full bg-[#FF0000] flex items-center justify-center text-[10px] font-bold text-white shrink-0">
-                                YT
-                              </div>
-                            )}
-                            <div className="min-w-0">
-                              <p className="font-semibold text-[13px] text-sp-admin-text truncate max-w-[200px]">
-                                {channel.title}
-                              </p>
-                              {channel.handle && (
-                                <p className="text-[11px] text-sp-admin-muted">
-                                  @{channel.handle}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-2.5 text-right text-[12px] font-semibold text-sp-admin-text tabular-nums">
-                          {channel.subscriberCount > 0
-                            ? formatCompact(channel.subscriberCount)
-                            : '--'}
-                        </td>
-                        <td className="px-4 py-2.5 text-right text-[12px] tabular-nums">
-                          {(() => {
-                            const v = avgViews[channel.channelId];
-                            if (!v) return <span className="text-sp-admin-muted/40">—</span>;
-                            return (
-                              <span className="font-semibold text-sp-admin-text">
-                                {formatCompact(v.avgViews)}
-                                <span className="text-[10px] font-normal text-sp-admin-muted ml-0.5">/{v.videoCount}v</span>
-                              </span>
-                            );
-                          })()}
-                        </td>
-                        <td className="px-4 py-2.5 max-w-[300px]">
-                          {channel.description ? (
-                            <p className="text-[11px] text-sp-admin-muted line-clamp-2 leading-relaxed">
-                              {channel.description}
-                            </p>
-                          ) : (
-                            <span className="text-[11px] text-sp-admin-muted/25 italic">
-                              —
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <YouTubeResultsTable
+                results={displayedResults}
+                selected={selected}
+                avgViews={avgViews}
+                toggleOne={toggleOne}
+              />
             </>
           )}
         </div>

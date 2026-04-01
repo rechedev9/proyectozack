@@ -17,6 +17,9 @@ const DEFAULT_PARAMS: TwitchSearchParams = {
   language: '',
   minFollowers: 0,
   useCS2Live: false,
+  maxFollowers: 0,
+  minViewers: 0,
+  maxViewers: 0,
 };
 
 export function TwitchSearch(): React.ReactElement {
@@ -219,6 +222,50 @@ export function TwitchSearch(): React.ReactElement {
                 onChange={(e) => set('minFollowers', parseInt(e.target.value, 10) || 0)}
                 placeholder="0"
                 className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none placeholder:text-sp-admin-muted/40"
+              />
+            </div>
+            <div>
+              <label htmlFor="twitch-max-followers" className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-sp-admin-muted/70 mb-1">
+                Max. seguidores
+              </label>
+              <input
+                id="twitch-max-followers"
+                type="number"
+                min="0"
+                value={params.maxFollowers || ''}
+                onChange={(e) => set('maxFollowers', parseInt(e.target.value, 10) || 0)}
+                placeholder="ilimitado"
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none placeholder:text-sp-admin-muted/40"
+              />
+            </div>
+            <div>
+              <label htmlFor="twitch-min-viewers" className={`block text-[10px] font-semibold uppercase tracking-[0.12em] mb-1 ${params.useCS2Live ? 'text-sp-admin-muted/70' : 'text-sp-admin-muted/30'}`}>
+                Min. viewers
+              </label>
+              <input
+                id="twitch-min-viewers"
+                type="number"
+                min="0"
+                disabled={!params.useCS2Live}
+                value={params.minViewers || ''}
+                onChange={(e) => set('minViewers', parseInt(e.target.value, 10) || 0)}
+                placeholder={params.useCS2Live ? '0' : 'solo CS2 live'}
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none placeholder:text-sp-admin-muted/40 disabled:opacity-40 disabled:cursor-not-allowed"
+              />
+            </div>
+            <div>
+              <label htmlFor="twitch-max-viewers" className={`block text-[10px] font-semibold uppercase tracking-[0.12em] mb-1 ${params.useCS2Live ? 'text-sp-admin-muted/70' : 'text-sp-admin-muted/30'}`}>
+                Max. viewers
+              </label>
+              <input
+                id="twitch-max-viewers"
+                type="number"
+                min="0"
+                disabled={!params.useCS2Live}
+                value={params.maxViewers || ''}
+                onChange={(e) => set('maxViewers', parseInt(e.target.value, 10) || 0)}
+                placeholder={params.useCS2Live ? 'ilimitado' : 'solo CS2 live'}
+                className="w-full bg-sp-admin-bg rounded-md px-3 py-2 text-sm text-sp-admin-text border border-sp-admin-border focus:outline-none placeholder:text-sp-admin-muted/40 disabled:opacity-40 disabled:cursor-not-allowed"
               />
             </div>
             {!params.useCS2Live && (

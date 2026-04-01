@@ -18,6 +18,9 @@ export type YouTubeSearchResult = {
   readonly filteredCount: number;
 };
 
+// '' = no filter; 'hispano' = relevanceLanguage=es (no regionCode); country codes = YouTube regionCode param
+export type YouTubeRegionCode = '' | 'hispano' | 'ES' | 'MX' | 'AR' | 'CL' | 'CO' | 'PE';
+
 export type YouTubeSearchParams = {
   readonly query: string;
   readonly minSubscribers: number;
@@ -25,6 +28,8 @@ export type YouTubeSearchParams = {
   readonly requiresHandle: boolean;
   readonly description: string;
   readonly limit: number;
+  readonly regionCode: YouTubeRegionCode;
+  readonly relevanceLanguage: string;
 };
 
 function parseKeywords(input: string): string[] {
@@ -102,7 +107,15 @@ export async function searchYouTubeAction(
 
   try {
     const fetchLimit = Math.min(Math.max(params.limit * 5, 25), 50);
-    const fetched = await searchYouTubeChannels(params.query.trim(), fetchLimit);
+    let serviceRegionCode: string | undefined;
+    let serviceRelevanceLanguage: string | undefined;
+    if (params.regionCode === 'hispano') {
+      serviceRelevanceLanguage = 'es';
+    } else {
+      if (params.regionCode) serviceRegionCode = params.regionCode;
+      if (params.relevanceLanguage) serviceRelevanceLanguage = params.relevanceLanguage;
+    }
+    const fetched = await searchYouTubeChannels(params.query.trim(), fetchLimit, serviceRegionCode, serviceRelevanceLanguage);
     const results = filterYouTubeResults(fetched, params);
     return {
       ok: true,
