@@ -22,6 +22,49 @@ import { randomUUID } from 'crypto';
 
 const REVALIDATE = '/admin/targets';
 
+// ─── CSV header aliases ───────────────────────────────────────────────────────
+
+const HEADER_ALIASES: Record<string, string> = {
+  // Spanish aliases
+  nombre: 'full_name',
+  seguidores: 'followers',
+  seguidos: 'following',
+  tipo: 'biography',
+  url: 'profile_url',
+  biografia: 'biography',
+  plataforma: 'platform',
+  categoria: 'business_category',
+  publicaciones: 'posts',
+  // Common variations
+  name: 'full_name',
+  display_name: 'full_name',
+  displayname: 'full_name',
+  user: 'username',
+  handle: 'username',
+  canal: 'username',
+  channel: 'username',
+  subscriber_count: 'followers',
+  subscribers: 'followers',
+  follower_count: 'followers',
+  bio: 'biography',
+  description: 'biography',
+  profile_url: 'profile_url',
+  link: 'profile_url',
+};
+
+function normalizeHeader(h: string): string {
+  const key = h.toLowerCase().trim();
+  return HEADER_ALIASES[key] ?? key;
+}
+
+function detectPlatformFromUrl(url: string): string | undefined {
+  if (url.includes('instagram.com')) return 'instagram';
+  if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+  if (url.includes('twitch.tv')) return 'twitch';
+  if (url.includes('kick.com')) return 'kick';
+  return undefined;
+}
+
 // ─── CSV import ───────────────────────────────────────────────────────────────
 
 export async function importCSVAction(
@@ -37,7 +80,8 @@ export async function importCSVAction(
   const lines = text.split('\n').filter((l) => l.trim());
   if (lines.length < 2) return { total: 0, inserted: 0, updated: 0, errors: 0, assigned: 0 };
 
-  const headers = parseCsvLine(lines[0]!).map((h) => h.trim());
+  const rawHeaders = parseCsvLine(lines[0]!).map((h) => h.trim());
+  const headers = rawHeaders.map(normalizeHeader);
   const batchId = randomUUID().slice(0, 8);
 
   const validRows = [];
@@ -49,6 +93,12 @@ export async function importCSVAction(
     headers.forEach((h, idx) => {
       raw[h] = cols[idx] ?? '';
     });
+
+    // Detect platform from URL if not explicitly provided
+    if (!raw.platform && raw.profile_url) {
+      const detected = detectPlatformFromUrl(raw.profile_url);
+      if (detected) raw.platform = detected;
+    }
 
     const parsed = csvTargetRowSchema.safeParse(raw);
     if (parsed.success) {
