@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useTransition } from 'react';
+import { useState, useMemo, useRef, useTransition } from 'react';
 import type { Target } from '@/types';
 import { formatCompact } from '@/lib/format';
 import {
@@ -8,6 +8,7 @@ import {
   updateNotesAction,
   deleteTargetsAction,
   assignTargetsToBrandAction,
+  importCSVAction,
 } from './actions';
 import { YouTubeSearch } from './YouTubeSearch';
 import { TwitchSearch } from './TwitchSearch';
@@ -68,6 +69,26 @@ export function TargetsSpreadsheet({
   const [notesValue, setNotesValue] = useState('');
   const [brandUserId, setBrandUserId] = useState('');
   const [isPending, startTransition] = useTransition();
+  const [importResult, setImportResult] = useState<{ inserted: number; updated: number; errors: number } | null>(null);
+  const csvInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportCSV = (): void => {
+    const file = csvInputRef.current?.files?.[0];
+    if (!file) return;
+    setImportResult(null);
+    const fd = new FormData();
+    fd.set('file', file);
+    startTransition(async () => {
+      try {
+        const res = await importCSVAction(fd);
+        setImportResult({ inserted: res.inserted, updated: res.updated, errors: res.errors });
+      } catch {
+        setImportResult({ inserted: 0, updated: 0, errors: -1 });
+      } finally {
+        if (csvInputRef.current) csvInputRef.current.value = '';
+      }
+    });
+  };
 
   // ── Filter ────────────────────────────────────────────────────────────────
 
@@ -246,6 +267,21 @@ export function TargetsSpreadsheet({
           {filtered.length !== targets.length && ` de ${targets.length}`}{' '}
           {filtered.length === 1 ? 'target' : 'targets'}
         </span>
+        <input
+          ref={csvInputRef}
+          type="file"
+          accept=".csv"
+          onChange={handleImportCSV}
+          className="hidden"
+        />
+        <button
+          type="button"
+          onClick={() => csvInputRef.current?.click()}
+          disabled={isPending}
+          className="shrink-0 px-3 py-2 rounded-lg text-[11px] font-semibold bg-sp-admin-accent text-white hover:opacity-90 transition-opacity disabled:opacity-40"
+        >
+          {isPending ? 'Importando...' : 'Importar CSV'}
+        </button>
         <button
           type="button"
           onClick={exportCSV}
@@ -254,6 +290,21 @@ export function TargetsSpreadsheet({
           Exportar CSV
         </button>
       </div>
+
+      {importResult && (
+        <div className="flex items-center gap-4 text-xs px-1">
+          {importResult.errors === -1 ? (
+            <span className="text-red-400">Error importando CSV</span>
+          ) : (
+            <>
+              <span className="text-emerald-400">Importados: <strong>{importResult.inserted}</strong></span>
+              {importResult.updated > 0 && <span className="text-blue-400">Actualizados: <strong>{importResult.updated}</strong></span>}
+              {importResult.errors > 0 && <span className="text-red-400">Errores: <strong>{importResult.errors}</strong></span>}
+            </>
+          )}
+          <button type="button" onClick={() => setImportResult(null)} className="text-sp-admin-muted hover:text-sp-admin-text text-[10px]">Cerrar</button>
+        </div>
+      )}
 
       {/* ── Bulk bar ────────────────────────────────────────────────────── */}
       {selected.size > 0 && (
