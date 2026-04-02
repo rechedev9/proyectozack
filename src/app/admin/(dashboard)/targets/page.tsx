@@ -1,7 +1,6 @@
 import { getAllTargets } from '@/lib/queries/targets';
 import { getAllBrandUsers } from '@/lib/queries/brandUsers';
 import { TargetsSpreadsheet } from './TargetsSpreadsheet';
-import { TargetsDiagnostics } from './TargetsDiagnostics';
 
 export default async function AdminTargetsPage(): Promise<React.ReactElement> {
   const [targets, brands] = await Promise.all([
@@ -19,10 +18,9 @@ export default async function AdminTargetsPage(): Promise<React.ReactElement> {
       </div>
 
       <p className="text-sm text-sp-admin-muted -mt-3">
-        Todo vive en targets: descubre perfiles, importalos y asigna cada fila a la marca que corresponda.
+        Importa perfiles via CSV y asigna cada fila a la marca que corresponda.
       </p>
 
-      <TargetsDiagnostics />
       <TargetsSpreadsheet targets={targets} brands={brands} />
     </div>
   );

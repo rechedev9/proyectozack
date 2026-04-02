@@ -11,50 +11,21 @@ import {
   assignTargetsToBrandAction,
   importCSVAction,
 } from './actions';
-import { YouTubeSearch } from './YouTubeSearch';
-import { TwitchSearch } from './TwitchSearch';
 import type { BrandUserRow } from '@/lib/queries/brandUsers';
-
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-type SortField = 'username' | 'followers' | 'status' | 'createdAt';
-type SortDir = 'asc' | 'desc';
-type SortState = { field: SortField; dir: SortDir };
-type StatusValue = 'pendiente' | 'contactado' | 'finalizado';
-
-const PLATFORM_COLORS: Record<string, string> = {
-  instagram: '#E1306C',
-  youtube: '#FF0000',
-  twitch: '#9146FF',
-  kick: '#53FC18',
-};
-
-const PLATFORM_LABELS: Record<string, string> = {
-  instagram: 'IG',
-  youtube: 'YT',
-  twitch: 'TW',
-  kick: 'KK',
-};
-
-const STATUS_CYCLE: Record<StatusValue, StatusValue> = {
-  pendiente: 'contactado',
-  contactado: 'finalizado',
-  finalizado: 'pendiente',
-};
-
-const STATUS_COLORS: Record<StatusValue, string> = {
-  pendiente: 'bg-amber-900/30 text-amber-400',
-  contactado: 'bg-blue-900/30 text-blue-400',
-  finalizado: 'bg-emerald-900/30 text-emerald-400',
-};
-
-const STATUS_LABELS: Record<StatusValue, string> = {
-  pendiente: 'Pendiente',
-  contactado: 'Contactado',
-  finalizado: 'Finalizado',
-};
-
-// ── Component ─────────────────────────────────────────────────────────────────
+import { TargetsEmptyState } from './TargetsEmptyState';
+import {
+  PLATFORMS,
+  PLATFORM_COLORS,
+  PLATFORM_LABELS,
+  STATUS_CYCLE,
+  STATUS_COLORS,
+  STATUS_LABELS,
+  STATUS_TAB_COLORS,
+  STATUS_FILTERS,
+} from './targets-constants';
+import type { SortField, SortState, StatusFilter, PlatformValue } from './targets-constants';
+import { Th } from './ThSortable';
+import { exportTargetsCSV } from './export-csv';
 
 export function TargetsSpreadsheet({
   targets,
@@ -64,6 +35,8 @@ export function TargetsSpreadsheet({
   brands?: BrandUserRow[];
 }): React.ReactElement {
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('todos');
+  const [platformFilter, setPlatformFilter] = useState<Set<PlatformValue>>(new Set());
   const [sort, setSort] = useState<SortState>({ field: 'createdAt', dir: 'desc' });
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [editingNotes, setEditingNotes] = useState<number | null>(null);
@@ -72,6 +45,23 @@ export function TargetsSpreadsheet({
   const [isPending, startTransition] = useTransition();
   const [importResult, setImportResult] = useState<{ inserted: number; updated: number; errors: number } | null>(null);
   const csvInputRef = useRef<HTMLInputElement>(null);
+
+  const statusCounts = useMemo(() => {
+    const counts: Record<StatusFilter, number> = { todos: targets.length, pendiente: 0, contactado: 0, finalizado: 0 };
+    for (const t of targets) counts[t.status]++;
+    return counts;
+  }, [targets]);
+
+  const platformCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const t of targets) counts[t.platform] = (counts[t.platform] ?? 0) + 1;
+    return counts;
+  }, [targets]);
+
+  const activePlatforms = useMemo(
+    () => PLATFORMS.filter((p) => (platformCounts[p] ?? 0) > 0),
+    [platformCounts],
+  );
 
   const handleImportCSV = (): void => {
     const file = csvInputRef.current?.files?.[0];
@@ -91,23 +81,28 @@ export function TargetsSpreadsheet({
     });
   };
 
-  // ── Filter ────────────────────────────────────────────────────────────────
-
-  const filteredUnsorted = useMemo(() => {
-    if (!search.trim()) return targets;
-    const q = search.toLowerCase().trim();
-    return targets.filter(
-      (t) =>
-        t.username.toLowerCase().includes(q) ||
-        (t.fullName?.toLowerCase().includes(q) ?? false) ||
-        (t.bio?.toLowerCase().includes(q) ?? false),
-    );
-  }, [targets, search]);
-
-  // ── Sort ──────────────────────────────────────────────────────────────────
-
   const filtered = useMemo(() => {
-    return [...filteredUnsorted].sort((a, b) => {
+    let list = targets;
+
+    if (statusFilter !== 'todos') {
+      list = list.filter((t) => t.status === statusFilter);
+    }
+
+    if (platformFilter.size > 0) {
+      list = list.filter((t) => platformFilter.has(t.platform as PlatformValue));
+    }
+
+    if (search.trim()) {
+      const q = search.toLowerCase().trim();
+      list = list.filter(
+        (t) =>
+          t.username.toLowerCase().includes(q) ||
+          (t.fullName?.toLowerCase().includes(q) ?? false) ||
+          (t.bio?.toLowerCase().includes(q) ?? false),
+      );
+    }
+
+    return [...list].sort((a, b) => {
       const { field, dir } = sort;
       let cmp = 0;
       if (field === 'username') cmp = a.username.localeCompare(b.username, 'es');
@@ -117,9 +112,7 @@ export function TargetsSpreadsheet({
         cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       return dir === 'desc' ? -cmp : cmp;
     });
-  }, [filteredUnsorted, sort]);
-
-  // ── Selection ─────────────────────────────────────────────────────────────
+  }, [targets, statusFilter, platformFilter, search, sort]);
 
   const allSelected = filtered.length > 0 && filtered.every((t) => selected.has(t.id));
   const selectedIds = useMemo(() => [...selected], [selected]);
@@ -149,7 +142,14 @@ export function TargetsSpreadsheet({
     });
   };
 
-  // ── Sort ──────────────────────────────────────────────────────────────────
+  const togglePlatform = (p: PlatformValue): void => {
+    setPlatformFilter((prev) => {
+      const next = new Set(prev);
+      if (next.has(p)) next.delete(p);
+      else next.add(p);
+      return next;
+    });
+  };
 
   const toggleSort = (field: SortField): void => {
     setSort((prev) =>
@@ -160,9 +160,7 @@ export function TargetsSpreadsheet({
   };
 
   const sortArrow = (field: SortField): string =>
-    sort.field === field ? (sort.dir === 'asc' ? ' ↑' : ' ↓') : '';
-
-  // ── Actions ───────────────────────────────────────────────────────────────
+    sort.field === field ? (sort.dir === 'asc' ? ' \u2191' : ' \u2193') : '';
 
   const cycleStatus = (target: Target): void => {
     const next = STATUS_CYCLE[target.status];
@@ -185,7 +183,7 @@ export function TargetsSpreadsheet({
   };
 
   const handleDelete = (ids: number[]): void => {
-    if (!confirm(`¿Eliminar ${ids.length} target${ids.length > 1 ? 's' : ''}?`)) return;
+    if (!confirm(`\u00bfEliminar ${ids.length} target${ids.length > 1 ? 's' : ''}?`)) return;
     const fd = new FormData();
     fd.set('ids', ids.join(','));
     startTransition(async () => {
@@ -211,48 +209,52 @@ export function TargetsSpreadsheet({
 
   const exportCSV = (): void => {
     const rows = filtered.filter((t) => selected.size === 0 || selected.has(t.id));
-    const headers = ['id', 'username', 'platform', 'followers', 'status', 'notes', 'profileUrl', 'createdAt'];
-    const lines = [
-      headers.join(','),
-      ...rows.map((t) =>
-        headers
-          .map((h) => {
-            const val = t[h as keyof Target] ?? '';
-            const s = String(val);
-            return s.includes(',') || s.includes('\n') || s.includes('"')
-              ? `"${s.replace(/"/g, '""')}"`
-              : s;
-          })
-          .join(','),
-      ),
-    ];
-    const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `targets-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 100);
+    exportTargetsCSV(rows);
   };
 
   const handleDeleteAll = (): void => {
-    if (!confirm('¿Eliminar TODOS los targets? Esta acción no se puede deshacer.')) return;
+    if (!confirm('\u00bfEliminar TODOS los targets? Esta acci\u00f3n no se puede deshacer.')) return;
     startTransition(async () => {
       await deleteAllTargetsAction();
       setSelected(new Set());
     });
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  if (targets.length === 0) {
+    return <TargetsEmptyState />;
+  }
 
   return (
     <div className="space-y-4">
+      {/* Status tabs */}
+      <div className="flex items-center gap-1 border-b border-sp-admin-border">
+        {STATUS_FILTERS.map((tab) => {
+          const isActive = statusFilter === tab;
+          const count = statusCounts[tab];
+          const label = tab === 'todos' ? 'Todos' : STATUS_LABELS[tab];
+          const colors = STATUS_TAB_COLORS[tab];
 
-      {/* ── YouTube Search (primary action) ─────────────────────────────── */}
-      <YouTubeSearch />
-      <TwitchSearch />
+          return (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setStatusFilter(tab)}
+              className={`relative px-4 py-2.5 text-xs font-semibold transition-colors ${
+                isActive
+                  ? colors
+                  : 'text-sp-admin-muted hover:text-sp-admin-text border-transparent'
+              } border-b-2 -mb-px`}
+            >
+              {label}
+              <span className={`ml-1.5 tabular-nums ${isActive ? 'opacity-100' : 'opacity-50'}`}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
-      {/* ── Filter row ──────────────────────────────────────────────────── */}
+      {/* Toolbar */}
       <div className="flex items-center gap-3">
         <div className="relative max-w-xs w-full">
           <svg
@@ -265,40 +267,62 @@ export function TargetsSpreadsheet({
           </svg>
           <input
             type="text"
-            placeholder="Filtrar targets..."
+            placeholder="Buscar por nombre, usuario o bio..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-sp-admin-card rounded-lg pl-9 pr-3 py-2 text-sm text-sp-admin-text placeholder:text-sp-admin-muted/40 border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40 transition-all"
           />
         </div>
-        <span className="text-xs text-sp-admin-muted tabular-nums ml-auto">
-          <span className="font-bold text-sp-admin-text">{filtered.length}</span>
-          {filtered.length !== targets.length && ` de ${targets.length}`}{' '}
-          {filtered.length === 1 ? 'target' : 'targets'}
-        </span>
-        <input
-          ref={csvInputRef}
-          type="file"
-          accept=".csv"
-          onChange={handleImportCSV}
-          className="hidden"
-        />
-        <button
-          type="button"
-          onClick={() => csvInputRef.current?.click()}
-          disabled={isPending}
-          className="shrink-0 px-3 py-2 rounded-lg text-[11px] font-semibold bg-sp-admin-accent text-white hover:opacity-90 transition-opacity disabled:opacity-40"
-        >
-          {isPending ? 'Importando...' : 'Importar CSV'}
-        </button>
-        <button
-          type="button"
-          onClick={exportCSV}
-          className="shrink-0 px-3 py-2 rounded-lg text-[11px] font-semibold bg-sp-admin-card border border-sp-admin-border text-sp-admin-muted hover:text-sp-admin-text transition-colors"
-        >
-          Exportar CSV
-        </button>
-        {targets.length > 0 && (
+
+        {activePlatforms.length > 1 && (
+          <div className="flex items-center gap-1.5">
+            {activePlatforms.map((p) => {
+              const isActive = platformFilter.has(p);
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => togglePlatform(p)}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all border ${
+                    isActive
+                      ? 'border-current opacity-100'
+                      : 'border-sp-admin-border text-sp-admin-muted hover:text-sp-admin-text opacity-60 hover:opacity-100'
+                  }`}
+                  style={isActive ? { color: PLATFORM_COLORS[p], borderColor: PLATFORM_COLORS[p] } : undefined}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ backgroundColor: PLATFORM_COLORS[p] }}
+                  />
+                  {PLATFORM_LABELS[p]}
+                  <span className="tabular-nums opacity-60">{platformCounts[p]}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="flex items-center gap-2 ml-auto">
+          <span className="text-xs text-sp-admin-muted tabular-nums mr-1">
+            <span className="font-bold text-sp-admin-text">{filtered.length}</span>
+            {filtered.length !== targets.length && ` / ${targets.length}`}
+          </span>
+          <input ref={csvInputRef} type="file" accept=".csv" onChange={handleImportCSV} className="hidden" />
+          <button
+            type="button"
+            onClick={() => csvInputRef.current?.click()}
+            disabled={isPending}
+            className="shrink-0 px-3 py-2 rounded-lg text-[11px] font-semibold bg-sp-admin-accent text-sp-admin-bg hover:opacity-90 transition-opacity disabled:opacity-40"
+          >
+            {isPending ? 'Importando...' : 'Importar CSV'}
+          </button>
+          <button
+            type="button"
+            onClick={exportCSV}
+            className="shrink-0 px-3 py-2 rounded-lg text-[11px] font-semibold bg-sp-admin-card border border-sp-admin-border text-sp-admin-muted hover:text-sp-admin-text transition-colors"
+          >
+            Exportar
+          </button>
           <button
             type="button"
             onClick={handleDeleteAll}
@@ -307,7 +331,7 @@ export function TargetsSpreadsheet({
           >
             Limpiar todo
           </button>
-        )}
+        </div>
       </div>
 
       {importResult && (
@@ -325,21 +349,17 @@ export function TargetsSpreadsheet({
         </div>
       )}
 
-      {/* ── Bulk bar ────────────────────────────────────────────────────── */}
       {selected.size > 0 && (
         <div className="flex items-center gap-3 px-4 py-2.5 bg-sp-admin-card border border-sp-admin-accent/30 rounded-lg">
           <span className="text-xs font-semibold text-sp-admin-accent tabular-nums">
             {selected.size} seleccionado{selected.size > 1 ? 's' : ''}
-          </span>
-          <span className="text-[11px] text-sp-admin-muted">
-            Asigna los seleccionados a la marca correcta para que aparezcan en su spreadsheet.
           </span>
           {brands.length > 0 && (
             <>
               <select
                 value={brandUserId}
                 onChange={(e) => setBrandUserId(e.target.value)}
-                className="min-w-[220px] bg-sp-admin-bg rounded px-3 py-1.5 text-[11px] text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40"
+                className="min-w-[200px] bg-sp-admin-bg rounded px-3 py-1.5 text-[11px] text-sp-admin-text border border-sp-admin-border focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40"
               >
                 <option value="">Asignar a marca...</option>
                 {brands.map((brand) => (
@@ -379,7 +399,6 @@ export function TargetsSpreadsheet({
         </div>
       )}
 
-      {/* ── Table ───────────────────────────────────────────────────────── */}
       <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-x-auto">
         <table className="w-full text-left text-sm min-w-[720px]">
           <thead>
@@ -399,7 +418,7 @@ export function TargetsSpreadsheet({
               <Th sortable field="followers" sort={sort} onSort={toggleSort} arrow={sortArrow} className="w-28 text-right">
                 Audiencia
               </Th>
-              <Th className="max-w-[240px]">Descripción</Th>
+              <Th className="max-w-[240px]">Descripci&oacute;n</Th>
               <Th sortable field="status" sort={sort} onSort={toggleSort} arrow={sortArrow} className="w-28">
                 Estado
               </Th>
@@ -411,9 +430,9 @@ export function TargetsSpreadsheet({
             {filtered.length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-5 py-16 text-center text-sp-admin-muted text-sm">
-                  {targets.length === 0
-                    ? 'Usa el sourcing de arriba para encontrar e importar targets'
-                    : 'Sin resultados'}
+                  {search || statusFilter !== 'todos' || platformFilter.size > 0
+                    ? 'Sin resultados para los filtros aplicados'
+                    : 'Sin targets'}
                 </td>
               </tr>
             ) : (
@@ -424,7 +443,6 @@ export function TargetsSpreadsheet({
                     key={target.id}
                     className={`transition-colors hover:bg-sp-admin-hover group ${selected.has(target.id) ? 'bg-sp-admin-accent/5' : ''}`}
                   >
-                    {/* Checkbox */}
                     <td className="px-3 py-2.5">
                       <input
                         type="checkbox"
@@ -433,13 +451,9 @@ export function TargetsSpreadsheet({
                         className="rounded border-sp-admin-border bg-sp-admin-bg accent-sp-admin-accent"
                       />
                     </td>
-
-                    {/* # */}
                     <td className="px-3 py-2.5 text-center text-[11px] text-sp-admin-muted tabular-nums">
                       {i + 1}
                     </td>
-
-                    {/* Channel */}
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-2.5">
                         {target.profilePicUrl ? (
@@ -476,24 +490,18 @@ export function TargetsSpreadsheet({
                         </div>
                       </div>
                     </td>
-
-                    {/* Subscribers */}
                     <td className="px-4 py-2.5 text-right text-[12px] font-semibold text-sp-admin-text tabular-nums">
                       {target.followers > 0 ? formatCompact(target.followers) : '--'}
                     </td>
-
-                    {/* Description */}
                     <td className="px-4 py-2.5 max-w-[240px]">
                       {target.bio ? (
                         <p className="text-[11px] text-sp-admin-muted line-clamp-2 leading-relaxed">
                           {target.bio}
                         </p>
                       ) : (
-                        <span className="text-sp-admin-muted/25 text-[11px]">—</span>
+                        <span className="text-sp-admin-muted/25 text-[11px]">&mdash;</span>
                       )}
                     </td>
-
-                    {/* Status */}
                     <td className="px-4 py-2.5">
                       <button
                         type="button"
@@ -505,8 +513,6 @@ export function TargetsSpreadsheet({
                         {STATUS_LABELS[target.status]}
                       </button>
                     </td>
-
-                    {/* Notes */}
                     <td className="px-4 py-2.5">
                       {isEditingNotes ? (
                         <div className="flex items-center gap-1.5">
@@ -521,22 +527,20 @@ export function TargetsSpreadsheet({
                             }}
                             className="flex-1 bg-sp-admin-bg rounded px-2 py-1 text-xs text-sp-admin-text focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40 min-w-0"
                           />
-                          <button type="button" onClick={() => saveNotes(target.id)} className="text-[10px] font-semibold text-sp-admin-accent hover:opacity-80">✓</button>
-                          <button type="button" onClick={() => setEditingNotes(null)} className="text-[10px] text-sp-admin-muted hover:text-sp-admin-text">✕</button>
+                          <button type="button" onClick={() => saveNotes(target.id)} className="text-[10px] font-semibold text-sp-admin-accent hover:opacity-80">{'\u2713'}</button>
+                          <button type="button" onClick={() => setEditingNotes(null)} className="text-[10px] text-sp-admin-muted hover:text-sp-admin-text">{'\u2715'}</button>
                         </div>
                       ) : (
                         <button
                           type="button"
                           onClick={() => { setEditingNotes(target.id); setNotesValue(target.notes ?? ''); }}
                           className="text-[11px] text-sp-admin-muted hover:text-sp-admin-text transition-colors text-left w-full max-w-[200px] truncate"
-                          title={target.notes ?? 'Añadir nota...'}
+                          title={target.notes ?? 'A\u00f1adir nota...'}
                         >
                           {target.notes || <span className="opacity-25 italic">nota...</span>}
                         </button>
                       )}
                     </td>
-
-                    {/* Delete */}
                     <td className="px-3 py-2.5 text-center">
                       <button
                         type="button"
@@ -561,38 +565,3 @@ export function TargetsSpreadsheet({
   );
 }
 
-// ── Sortable Table Header ─────────────────────────────────────────────────────
-
-type ThProps = {
-  children?: React.ReactNode;
-  className?: string;
-  sortable?: boolean;
-  field?: SortField;
-  sort?: SortState;
-  onSort?: (field: SortField) => void;
-  arrow?: (field: SortField) => string;
-};
-
-function Th({ children, className = '', sortable, field, sort, onSort, arrow }: ThProps): React.ReactElement {
-  const base = `px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-sp-admin-muted whitespace-nowrap ${className}`;
-
-  if (!sortable || !field || !onSort) {
-    return <th className={base}>{children}</th>;
-  }
-
-  const isActive = sort?.field === field;
-  const indicator = arrow?.(field) ?? '';
-
-  return (
-    <th className={base}>
-      <button
-        type="button"
-        onClick={() => onSort(field)}
-        className={`inline-flex items-center gap-0.5 transition-colors ${isActive ? 'text-sp-admin-text' : 'hover:text-sp-admin-text'}`}
-      >
-        {children}
-        {indicator && <span className="text-sp-admin-accent">{indicator}</span>}
-      </button>
-    </th>
-  );
-}
