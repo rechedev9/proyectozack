@@ -10,7 +10,10 @@ const csvBool = z
 
 export const csvTargetRowSchema = z.object({
   username: z.string().min(1).max(200),
-  platform: z.enum(['instagram', 'youtube', 'twitch', 'kick']).optional(),
+  platform: z.preprocess(
+    (v) => (typeof v === 'string' ? v.toLowerCase() : v),
+    z.enum(['instagram', 'youtube', 'twitch', 'kick']).optional(),
+  ),
   full_name: z.string().max(300).optional(),
   biography: z.string().optional(),
   followers: z.coerce.number().int().nonnegative().default(0),
@@ -21,6 +24,7 @@ export const csvTargetRowSchema = z.object({
   is_business: csvBool,
   is_creator: csvBool,
   business_category: z.string().max(200).optional(),
+  profile_url: z.preprocess((v) => (v === '' ? undefined : v), z.url().optional()),
   external_url: z.preprocess((v) => (v === '' ? undefined : v), z.url().optional()),
   profile_pic_url: z.preprocess((v) => (v === '' ? undefined : v), z.url().optional()),
   discovered_via: z.string().max(200).optional(),

@@ -78,7 +78,7 @@ export async function upsertTargetsFromCSV(
       username: r.username,
       fullName: r.full_name ?? null,
       platform,
-      profileUrl: buildProfileUrl(platform, r.username),
+      profileUrl: r.profile_url ?? buildProfileUrl(platform, r.username),
       profilePicUrl: r.profile_pic_url ?? null,
       followers: r.followers ?? 0,
       following: r.following ?? null,
