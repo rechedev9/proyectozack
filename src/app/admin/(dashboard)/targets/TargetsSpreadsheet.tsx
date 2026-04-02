@@ -7,6 +7,7 @@ import {
   updateStatusAction,
   updateNotesAction,
   deleteTargetsAction,
+  deleteAllTargetsAction,
   assignTargetsToBrandAction,
   importCSVAction,
 } from './actions';
@@ -234,6 +235,14 @@ export function TargetsSpreadsheet({
     setTimeout(() => URL.revokeObjectURL(url), 100);
   };
 
+  const handleDeleteAll = (): void => {
+    if (!confirm('¿Eliminar TODOS los targets? Esta acción no se puede deshacer.')) return;
+    startTransition(async () => {
+      await deleteAllTargetsAction();
+      setSelected(new Set());
+    });
+  };
+
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
@@ -289,6 +298,16 @@ export function TargetsSpreadsheet({
         >
           Exportar CSV
         </button>
+        {targets.length > 0 && (
+          <button
+            type="button"
+            onClick={handleDeleteAll}
+            disabled={isPending}
+            className="shrink-0 px-3 py-2 rounded-lg text-[11px] font-semibold bg-red-900/20 border border-red-500/30 text-red-400 hover:bg-red-900/40 hover:text-red-300 transition-colors disabled:opacity-40"
+          >
+            Limpiar todo
+          </button>
+        )}
       </div>
 
       {importResult && (

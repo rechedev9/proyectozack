@@ -8,6 +8,7 @@ import {
   updateTargetNotes,
   createTarget,
   deleteTargets,
+  deleteAllTargets,
   bulkUpdateStatus,
   assignTargetsToBrand,
 } from '@/lib/queries/targets';
@@ -234,6 +235,15 @@ export async function assignTargetsToBrandAction(
   revalidatePath(REVALIDATE);
   revalidatePath('/marcas');
   return { assigned: result.assigned, updated: 0 };
+}
+
+// ─── Delete all ──────────────────────────────────────────────────────────────
+
+export async function deleteAllTargetsAction(): Promise<void> {
+  await requireRole('admin', '/admin/login');
+  await deleteAllTargets();
+  revalidatePath(REVALIDATE);
+  revalidatePath('/marcas');
 }
 
 // ─── CSV line parser (handles quoted fields) ──────────────────────────────────

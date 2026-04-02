@@ -176,6 +176,10 @@ export async function deleteTargets(ids: number[]): Promise<void> {
   await db.delete(targets).where(inArray(targets.id, ids));
 }
 
+export async function deleteAllTargets(): Promise<void> {
+  await db.delete(targets);
+}
+
 export async function bulkUpsertTargets(
   rows: CreateTargetInput[],
 ): Promise<{ inserted: number; updated: number; ids: number[] }> {
