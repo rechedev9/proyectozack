@@ -17,7 +17,7 @@ export function TalentSection({ talents }: TalentSectionProps) {
           <div className="text-center mb-12">
             <SectionTag>Nuestro portfolio</SectionTag>
             <SectionHeading>
-              <GradientText>Talentos</GradientText> en activo
+              <GradientText>Streamers y Creadores</GradientText> Gaming en España y LatAm
             </SectionHeading>
             <p className="mt-4 text-sp-muted max-w-xl mx-auto text-sm leading-relaxed">
               Streamers y creadores gaming con audiencias reales y alta fidelidad. Filtro por plataforma principal.

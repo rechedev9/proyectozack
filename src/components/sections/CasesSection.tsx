@@ -17,7 +17,7 @@ export function CasesSection({ cases }: CasesSectionProps) {
           <div className="text-center mb-12">
             <SectionTag>Track Record</SectionTag>
             <SectionHeading>
-              Casos de <GradientText>Éxito</GradientText>
+              Campañas Gaming con <GradientText>Resultados Medibles</GradientText>
             </SectionHeading>
           </div>
         </FadeInOnScroll>
