@@ -18,13 +18,14 @@ import {
   PLATFORMS,
   PLATFORM_COLORS,
   PLATFORM_LABELS,
-  STATUS_CYCLE,
   STATUS_COLORS,
+  STATUS_TEXT_COLORS,
   STATUS_LABELS,
   STATUS_TAB_COLORS,
   STATUS_FILTERS,
+  STATUS_VALUES,
 } from './targets-constants';
-import type { SortField, SortState, StatusFilter, PlatformValue } from './targets-constants';
+import type { SortField, SortState, StatusFilter, StatusValue, PlatformValue } from './targets-constants';
 import { Th } from './ThSortable';
 import { exportTargetsCSV } from './export-csv';
 
@@ -40,6 +41,7 @@ export function TargetsSpreadsheet({
   const [platformFilter, setPlatformFilter] = useState<Set<PlatformValue>>(new Set());
   const [sort, setSort] = useState<SortState>({ field: 'createdAt', dir: 'desc' });
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [openStatusMenu, setOpenStatusMenu] = useState<number | null>(null);
   const [editingNotes, setEditingNotes] = useState<number | null>(null);
   const [notesValue, setNotesValue] = useState('');
   const [brandUserId, setBrandUserId] = useState('');
@@ -163,12 +165,11 @@ export function TargetsSpreadsheet({
   const sortArrow = (field: SortField): string =>
     sort.field === field ? (sort.dir === 'asc' ? ' \u2191' : ' \u2193') : '';
 
-  const cycleStatus = (target: Target): void => {
-    const next = STATUS_CYCLE[target.status];
+  const setStatus = (id: number, status: StatusValue): void => {
     startTransition(async () => {
       const fd = new FormData();
-      fd.set('id', String(target.id));
-      fd.set('status', next);
+      fd.set('id', String(id));
+      fd.set('status', status);
       await updateStatusAction(fd);
     });
   };
@@ -400,6 +401,10 @@ export function TargetsSpreadsheet({
         </div>
       )}
 
+      {openStatusMenu !== null && (
+        <div className="fixed inset-0 z-40" onClick={() => setOpenStatusMenu(null)} />
+      )}
+
       <div className="rounded-xl border border-sp-admin-border bg-sp-admin-card overflow-x-auto">
         <table className="w-full text-left text-sm min-w-[720px]">
           <thead>
@@ -506,15 +511,34 @@ export function TargetsSpreadsheet({
                       )}
                     </td>
                     <td className="px-4 py-2.5">
-                      <button
-                        type="button"
-                        onClick={() => cycleStatus(target)}
-                        disabled={isPending}
-                        title="Clic para cambiar estado"
-                        className={`inline-flex items-center px-2.5 py-1 rounded text-[11px] font-semibold transition-opacity hover:opacity-80 disabled:cursor-not-allowed ${STATUS_COLORS[target.status]}`}
-                      >
-                        {STATUS_LABELS[target.status]}
-                      </button>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => { setEditingNotes(null); setOpenStatusMenu(openStatusMenu === target.id ? null : target.id); }}
+                          disabled={isPending}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-semibold transition-opacity hover:opacity-80 disabled:cursor-not-allowed ${STATUS_COLORS[target.status]}`}
+                        >
+                          {STATUS_LABELS[target.status]}
+                          <svg aria-hidden="true" className="w-2.5 h-2.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
+                        {openStatusMenu === target.id && (
+                          <div className="absolute left-0 top-full mt-1 z-50 min-w-[140px] bg-sp-admin-card border border-sp-admin-border rounded-lg shadow-xl py-1">
+                            {STATUS_VALUES.map((s) => (
+                              <button
+                                key={s}
+                                type="button"
+                                onClick={() => { setStatus(target.id, s); setOpenStatusMenu(null); }}
+                                disabled={s === target.status}
+                                className={`w-full text-left px-3 py-1.5 text-[11px] font-semibold transition-colors hover:bg-sp-admin-hover disabled:opacity-40 disabled:cursor-default ${STATUS_TEXT_COLORS[s]}`}
+                              >
+                                {STATUS_LABELS[s]}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-2.5">
                       {isEditingNotes ? (
@@ -536,7 +560,7 @@ export function TargetsSpreadsheet({
                       ) : (
                         <button
                           type="button"
-                          onClick={() => { setEditingNotes(target.id); setNotesValue(target.notes ?? ''); }}
+                          onClick={() => { setOpenStatusMenu(null); setEditingNotes(target.id); setNotesValue(target.notes ?? ''); }}
                           className="text-[11px] text-sp-admin-muted hover:text-sp-admin-text transition-colors text-left w-full max-w-[200px] truncate"
                           title={target.notes ?? 'A\u00f1adir nota...'}
                         >

@@ -21,18 +21,18 @@ export const PLATFORM_LABELS: Record<string, string> = {
   kick: 'KK',
 };
 
-export const STATUS_CYCLE: Record<StatusValue, StatusValue> = {
-  pendiente: 'contactado',
-  contactado: 'finalizado',
-  finalizado: 'descartado',
-  descartado: 'pendiente',
-};
-
 export const STATUS_COLORS: Record<StatusValue, string> = {
   pendiente: 'bg-amber-900/30 text-amber-400',
   contactado: 'bg-blue-900/30 text-blue-400',
   finalizado: 'bg-emerald-900/30 text-emerald-400',
   descartado: 'bg-sp-admin-bg text-sp-admin-muted/60',
+};
+
+export const STATUS_TEXT_COLORS: Record<StatusValue, string> = {
+  pendiente: 'text-amber-400',
+  contactado: 'text-blue-400',
+  finalizado: 'text-emerald-400',
+  descartado: 'text-sp-admin-muted/60',
 };
 
 export const STATUS_LABELS: Record<StatusValue, string> = {
@@ -50,4 +50,5 @@ export const STATUS_TAB_COLORS: Record<StatusFilter, string> = {
   descartado: 'text-sp-admin-muted/70 border-sp-admin-muted/40',
 };
 
+export const STATUS_VALUES: readonly StatusValue[] = ['pendiente', 'contactado', 'finalizado', 'descartado'] as const;
 export const STATUS_FILTERS: readonly StatusFilter[] = ['todos', 'pendiente', 'contactado', 'finalizado', 'descartado'] as const;

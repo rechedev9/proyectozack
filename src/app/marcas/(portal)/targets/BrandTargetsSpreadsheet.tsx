@@ -13,19 +13,21 @@ import {
 
 type StatusValue = 'pendiente' | 'contactado' | 'finalizado' | 'descartado';
 
-const STATUS_CYCLE: Record<StatusValue, StatusValue> = {
-  pendiente: 'contactado',
-  contactado: 'finalizado',
-  finalizado: 'pendiente',
-  descartado: 'pendiente',
-};
-
 const STATUS_COLORS: Record<StatusValue, string> = {
   pendiente: 'bg-amber-100 text-amber-700',
   contactado: 'bg-blue-100 text-blue-700',
   finalizado: 'bg-emerald-100 text-emerald-700',
   descartado: 'bg-gray-100 text-gray-400',
 };
+
+const STATUS_TEXT_COLORS: Record<StatusValue, string> = {
+  pendiente: 'text-amber-700',
+  contactado: 'text-blue-700',
+  finalizado: 'text-emerald-700',
+  descartado: 'text-gray-400',
+};
+
+const STATUS_VALUES: readonly StatusValue[] = ['pendiente', 'contactado', 'finalizado', 'descartado'] as const;
 
 const STATUS_LABELS: Record<StatusValue, string> = {
   pendiente: 'Pendiente',
@@ -40,6 +42,7 @@ export function BrandTargetsSpreadsheet({
   targets: Target[];
 }): React.ReactElement {
   const [search, setSearch] = useState('');
+  const [openStatusMenu, setOpenStatusMenu] = useState<number | null>(null);
   const [editingNotes, setEditingNotes] = useState<number | null>(null);
   const [notesValue, setNotesValue] = useState('');
   const [isPending, startTransition] = useTransition();
@@ -54,12 +57,11 @@ export function BrandTargetsSpreadsheet({
     );
   }, [targets, search]);
 
-  const cycleStatus = (target: Target): void => {
-    const next = STATUS_CYCLE[target.status];
+  const setStatus = (id: number, status: StatusValue): void => {
     startTransition(async () => {
       const fd = new FormData();
-      fd.set('targetId', String(target.id));
-      fd.set('status', next);
+      fd.set('targetId', String(id));
+      fd.set('status', status);
       await updateBrandTargetStatusAction(fd);
     });
   };
@@ -91,8 +93,12 @@ export function BrandTargetsSpreadsheet({
       </div>
 
       <div className="rounded-2xl border border-sp-border bg-sp-off/60 px-4 py-3 text-xs text-sp-muted">
-        Haz clic en el estado para avanzar el target por la pipeline y usa las notas para guardar contexto antes de contactar.
+        Usa el desplegable de estado para mover el target por la pipeline y las notas para guardar contexto antes de contactar.
       </div>
+
+      {openStatusMenu !== null && (
+        <div className="fixed inset-0 z-40" onClick={() => setOpenStatusMenu(null)} />
+      )}
 
       <div className="rounded-2xl border border-sp-border bg-white overflow-x-auto">
         <table className="w-full min-w-[760px] text-left text-sm">
@@ -163,14 +169,34 @@ export function BrandTargetsSpreadsheet({
                     </td>
                     <td className="px-4 py-3 text-xs text-sp-muted">{target.discoveredVia || '--'}</td>
                     <td className="px-4 py-3">
+                      <div className="relative">
                         <button
                           type="button"
-                          onClick={() => cycleStatus(target)}
+                          onClick={() => { setEditingNotes(null); setOpenStatusMenu(openStatusMenu === target.id ? null : target.id); }}
                           disabled={isPending}
-                          className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold transition-opacity hover:opacity-80 ${STATUS_COLORS[target.status]}`}
+                          className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold transition-opacity hover:opacity-80 disabled:cursor-not-allowed ${STATUS_COLORS[target.status]}`}
                         >
                           {STATUS_LABELS[target.status]}
+                          <svg aria-hidden="true" className="w-2.5 h-2.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
                         </button>
+                        {openStatusMenu === target.id && (
+                          <div className="absolute left-0 top-full mt-1 z-50 min-w-[140px] bg-white border border-sp-border rounded-xl shadow-xl py-1">
+                            {STATUS_VALUES.map((s) => (
+                              <button
+                                key={s}
+                                type="button"
+                                onClick={() => { setStatus(target.id, s); setOpenStatusMenu(null); }}
+                                disabled={s === target.status}
+                                className={`w-full text-left px-3 py-1.5 text-[11px] font-semibold transition-colors hover:bg-sp-off disabled:opacity-40 disabled:cursor-default ${STATUS_TEXT_COLORS[s]}`}
+                              >
+                                {STATUS_LABELS[s]}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3 min-w-[220px]">
                       {isEditingNotes ? (
@@ -191,6 +217,7 @@ export function BrandTargetsSpreadsheet({
                         <button
                           type="button"
                           onClick={() => {
+                            setOpenStatusMenu(null);
                             setEditingNotes(target.id);
                             setNotesValue(target.notes ?? '');
                           }}
