@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { MetricsChart } from '@/components/admin/MetricsChart';
 import { formatCompact } from '@/lib/format';
 import type { TalentMetricSnapshot } from '@/types';
@@ -55,9 +56,11 @@ export function GrowthReport({ talentName, talentPhoto, from, to, snapshots }: G
           </div>
         </div>
         {talentPhoto && (
-          <img
+          <Image
             src={talentPhoto}
             alt={talentName}
+            width={64}
+            height={64}
             className="w-16 h-16 rounded-full object-cover border-2 border-sp-admin-border"
           />
         )}

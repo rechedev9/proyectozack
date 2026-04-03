@@ -51,7 +51,7 @@ const ENDPOINTS = [
   },
 ];
 
-export default function () {
+export default function spikeApi() {
   const endpoint = randomItem(ENDPOINTS);
 
   const res = http.post(

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useTransition, useMemo } from 'react';
 import { formatCompact } from '@/lib/format';
 import type { YouTubeChannelPreview } from '@/lib/services/youtube';
@@ -67,7 +68,7 @@ function YouTubeResultsTable({ results, selected, avgViews, toggleOne }: YouTube
               <td className="px-4 py-2.5">
                 <div className="flex items-center gap-2.5">
                   {channel.thumbnailUrl ? (
-                    <img src={channel.thumbnailUrl} alt={channel.title} className="w-8 h-8 rounded-full object-cover shrink-0 bg-sp-admin-border" />
+                    <Image src={channel.thumbnailUrl} alt={channel.title} width={32} height={32} className="w-8 h-8 rounded-full object-cover shrink-0 bg-sp-admin-border" />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-[#FF0000] flex items-center justify-center text-[10px] font-bold text-white shrink-0">YT</div>
                   )}

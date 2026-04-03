@@ -128,7 +128,7 @@ function checkRss() {
   });
 }
 
-export default function () {
+export default function soak() {
   const action = pickAction();
   action();
 

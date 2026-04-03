@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useMemo, useRef, useTransition } from 'react';
 import type { Target } from '@/types';
 import { formatCompact } from '@/lib/format';
@@ -457,9 +458,11 @@ export function TargetsSpreadsheet({
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-2.5">
                         {target.profilePicUrl ? (
-                          <img
+                          <Image
                             src={target.profilePicUrl}
                             alt={target.username}
+                            width={28}
+                            height={28}
                             className="w-7 h-7 rounded-full object-cover shrink-0 bg-sp-admin-border"
                           />
                         ) : (

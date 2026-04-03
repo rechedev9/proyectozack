@@ -73,7 +73,7 @@ function generateInvalidPayload() {
   return randomItem(variants);
 }
 
-export default function () {
+export default function loadApiContact() {
   // 90% valid payloads, 10% invalid (realistic error rate)
   const isValid = Math.random() < 0.9;
   const payload = isValid ? generateValidPayload() : generateInvalidPayload();

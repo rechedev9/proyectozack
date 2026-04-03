@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useMemo, useState, useTransition } from 'react';
 
 import { formatCompact } from '@/lib/format';
@@ -120,9 +121,11 @@ export function BrandTargetsSpreadsheet({
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         {target.profilePicUrl ? (
-                          <img
+                          <Image
                             src={target.profilePicUrl}
                             alt={target.username}
+                            width={36}
+                            height={36}
                             className="w-9 h-9 rounded-full object-cover bg-sp-border shrink-0"
                           />
                         ) : (

@@ -29,7 +29,7 @@ const PUBLIC_PAGES = [
   '/blog',
 ];
 
-export default function () {
+export default function loadPublicPages() {
   // Simulate a user browsing multiple pages in a session
 
   // 1. Land on home page (heaviest — fetches 6 queries via Promise.all)

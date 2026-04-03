@@ -12,7 +12,7 @@ export const options = {
   thresholds: THRESHOLDS,
 };
 
-export default function () {
+export default function smoke() {
   // Home page (SSR)
   const home = http.get(`${BASE_URL}/`);
   check(home, {
