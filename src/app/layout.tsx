@@ -32,6 +32,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: '/',
+    languages: {
+      'es': SITE_URL,
+      'x-default': SITE_URL,
+    },
   },
   openGraph: {
     title: 'SocialPro — Agencia Gaming & Esports',
