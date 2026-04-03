@@ -1,6 +1,7 @@
 # SocialPro — Pending Work
 
-> Last updated: 2026-04-01. Historical bootstrap phases (1–11) are complete.
+> Last updated: 2026-04-03. Historical bootstrap phases (1–11) are complete.
+> Structural reorganization phases R1, R3, R4 executed 2026-04-03. R2 applies on next touch.
 > Instascout (Instagram) removed — only YouTube + Twitch remain.
 > Read this file at the start of every session before touching any code.
 
@@ -15,7 +16,7 @@
 | DB singleton | `src/lib/db.ts` — Neon + Drizzle, edge-safe |
 | Auth guard | `src/lib/auth-guard.ts` — `requireRole('admin' \| 'brand')` |
 | Server actions pattern | `src/app/admin/(dashboard)/giveaways/actions.ts` — reference impl |
-| Spreadsheet UI pattern | `src/app/admin/(dashboard)/talents/RosterSpreadsheet.tsx` |
+| Spreadsheet UI pattern | `src/components/admin/talents/RosterSpreadsheet.tsx` |
 | Follower sync | `scripts/sync-followers.ts` — YouTube + Twitch via real APIs |
 | Committer | `scripts/committer "type(scope): msg" file1 file2 ...` |
 | Migration workflow | `npx drizzle-kit generate` → `npx drizzle-kit migrate` |
@@ -110,3 +111,219 @@ Add three new `<input type="number">` fields to the filter grid:
    - Twitch: CS2 Live + es → only Spanish streams
    - Twitch: "cs2" + max 100K followers + min 50 viewers → filtered results
 4. Searches without new filters still return same results as before
+
+---
+
+## Structural Reorganization — Phases R1–R4
+
+> Objective: make the codebase consistently navigable so that any component, query, or action can be found and edited in one obvious place without a full-text search.
+> These phases are independent of feature phases and can be executed incrementally.
+> **Execute phases in order — R1 breaks import paths that R2/R3/R4 may touch.**
+
+---
+
+## Phase R1 — Move co-located components out of `app/` ✓ DONE
+
+### Objective
+
+Components inside `app/` route directories are invisible to `src/components/` conventions. Any edit to them requires knowing which route they live in rather than browsing `components/`. This phase moves all non-page, non-layout, non-action files from `app/` into `src/components/` under the appropriate sub-directory.
+
+### Current state
+
+**27 component files** are co-located inside `app/` route directories:
+
+| File (current location) | Move to |
+|---|---|
+| `app/admin/(dashboard)/targets/TargetsDiagnostics.tsx` | `src/components/admin/targets/` |
+| `app/admin/(dashboard)/targets/TargetsEmptyState.tsx` | `src/components/admin/targets/` |
+| `app/admin/(dashboard)/targets/TargetsSpreadsheet.tsx` | `src/components/admin/targets/` |
+| `app/admin/(dashboard)/targets/ThSortable.tsx` | `src/components/admin/targets/` |
+| `app/admin/(dashboard)/targets/TwitchSearch.tsx` | `src/components/admin/targets/` |
+| `app/admin/(dashboard)/targets/YouTubeSearch.tsx` | `src/components/admin/targets/` |
+| `app/admin/(dashboard)/targets/targets-constants.ts` | `src/components/admin/targets/` |
+| `app/admin/(dashboard)/talents/RosterSpreadsheet.tsx` | `src/components/admin/talents/` |
+| `app/admin/(dashboard)/analytics/report/[talentSlug]/GrowthReport.tsx` | `src/components/admin/analytics/` |
+| `app/admin/(dashboard)/brands/invite-form.tsx` | `src/components/admin/brands/` |
+| `app/admin/(dashboard)/equipo/UploadForm.tsx` | `src/components/admin/equipo/` |
+| `app/marcas/(portal)/targets/BrandTargetsSpreadsheet.tsx` | `src/components/brand/targets/` |
+| `app/marcas/(portal)/talentos/[slug]/client.tsx` | `src/components/brand/` → rename `BrandTalentFichaClient.tsx` |
+| `app/giveaways/BrandsSidebar.tsx` | `src/components/giveaways/` |
+| `app/giveaways/CodeCard.tsx` | `src/components/giveaways/` |
+| `app/giveaways/CreatorsSidebar.tsx` | `src/components/giveaways/` |
+| `app/giveaways/GiveawayHubCard.tsx` | `src/components/giveaways/` |
+| `app/giveaways/GiveawaysHub.tsx` | `src/components/giveaways/` |
+| `app/giveaways/RecentWinners.tsx` | `src/components/giveaways/` |
+| `app/giveaways/StatsBar.tsx` | `src/components/giveaways/` |
+| `app/giveaways/TopWinners.tsx` | `src/components/giveaways/` |
+| `app/creadores/[slug]/CountdownTimer.tsx` | `src/components/creadores/` |
+| `app/creadores/[slug]/CreatorHero.tsx` | `src/components/creadores/` |
+| `app/creadores/[slug]/GiveawayCard.tsx` | `src/components/creadores/` |
+| `app/creadores/[slug]/GiveawayGrid.tsx` | `src/components/creadores/` |
+| `app/creadores/[slug]/UnboxReveal.tsx` | `src/components/creadores/` |
+
+### Constraints
+
+- Only move files. Do not refactor, rename (except `client.tsx` → `BrandTalentFichaClient.tsx`), or change logic.
+- Update all `import` paths in their parent `page.tsx` and `layout.tsx` after each move.
+- Architecture reminders table at the top of this file must be updated: `RosterSpreadsheet.tsx` new path.
+- CLAUDE.md note "Spreadsheet UI pattern" must be updated after R1.
+- `targets-constants.ts` is a `.ts` not a `.tsx` — move it, do not rename.
+
+### Step-by-step plan
+
+#### Step 1 — Create new directories
+
+```
+src/components/admin/targets/
+src/components/admin/talents/
+src/components/admin/analytics/
+src/components/admin/brands/
+src/components/admin/equipo/
+src/components/brand/targets/
+src/components/giveaways/
+src/components/creadores/
+```
+
+#### Step 2 — Move `targets/` components (6 files + 1 constants)
+
+Move all 7 files from `app/admin/(dashboard)/targets/` (non-page, non-action files).
+Update `app/admin/(dashboard)/targets/page.tsx` imports.
+
+#### Step 3 — Move `talents/` component (1 file)
+
+Move `RosterSpreadsheet.tsx`. Update `app/admin/(dashboard)/talents/page.tsx`.
+Update architecture reminders in this file.
+
+#### Step 4 — Move `analytics/` component (1 file)
+
+Move `GrowthReport.tsx`. Update `app/admin/(dashboard)/analytics/report/[talentSlug]/page.tsx`.
+
+#### Step 5 — Move `brands/` and `equipo/` components (2 files)
+
+Move `invite-form.tsx` and `UploadForm.tsx`. Update parent pages.
+
+#### Step 6 — Move `marcas/` components (2 files)
+
+Move `BrandTargetsSpreadsheet.tsx` and rename `client.tsx` → `BrandTalentFichaClient.tsx`.
+Update `app/marcas/(portal)/targets/page.tsx` and `app/marcas/(portal)/talentos/[slug]/page.tsx`.
+
+#### Step 7 — Move `giveaways/` components (8 files)
+
+Move all non-page files from `app/giveaways/`. Update `app/giveaways/page.tsx`.
+
+#### Step 8 — Move `creadores/` components (5 files)
+
+Move all non-page files from `app/creadores/[slug]/`. Update `app/creadores/[slug]/page.tsx`.
+
+### Files affected
+
+All 27 component files listed above plus the `page.tsx` / `layout.tsx` files that import them.
+After: `app/` contains only `page.tsx`, `layout.tsx`, `actions*.ts`, `route.ts`, `error.tsx`, `loading.tsx` files.
+
+### Risks
+
+- **Import path breaks** if any file is missed during the move. Mitigation: run `npx tsc --noEmit` after each step.
+- **`client.tsx` rename** may break Fast Refresh cache — rebuild after rename.
+- **Barrel `index.ts` files** do not exist in `components/` subdirs; do not create them (adds indirection for no gain).
+
+### Verification
+
+After each step:
+1. `npx tsc --noEmit` — zero errors
+2. `npm run lint` — zero new warnings
+3. Dev server: manually navigate to the affected route, confirm no 404s or component errors
+
+---
+
+## Phase R2 — Standardize server actions naming convention ⬜ TODO
+
+### Objective
+
+`app/admin/(dashboard)/targets/` has three action files (`actions.ts`, `diagnostics-actions.ts`, `youtube-actions.ts`) with no consistent naming rule. `giveaways/` also has three (`actions.ts`, `codes-actions.ts`, `winners-actions.ts`). Define a convention and apply it on the next edit to each file — no mass rename needed now.
+
+### Constraint
+
+Do not rename files proactively. Apply the convention the next time each file is touched for a feature change. This avoids a churn commit with no behavior change.
+
+### Convention to adopt
+
+- **Single domain route**: one `actions.ts` — no prefix.
+- **Multi-domain route** (targets, giveaways): one file per domain, always `[domain]-actions.ts`. No bare `actions.ts` in a multi-domain route.
+  - `targets/`: rename `actions.ts` → `targets-actions.ts` on next touch.
+  - `giveaways/`: rename `actions.ts` → `giveaway-actions.ts` on next touch.
+- **Export naming**: every exported server action function must include the domain in its name (`searchYouTubeChannels`, not `search`).
+
+### Files affected (on next touch)
+
+| Current | Rename to |
+|---|---|
+| `app/admin/(dashboard)/targets/actions.ts` | `targets-actions.ts` |
+| `app/admin/(dashboard)/giveaways/actions.ts` | `giveaway-actions.ts` |
+
+### Risks
+
+- Architecture reminders table references `giveaways/actions.ts` as the "Server actions pattern" reference impl. Update the pointer when the rename happens.
+
+---
+
+## Phase R3 — Split `src/types/index.ts` into domain files ✓ DONE
+
+### Objective
+
+`src/types/index.ts` currently re-exports all `InferSelectModel` types from a single file. As the schema grows this becomes a bottleneck: editing one domain type requires opening a catch-all file, and the flat namespace obscures domain boundaries.
+
+### Current state
+
+Single file at `src/types/index.ts` with 20+ type exports inferred from Drizzle schema models.
+
+### Step-by-step plan
+
+1. Create `src/types/talent.ts`, `src/types/giveaway.ts`, `src/types/brand.ts`, `src/types/target.ts`, `src/types/case.ts`, `src/types/post.ts`, `src/types/auth.ts`.
+2. Move the relevant `InferSelectModel` type exports into each file.
+3. Convert `src/types/index.ts` into a barrel that re-exports everything from the domain files — preserving all existing import paths with zero consumer changes.
+4. Verify: `npx tsc --noEmit` clean.
+
+### Constraints
+
+- `src/types/index.ts` must continue to exist as a re-export barrel so no consumer imports break.
+- Do not split until Phase R1 is complete (avoids compound diffs).
+
+### Risks
+
+- Low risk. The barrel pattern means zero import changes for consumers.
+
+---
+
+## Phase R4 — Clean up `scripts/` ✓ DONE
+
+### Objective
+
+`scripts/` mixes general-purpose tooling with one-off talent-specific seed files and an `.mjs` outlier, making it hard to distinguish stable scripts from historical one-offs.
+
+### Current state
+
+One-off seed scripts: `add-chips.ts`, `add-manolito.ts`, `add-therealfer.ts`.
+Extension mismatch: `extract-images.mjs` (`.mjs` in a TypeScript project).
+
+### Step-by-step plan
+
+1. Create `scripts/seeds/talents/` directory.
+2. Move `add-chips.ts`, `add-manolito.ts`, `add-therealfer.ts` into it.
+3. Convert `extract-images.mjs` to `extract-images.ts` — replace `import.meta.url` pattern if used with `__filename`/`__dirname` via `tsx`, or keep `.mjs` and document it explicitly.
+4. Update README / any docs that reference these paths.
+
+### Constraints
+
+- None of these scripts are referenced in `package.json`. They are run manually. No `npm run` commands break.
+- Verify `extract-images.mjs` does not rely on native ES module features unavailable in `tsx` before converting.
+
+### Risks
+
+- Very low. These are manual-run scripts with no automated callers.
+
+### Verification
+
+After moves:
+1. `node scripts/seeds/talents/add-chips.ts` (via tsx) still runs without error.
+2. `node scripts/extract-images.mjs` (or `.ts` after conversion) still works.
+3. `npx tsc --noEmit` clean (new files must resolve).

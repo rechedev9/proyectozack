@@ -1,5 +1,5 @@
 import { getAdminRosterWithGrowth } from '@/lib/queries/talents';
-import { RosterSpreadsheet } from './RosterSpreadsheet';
+import { RosterSpreadsheet } from '@/components/admin/talents/RosterSpreadsheet';
 
 export default async function AdminTalentsPage(): Promise<React.ReactElement> {
   const creators = await getAdminRosterWithGrowth();

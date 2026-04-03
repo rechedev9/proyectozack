@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTalentSlugs, getTalentBySlug } from '@/lib/queries/talents';
 import { getActiveGiveaways, getFinishedGiveaways } from '@/lib/queries/giveaways';
-import { CreatorHero } from './CreatorHero';
-import { GiveawayGrid } from './GiveawayGrid';
+import { CreatorHero } from '@/components/creadores/CreatorHero';
+import { GiveawayGrid } from '@/components/creadores/GiveawayGrid';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
 

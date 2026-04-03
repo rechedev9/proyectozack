@@ -1,7 +1,7 @@
 import { db } from '@/lib/db';
 import { user as userTable } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
-import { InviteBrandForm } from './invite-form';
+import { InviteBrandForm } from '@/components/admin/brands/invite-form';
 
 export default async function AdminBrandsPage(): Promise<React.ReactElement> {
   const brands = await db

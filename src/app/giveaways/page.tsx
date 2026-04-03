@@ -3,8 +3,8 @@ import { getAllActiveGiveaways, getAllFinishedGiveaways, extractUniqueBrands } f
 import { getAllCodes } from '@/lib/queries/creatorCodes';
 import { getTopWinners, getRecentWinners } from '@/lib/queries/giveawayWinners';
 import { getAllTalents } from '@/lib/queries/talents';
-import { GiveawaysHub } from './GiveawaysHub';
-import { StatsBar } from './StatsBar';
+import { GiveawaysHub } from '@/components/giveaways/GiveawaysHub';
+import { StatsBar } from '@/components/giveaways/StatsBar';
 
 export const revalidate = 3600;
 

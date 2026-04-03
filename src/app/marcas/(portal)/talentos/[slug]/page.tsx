@@ -6,7 +6,7 @@ import { getTalentCampaignsForBrand } from '@/lib/queries/brands';
 import { SocialIcon } from '@/components/ui/SocialIcon';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { gradientStyle } from '@/lib/gradient';
-import { BrandTalentFichaClient } from './client';
+import { BrandTalentFichaClient } from '@/components/brand/BrandTalentFichaClient';
 
 type PageProps = {
   params: Promise<{ slug: string }>;
