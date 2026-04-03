@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const post = await getPostBySlug(slug);
   if (!post) return {};
 
-  const title = `${post.title} — Blog SocialPro`;
+  const title = post.title;
 
   return {
     title,
@@ -65,7 +65,11 @@ export default async function BlogPostPage({ params }: PageProps) {
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt,
-    author: { '@type': 'Organization', name: 'SocialPro' },
+    author: {
+      '@type': 'Person',
+      name: post.author,
+      worksFor: { '@type': 'Organization', name: 'SocialPro' },
+    },
     publisher: { '@type': 'Organization', name: 'SocialPro' },
     datePublished: post.publishedAt?.toISOString(),
     image: post.coverUrl || undefined,

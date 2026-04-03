@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!talent) return {};
 
   const description = talent.bio;
-  const title = `${talent.name} — ${talent.role} | SocialPro`;
+  const title = `${talent.name} — ${talent.role}`;
 
   return {
     title,
