@@ -129,7 +129,7 @@ export async function upsertTargetsFromCSV(
 
 export async function updateTargetStatus(
   id: number,
-  status: 'pendiente' | 'contactado' | 'finalizado',
+  status: Target['status'],
 ): Promise<void> {
   await db
     .update(targets)
@@ -254,7 +254,7 @@ export async function assignTargetsToBrand(
 export async function updateBrandTargetStatus(
   brandUserId: string,
   targetId: number,
-  status: 'pendiente' | 'contactado' | 'finalizado',
+  status: Target['status'],
 ): Promise<void> {
   await db
     .update(targets)
@@ -289,7 +289,7 @@ export async function updateBrandTargetNotes(
 
 export async function bulkUpdateStatus(
   ids: number[],
-  status: 'pendiente' | 'contactado' | 'finalizado',
+  status: Target['status'],
 ): Promise<void> {
   if (ids.length === 0) return;
   await db

@@ -1,7 +1,7 @@
 export type SortField = 'username' | 'followers' | 'status' | 'createdAt';
 export type SortDir = 'asc' | 'desc';
 export type SortState = { field: SortField; dir: SortDir };
-export type StatusValue = 'pendiente' | 'contactado' | 'finalizado';
+export type StatusValue = 'pendiente' | 'contactado' | 'finalizado' | 'descartado';
 export type StatusFilter = 'todos' | StatusValue;
 export type PlatformValue = 'instagram' | 'youtube' | 'twitch' | 'kick';
 
@@ -24,19 +24,22 @@ export const PLATFORM_LABELS: Record<string, string> = {
 export const STATUS_CYCLE: Record<StatusValue, StatusValue> = {
   pendiente: 'contactado',
   contactado: 'finalizado',
-  finalizado: 'pendiente',
+  finalizado: 'descartado',
+  descartado: 'pendiente',
 };
 
 export const STATUS_COLORS: Record<StatusValue, string> = {
   pendiente: 'bg-amber-900/30 text-amber-400',
   contactado: 'bg-blue-900/30 text-blue-400',
   finalizado: 'bg-emerald-900/30 text-emerald-400',
+  descartado: 'bg-sp-admin-bg text-sp-admin-muted/60',
 };
 
 export const STATUS_LABELS: Record<StatusValue, string> = {
   pendiente: 'Pendiente',
   contactado: 'Contactado',
   finalizado: 'Finalizado',
+  descartado: 'Descartado',
 };
 
 export const STATUS_TAB_COLORS: Record<StatusFilter, string> = {
@@ -44,6 +47,7 @@ export const STATUS_TAB_COLORS: Record<StatusFilter, string> = {
   pendiente: 'text-amber-400 border-amber-400',
   contactado: 'text-blue-400 border-blue-400',
   finalizado: 'text-emerald-400 border-emerald-400',
+  descartado: 'text-sp-admin-muted/70 border-sp-admin-muted/40',
 };
 
-export const STATUS_FILTERS: readonly StatusFilter[] = ['todos', 'pendiente', 'contactado', 'finalizado'] as const;
+export const STATUS_FILTERS: readonly StatusFilter[] = ['todos', 'pendiente', 'contactado', 'finalizado', 'descartado'] as const;

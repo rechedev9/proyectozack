@@ -10,24 +10,27 @@ import {
   updateBrandTargetStatusAction,
 } from './actions';
 
-type StatusValue = 'pendiente' | 'contactado' | 'finalizado';
+type StatusValue = 'pendiente' | 'contactado' | 'finalizado' | 'descartado';
 
 const STATUS_CYCLE: Record<StatusValue, StatusValue> = {
   pendiente: 'contactado',
   contactado: 'finalizado',
   finalizado: 'pendiente',
+  descartado: 'pendiente',
 };
 
 const STATUS_COLORS: Record<StatusValue, string> = {
   pendiente: 'bg-amber-100 text-amber-700',
   contactado: 'bg-blue-100 text-blue-700',
   finalizado: 'bg-emerald-100 text-emerald-700',
+  descartado: 'bg-gray-100 text-gray-400',
 };
 
 const STATUS_LABELS: Record<StatusValue, string> = {
   pendiente: 'Pendiente',
   contactado: 'Contactado',
   finalizado: 'Finalizado',
+  descartado: 'Descartado',
 };
 
 export function BrandTargetsSpreadsheet({

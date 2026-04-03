@@ -47,7 +47,7 @@ export function TargetsSpreadsheet({
   const csvInputRef = useRef<HTMLInputElement>(null);
 
   const statusCounts = useMemo(() => {
-    const counts: Record<StatusFilter, number> = { todos: targets.length, pendiente: 0, contactado: 0, finalizado: 0 };
+    const counts: Record<StatusFilter, number> = { todos: targets.length, pendiente: 0, contactado: 0, finalizado: 0, descartado: 0 };
     for (const t of targets) counts[t.status]++;
     return counts;
   }, [targets]);
@@ -441,7 +441,7 @@ export function TargetsSpreadsheet({
                 return (
                   <tr
                     key={target.id}
-                    className={`transition-colors hover:bg-sp-admin-hover group ${selected.has(target.id) ? 'bg-sp-admin-accent/5' : ''}`}
+                    className={`transition-colors hover:bg-sp-admin-hover group ${selected.has(target.id) ? 'bg-sp-admin-accent/5' : ''} ${target.status === 'descartado' ? 'opacity-40' : ''}`}
                   >
                     <td className="px-3 py-2.5">
                       <input

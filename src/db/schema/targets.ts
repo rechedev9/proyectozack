@@ -17,6 +17,7 @@ export const targetStatusEnum = pgEnum('target_status', [
   'pendiente',
   'contactado',
   'finalizado',
+  'descartado',
 ]);
 
 export const targetPlatformEnum = pgEnum('target_platform', [

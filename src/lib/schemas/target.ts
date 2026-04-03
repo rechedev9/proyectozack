@@ -59,9 +59,11 @@ const targetFields = z.object({
 export const createTargetSchema = targetFields;
 export const updateTargetSchema = targetFields.partial();
 
+const TARGET_STATUSES = ['pendiente', 'contactado', 'finalizado', 'descartado'] as const;
+
 export const updateTargetStatusSchema = z.object({
   id: z.coerce.number().int().positive(),
-  status: z.enum(['pendiente', 'contactado', 'finalizado']),
+  status: z.enum(TARGET_STATUSES),
 });
 
 export const updateTargetNotesSchema = z.object({
@@ -71,7 +73,7 @@ export const updateTargetNotesSchema = z.object({
 
 export const bulkStatusSchema = z.object({
   ids: z.array(z.number().int().positive()).min(1),
-  status: z.enum(['pendiente', 'contactado', 'finalizado']),
+  status: z.enum(TARGET_STATUSES),
 });
 
 export type CreateTargetInput = z.infer<typeof createTargetSchema>;
