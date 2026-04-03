@@ -8,6 +8,7 @@ import { SectionHeading } from '@/components/ui/SectionHeading';
 import { GradientText } from '@/components/ui/GradientText';
 import { FilterTabs } from '@/components/ui/FilterTabs';
 import { FadeInOnScroll } from '@/components/ui/FadeInOnScroll';
+import Link from 'next/link';
 
 const SERVICES = [
   {
@@ -96,6 +97,12 @@ export function ServicesSection() {
             <SectionHeading>
               Lo que <GradientText>Ofrecemos</GradientText>
             </SectionHeading>
+            <p className="mt-4 text-sm text-sp-muted">
+              ¿Marca de iGaming?{' '}
+              <Link href="/servicios/igaming" className="text-sp-orange hover:underline font-medium">
+                Ver página dedicada a campañas iGaming →
+              </Link>
+            </p>
           </div>
         </FadeInOnScroll>
 
