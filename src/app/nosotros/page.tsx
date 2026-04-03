@@ -6,9 +6,9 @@ import { TeamGrid } from '@/components/sections/TeamGrid';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Nosotros',
+  title: 'Agencia Gaming España desde 2012',
   description:
-    'Sobre SocialPro: la agencia gaming del mercado hispano. Fundada por ex-profesionales de esports con más de una década de experiencia.',
+    'SocialPro — agencia gaming fundada en Madrid en 2012 por ex-profesionales de esports. Especialistas en iGaming, CS2 y el ecosistema hispano.',
   alternates: {
     canonical: '/nosotros',
   },

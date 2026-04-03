@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ContactSection } from '@/components/sections/ContactSection';
 
 export const metadata: Metadata = {
-  title: 'Contacto',
+  title: 'Contacta con Nuestra Agencia Gaming',
   description:
     'Contacta con SocialPro. ¿Eres una marca o un creador? Cuéntanos tu proyecto y te respondemos en menos de 24h.',
   alternates: {

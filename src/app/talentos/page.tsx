@@ -5,9 +5,9 @@ import { TalentSection } from '@/components/sections/TalentSection';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Talentos',
+  title: 'Streamers y Creadores Gaming de Élite',
   description:
-    'Descubre el roster de talentos gaming de SocialPro. Streamers, youtubers y creadores de contenido especializados en gaming, esports e iGaming.',
+    'Roster exclusivo de streamers y creadores de contenido gaming en España y LatAm. CS2, Valorant, Twitch, YouTube. Más de 15M vistas mensuales.',
   alternates: {
     canonical: '/talentos',
   },

@@ -5,9 +5,9 @@ import { GradientText } from '@/components/ui/GradientText';
 import { CreatorApplyForm } from '@/components/sections/CreatorApplyForm';
 
 export const metadata: Metadata = {
-  title: 'Para Creadores',
+  title: 'Gestión y Patrocinios para Streamers',
   description:
-    'Únete al roster de SocialPro. Conectamos creadores gaming con las mejores marcas de iGaming, periféricos y entretenimiento.',
+    'Únete al roster de SocialPro. Conseguimos patrocinios con las mejores marcas de iGaming, hardware y entretenimiento para streamers en España y LatAm.',
   alternates: {
     canonical: '/para-creadores',
   },

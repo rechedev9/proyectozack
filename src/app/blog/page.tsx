@@ -8,7 +8,7 @@ import { SectionHeading } from '@/components/ui/SectionHeading';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Blog',
+  title: 'Marketing Gaming — Insights y Tendencias',
   description:
     'Artículos sobre marketing gaming, esports, estrategias para creadores y tendencias del sector iGaming en España y Latinoamérica.',
   alternates: {

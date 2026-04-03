@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { ServicesSection } from '@/components/sections/ServicesSection';
 
 export const metadata: Metadata = {
-  title: 'Servicios',
+  title: 'Agencia Marketing Gaming e iGaming',
   description:
-    'Servicios de SocialPro: gestión de talentos gaming, campañas para marcas iGaming, gestión integral de canales YouTube. Activación en menos de 72h.',
+    'Campañas de influencer marketing gaming, gestión de talentos streamers y canales YouTube. Especialistas en iGaming y esports para el mercado hispano.',
   alternates: {
     canonical: '/servicios',
   },

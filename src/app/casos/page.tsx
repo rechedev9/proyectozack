@@ -5,9 +5,9 @@ import { CasesSection } from '@/components/sections/CasesSection';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Casos de Éxito',
+  title: 'Campañas Gaming — Resultados Reales',
   description:
-    'Casos de éxito de campañas gaming y esports. Resultados medibles con marcas de iGaming, periféricos y entretenimiento.',
+    'Resultados reales: campañas con RAZER (2.5M reach), 1WIN (8M+ reach), SkinsMonkey (200K€ conversiones). Así trabaja SocialPro con las marcas.',
   alternates: {
     canonical: '/casos',
   },
