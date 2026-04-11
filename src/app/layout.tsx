@@ -5,6 +5,7 @@ import { Nav } from '@/components/layout/Nav';
 import { Footer } from '@/components/layout/Footer';
 import { PublicChrome } from '@/components/layout/PublicChrome';
 import { CookieConsent } from '@/components/layout/CookieConsent';
+import { SITE_URL, absoluteUrl } from '@/lib/site-url';
 
 const inter = Inter({
   variable: '--font-body',
@@ -19,8 +20,6 @@ const barlowCondensed = Barlow_Condensed({
   weight: ['400', '600', '700', '800', '900'],
   display: 'swap',
 });
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
 
 export const metadata: Metadata = {
   title: {
@@ -60,12 +59,12 @@ const jsonLd = {
   '@graph': [
     {
       '@type': 'Organization',
-      '@id': `${SITE_URL}/#organization`,
+      '@id': absoluteUrl('/#organization'),
       name: 'SocialPro',
       url: SITE_URL,
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE_URL}/logo.png`,
+        url: absoluteUrl('/logo.png'),
         width: 512,
         height: 512,
       },
@@ -88,26 +87,26 @@ const jsonLd = {
     },
     {
       '@type': 'WebSite',
-      '@id': `${SITE_URL}/#website`,
+      '@id': absoluteUrl('/#website'),
       url: SITE_URL,
       name: 'SocialPro',
-      publisher: { '@id': `${SITE_URL}/#organization` },
+      publisher: { '@id': absoluteUrl('/#organization') },
       inLanguage: 'es',
       potentialAction: {
         '@type': 'SearchAction',
         target: {
           '@type': 'EntryPoint',
-          urlTemplate: `${SITE_URL}/blog?q={search_term_string}`,
+          urlTemplate: absoluteUrl('/blog?q={search_term_string}'),
         },
         'query-input': 'required name=search_term_string',
       },
     },
     {
       '@type': 'LocalBusiness',
-      '@id': `${SITE_URL}/#localbusiness`,
+      '@id': absoluteUrl('/#localbusiness'),
       name: 'SocialPro',
       url: SITE_URL,
-      image: `${SITE_URL}/logo.png`,
+      image: absoluteUrl('/logo.png'),
       telephone: '+34-604-868-426',
       email: 'marketing@socialpro.es',
       priceRange: '$$',
@@ -133,17 +132,17 @@ const jsonLd = {
     },
     {
       '@type': 'SiteNavigationElement',
-      '@id': `${SITE_URL}/#navigation`,
+      '@id': absoluteUrl('/#navigation'),
       name: 'Main Navigation',
       hasPart: [
-        { '@type': 'WebPage', name: 'Talentos', url: `${SITE_URL}/talentos` },
-        { '@type': 'WebPage', name: 'Servicios', url: `${SITE_URL}/servicios` },
-        { '@type': 'WebPage', name: 'Casos de Éxito', url: `${SITE_URL}/casos` },
-        { '@type': 'WebPage', name: 'Blog', url: `${SITE_URL}/blog` },
-        { '@type': 'WebPage', name: 'Nosotros', url: `${SITE_URL}/nosotros` },
-        { '@type': 'WebPage', name: 'Contacto', url: `${SITE_URL}/contacto` },
-        { '@type': 'WebPage', name: 'Metodología', url: `${SITE_URL}/metodologia` },
-        { '@type': 'WebPage', name: 'Para Creadores', url: `${SITE_URL}/para-creadores` },
+        { '@type': 'WebPage', name: 'Talentos', url: absoluteUrl('/talentos') },
+        { '@type': 'WebPage', name: 'Servicios', url: absoluteUrl('/servicios') },
+        { '@type': 'WebPage', name: 'Casos de Éxito', url: absoluteUrl('/casos') },
+        { '@type': 'WebPage', name: 'Blog', url: absoluteUrl('/blog') },
+        { '@type': 'WebPage', name: 'Nosotros', url: absoluteUrl('/nosotros') },
+        { '@type': 'WebPage', name: 'Contacto', url: absoluteUrl('/contacto') },
+        { '@type': 'WebPage', name: 'Metodología', url: absoluteUrl('/metodologia') },
+        { '@type': 'WebPage', name: 'Para Creadores', url: absoluteUrl('/para-creadores') },
       ],
     },
   ],

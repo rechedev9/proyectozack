@@ -8,8 +8,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { SocialIcon } from '@/components/ui/SocialIcon';
 import { gradientStyle } from '@/lib/gradient';
 import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbs';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
+import { absoluteUrl } from '@/lib/site-url';
 
 export const revalidate = 3600;
 
@@ -39,7 +38,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      url: `${SITE_URL}/talentos/${slug}`,
+      url: absoluteUrl(`/talentos/${slug}`),
       images: talent.photoUrl
         ? [{ url: talent.photoUrl, width: 600, height: 600 }]
         : undefined,
@@ -61,8 +60,8 @@ export default async function TalentPage({ params }: PageProps) {
   const grad = gradientStyle(talent.gradientC1, talent.gradientC2);
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
-    { name: 'Talentos', url: `${SITE_URL}/#talentos` },
-    { name: talent.name, url: `${SITE_URL}/talentos/${slug}` },
+    { name: 'Talentos', url: absoluteUrl('/#talentos') },
+    { name: talent.name, url: absoluteUrl(`/talentos/${slug}`) },
   ]);
 
   const jsonLd = {

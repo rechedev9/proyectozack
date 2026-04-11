@@ -5,8 +5,7 @@ import Link from 'next/link';
 import { getCaseSlugs, getCaseBySlug } from '@/lib/queries/cases';
 import { SectionTag } from '@/components/ui/SectionTag';
 import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbs';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
+import { absoluteUrl } from '@/lib/site-url';
 
 export const revalidate = 3600;
 
@@ -38,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      url: `${SITE_URL}/casos/${slug}`,
+      url: absoluteUrl(`/casos/${slug}`),
       images: hasImage ? [{ url: caseStudy.heroImageUrl!, width: 1200, height: 630 }] : undefined,
     },
     twitter: {
@@ -63,8 +62,8 @@ export default async function CaseStudyPage({ params }: PageProps) {
   ].filter((m) => m.value);
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
-    { name: 'Casos de Éxito', url: `${SITE_URL}/#casos` },
-    { name: caseStudy.brandName, url: `${SITE_URL}/casos/${slug}` },
+    { name: 'Casos de Éxito', url: absoluteUrl('/#casos') },
+    { name: caseStudy.brandName, url: absoluteUrl(`/casos/${slug}`) },
   ]);
 
   const jsonLd = {

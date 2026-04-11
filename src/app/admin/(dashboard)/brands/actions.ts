@@ -5,7 +5,7 @@ import { db } from '@/lib/db';
 import { user as userTable } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { sendBrandInviteEmail } from '@/lib/email';
-import { env } from '@/lib/env';
+import { absoluteUrl } from '@/lib/site-url';
 import { auth } from '@/lib/auth';
 import { requireRole } from '@/lib/auth-guard';
 
@@ -41,7 +41,7 @@ export async function inviteBrandAction(_prev: InviteState, formData: FormData):
 
     // Send invite email — brand sets their own password by clicking "set password"
     // which links to the brand login page (they use "forgot password" from there)
-    const portalUrl = `${env.NEXT_PUBLIC_SITE_URL}/marcas/login`;
+    const portalUrl = absoluteUrl('/marcas/login');
     try {
       await sendBrandInviteEmail({ brandEmail: email, brandName: name, resetUrl: portalUrl });
     } catch (err) {

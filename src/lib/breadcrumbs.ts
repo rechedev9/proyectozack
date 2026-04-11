@@ -1,9 +1,9 @@
+import { SITE_URL } from './site-url';
+
 type BreadcrumbItem = {
   name: string;
   url: string;
 }
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
 
 export function buildBreadcrumbJsonLd(items: BreadcrumbItem[]): object {
   const all = [{ name: 'Inicio', url: SITE_URL }, ...items];

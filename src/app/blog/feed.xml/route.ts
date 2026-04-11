@@ -1,19 +1,22 @@
 import { getPosts } from '@/lib/queries/posts';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
+import { absoluteUrl } from '@/lib/site-url';
 
 export async function GET(): Promise<Response> {
   const posts = await getPosts();
+
+  const blogUrl = absoluteUrl('/blog');
+  const logoUrl = absoluteUrl('/logo.png');
+  const feedUrl = absoluteUrl('/blog/feed.xml');
 
   const items = posts
     .map(
       (post) => `
     <item>
       <title><![CDATA[${post.title}]]></title>
-      <link>${SITE_URL}/blog/${post.slug}</link>
+      <link>${absoluteUrl(`/blog/${post.slug}`)}</link>
       <description><![CDATA[${post.excerpt}]]></description>
       <pubDate>${post.publishedAt ? new Date(post.publishedAt).toUTCString() : ''}</pubDate>
-      <guid isPermaLink="true">${SITE_URL}/blog/${post.slug}</guid>
+      <guid isPermaLink="true">${absoluteUrl(`/blog/${post.slug}`)}</guid>
     </item>`
     )
     .join('');
@@ -22,16 +25,16 @@ export async function GET(): Promise<Response> {
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>SocialPro Blog</title>
-    <link>${SITE_URL}/blog</link>
+    <link>${blogUrl}</link>
     <description>Insights sobre marketing gaming, esports y creadores de contenido</description>
     <language>es</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <image>
-      <url>${SITE_URL}/logo.png</url>
+      <url>${logoUrl}</url>
       <title>SocialPro Blog</title>
-      <link>${SITE_URL}/blog</link>
+      <link>${blogUrl}</link>
     </image>
-    <atom:link href="${SITE_URL}/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="${feedUrl}" rel="self" type="application/rss+xml"/>
     ${items}
   </channel>
 </rss>`;

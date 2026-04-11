@@ -2,8 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getCaseSlugs } from '@/lib/queries/cases';
 import { getTalentSlugs } from '@/lib/queries/talents';
 import { getPostSlugs } from '@/lib/queries/posts';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
+import { SITE_URL, absoluteUrl } from '@/lib/site-url';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
@@ -15,14 +14,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   const caseEntries: MetadataRoute.Sitemap = cases.map((c) => ({
-    url: `${SITE_URL}/casos/${c.slug}`,
+    url: absoluteUrl(`/casos/${c.slug}`),
     lastModified: now,
     changeFrequency: 'monthly',
     priority: 0.7,
   }));
 
   const talentEntries: MetadataRoute.Sitemap = talentSlugs.map((t) => ({
-    url: `${SITE_URL}/talentos/${t.slug}`,
+    url: absoluteUrl(`/talentos/${t.slug}`),
     lastModified: now,
     changeFrequency: 'weekly',
     priority: 0.8,
@@ -36,55 +35,55 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${SITE_URL}/talentos`,
+      url: absoluteUrl('/talentos'),
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: `${SITE_URL}/servicios`,
+      url: absoluteUrl('/servicios'),
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${SITE_URL}/servicios/igaming`,
+      url: absoluteUrl('/servicios/igaming'),
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${SITE_URL}/casos`,
+      url: absoluteUrl('/casos'),
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
-      url: `${SITE_URL}/nosotros`,
+      url: absoluteUrl('/nosotros'),
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     {
-      url: `${SITE_URL}/contacto`,
+      url: absoluteUrl('/contacto'),
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${SITE_URL}/metodologia`,
+      url: absoluteUrl('/metodologia'),
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     {
-      url: `${SITE_URL}/para-creadores`,
+      url: absoluteUrl('/para-creadores'),
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${SITE_URL}/blog`,
+      url: absoluteUrl('/blog'),
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.7,
@@ -92,7 +91,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...caseEntries,
     ...talentEntries,
     ...postSlugs.map((p) => ({
-      url: `${SITE_URL}/blog/${p.slug}`,
+      url: absoluteUrl(`/blog/${p.slug}`),
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.6,

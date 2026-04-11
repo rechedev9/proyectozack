@@ -3,8 +3,7 @@ import Link from 'next/link';
 import { SectionTag } from '@/components/ui/SectionTag';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { GradientText } from '@/components/ui/GradientText';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
+import { SITE_URL, absoluteUrl } from '@/lib/site-url';
 
 export const metadata: Metadata = {
   title: 'Agencia de Campañas iGaming España',
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
     canonical: '/servicios/igaming',
   },
   openGraph: {
-    url: `${SITE_URL}/servicios/igaming`,
+    url: absoluteUrl('/servicios/igaming'),
     type: 'website',
   },
 };

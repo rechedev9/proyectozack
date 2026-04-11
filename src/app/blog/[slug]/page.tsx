@@ -4,8 +4,7 @@ import Link from 'next/link';
 import { getPostSlugs, getPostBySlug } from '@/lib/queries/posts';
 import { SectionTag } from '@/components/ui/SectionTag';
 import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbs';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
+import { absoluteUrl } from '@/lib/site-url';
 
 export const revalidate = 3600;
 
@@ -34,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description: post.excerpt,
-      url: `${SITE_URL}/blog/${slug}`,
+      url: absoluteUrl(`/blog/${slug}`),
       type: 'article',
       publishedTime: post.publishedAt?.toISOString(),
       images: post.coverUrl
@@ -56,8 +55,8 @@ export default async function BlogPostPage({ params }: PageProps) {
   if (!post || post.status !== 'published') notFound();
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
-    { name: 'Blog', url: `${SITE_URL}/blog` },
-    { name: post.title, url: `${SITE_URL}/blog/${slug}` },
+    { name: 'Blog', url: absoluteUrl('/blog') },
+    { name: post.title, url: absoluteUrl(`/blog/${slug}`) },
   ]);
 
   const jsonLd = {

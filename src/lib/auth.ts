@@ -2,6 +2,7 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from './db';
 import { env } from './env';
+import { SITE_URL } from './site-url';
 
 /** Derive www/non-www variants + production domain so auth works regardless of env config. */
 function getSiteOrigins(siteUrl: string): string[] {
@@ -22,7 +23,7 @@ function getSiteOrigins(siteUrl: string): string[] {
 
 export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET,
-  baseURL: env.NEXT_PUBLIC_SITE_URL,
+  baseURL: SITE_URL,
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 12,
@@ -36,13 +37,13 @@ export const auth = betterAuth({
     freshAge: 60 * 60,       // require re-auth after 1h for sensitive ops
   },
   advanced: {
-    useSecureCookies: env.NEXT_PUBLIC_SITE_URL.startsWith('https'),
+    useSecureCookies: SITE_URL.startsWith('https'),
     defaultCookieAttributes: {
       sameSite: 'lax',
       path: '/',
     },
   },
-  trustedOrigins: getSiteOrigins(env.NEXT_PUBLIC_SITE_URL),
+  trustedOrigins: getSiteOrigins(SITE_URL),
   user: {
     additionalFields: {
       role: {

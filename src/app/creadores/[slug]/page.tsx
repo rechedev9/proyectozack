@@ -4,8 +4,7 @@ import { getTalentSlugs, getTalentBySlug } from '@/lib/queries/talents';
 import { getActiveGiveaways, getFinishedGiveaways } from '@/lib/queries/giveaways';
 import { CreatorHero } from '@/components/creadores/CreatorHero';
 import { GiveawayGrid } from '@/components/creadores/GiveawayGrid';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://socialpro.es';
+import { absoluteUrl } from '@/lib/site-url';
 
 export const revalidate = 3600;
 
@@ -36,7 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      url: `${SITE_URL}/creadores/${slug}`,
+      url: absoluteUrl(`/creadores/${slug}`),
       images: ogImage ? [{ url: ogImage }] : undefined,
     },
     twitter: {

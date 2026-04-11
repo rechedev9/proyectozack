@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { env } from './env';
+import { SITE_URL } from './site-url';
 
 export const resend = new Resend(env.RESEND_API_KEY);
 
@@ -54,7 +55,7 @@ export async function sendBrandInviteEmail(payload: {
   let resetUrl = '#';
   try {
     const parsed = new URL(payload.resetUrl);
-    const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000');
+    const siteUrl = new URL(SITE_URL);
     if (parsed.hostname === siteUrl.hostname) resetUrl = payload.resetUrl;
   } catch {
     // Malformed URL — fall through to '#'
