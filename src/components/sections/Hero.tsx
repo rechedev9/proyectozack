@@ -150,8 +150,9 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="text-base sm:text-lg text-sp-muted2 mb-8 leading-relaxed font-medium"
           >
-            13+ años operando en la élite del ecosistema. Representamos a los mejores talentos
-            y ejecutamos campañas de iGaming con resultados exponenciales.
+            Campañas gaming y iGaming con talentos verificados, compliance
+            integrado y FTDs rastreados. 13+ años ejecutando en España, LatAm
+            y Turquía.
           </m.p>
 
           <m.div
@@ -169,27 +170,37 @@ export function Hero() {
               Iniciar Propuesta
             </m.a>
             <m.a
-              href="/talentos"
+              href="/casos"
               whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
               whileTap={{ scale: 0.95 }}
               className="px-10 py-4 rounded-full font-bold text-white text-sm tracking-widest uppercase border border-white/10 backdrop-blur-sm transition-all"
             >
-              Explorar Talentos
+              Ver Casos de Éxito
             </m.a>
           </m.div>
+
+          <m.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+            className="mt-5 text-[11px] font-semibold uppercase tracking-[0.25em] text-sp-muted2/80"
+          >
+            Respuesta en 24h · Sin compromiso
+          </m.p>
         </div>
 
-        {/* Bottom stats */}
+        {/* Bottom stats — always visible, lightly muted. Previously hidden
+            behind grayscale+opacity-40, which buried proof above the fold. */}
         <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.5 }}
-          className="mt-20 flex gap-12 sm:gap-24 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
+          className="mt-20 flex gap-12 sm:gap-24 opacity-70 hover:opacity-100 transition-opacity duration-500"
         >
           {[
             { value: '13+', label: 'AÑOS' },
             { value: '15M', label: 'VIEWS/MES' },
-            { value: '15', label: 'CAMPAÑAS' },
+            { value: '+340', label: 'FTDS' },
           ].map(({ value, label }) => (
             <div key={label} className="text-center">
               <div className="font-display text-4xl font-black text-white leading-none">{value}</div>
