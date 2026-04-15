@@ -5,6 +5,7 @@ import { getPostSlugs, getPostBySlug } from '@/lib/queries/posts';
 import { SectionTag } from '@/components/ui/SectionTag';
 import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbs';
 import { absoluteUrl } from '@/lib/site-url';
+import { truncateMetaDescription, truncateMetaTitle } from '@/lib/text';
 
 export const revalidate = 3600;
 
@@ -22,17 +23,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const post = await getPostBySlug(slug);
   if (!post) return {};
 
-  const title = post.title;
+  const description = truncateMetaDescription(post.excerpt || undefined);
+  const title = truncateMetaTitle(post.title);
 
   return {
     title,
-    description: post.excerpt,
+    description,
     alternates: {
       canonical: `/blog/${slug}`,
     },
     openGraph: {
       title,
-      description: post.excerpt,
+      description,
       url: absoluteUrl(`/blog/${slug}`),
       type: 'article',
       publishedTime: post.publishedAt?.toISOString(),
@@ -43,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     twitter: {
       card: 'summary_large_image',
       title,
-      description: post.excerpt,
+      description,
       images: post.coverUrl ? [post.coverUrl] : undefined,
     },
   };

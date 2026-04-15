@@ -8,7 +8,7 @@ import { SITE_URL, absoluteUrl } from '@/lib/site-url';
 export const metadata: Metadata = {
   title: 'Agencia de Campañas iGaming España',
   description:
-    'Campañas iGaming con streamers verificados en España y LatAm. Compliance integrado, FTD tracking y ROI demostrable. Especialistas en marketing igaming para operadores con licencia.',
+    'Campañas iGaming con streamers verificados en España y LatAm. Compliance, FTD tracking y ROI demostrable. Especialistas en iGaming para operadores.',
   alternates: {
     canonical: '/servicios/igaming',
   },

@@ -9,6 +9,7 @@ import { SocialIcon } from '@/components/ui/SocialIcon';
 import { gradientStyle } from '@/lib/gradient';
 import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbs';
 import { absoluteUrl } from '@/lib/site-url';
+import { truncateMetaDescription } from '@/lib/text';
 
 export const revalidate = 3600;
 
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const talent = await getTalentBySlug(slug);
   if (!talent) return {};
 
-  const description = talent.bio;
+  const description = truncateMetaDescription(talent.bio || undefined);
   const title = `${talent.name} — ${talent.role}`;
 
   return {

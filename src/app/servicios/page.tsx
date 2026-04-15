@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 export default function ServiciosPage() {
   return (
     <main>
+      <h1 className="sr-only">Agencia Marketing Gaming e iGaming</h1>
       <ServicesSection />
     </main>
   );

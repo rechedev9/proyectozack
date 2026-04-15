@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 export default function ContactoPage() {
   return (
     <main>
+      <h1 className="sr-only">Contacta con Nuestra Agencia Gaming</h1>
       <ContactSection />
     </main>
   );

@@ -18,6 +18,7 @@ export default async function TalentosPage() {
 
   return (
     <main>
+      <h1 className="sr-only">Streamers y Creadores Gaming de Élite</h1>
       <TalentSection talents={talents} />
     </main>
   );

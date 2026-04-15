@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import { getAllActiveGiveaways, getAllFinishedGiveaways, extractUniqueBrands } from '@/lib/queries/giveawaysHub';
 import { getAllCodes } from '@/lib/queries/creatorCodes';
@@ -5,6 +6,15 @@ import { getTopWinners, getRecentWinners } from '@/lib/queries/giveawayWinners';
 import { getAllTalents } from '@/lib/queries/talents';
 import { GiveawaysHub } from '@/components/giveaways/GiveawaysHub';
 import { StatsBar } from '@/components/giveaways/StatsBar';
+
+export const metadata: Metadata = {
+  title: 'Sorteos y Códigos Gaming',
+  description:
+    'Sorteos activos y códigos de descuento de tus streamers favoritos. Participa en giveaways gaming con SocialPro.',
+  alternates: {
+    canonical: '/giveaways',
+  },
+};
 
 export const revalidate = 3600;
 
@@ -48,6 +58,7 @@ export default async function GiveawaysPage() {
 
   return (
     <>
+      <h1 className="sr-only">Sorteos y Códigos Gaming</h1>
       {/* Ticker marquee — SP themed */}
       {active.length > 0 && (
         <div className="bg-sp-grad overflow-hidden">

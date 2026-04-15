@@ -18,6 +18,7 @@ export default async function CasosPage() {
 
   return (
     <main>
+      <h1 className="sr-only">Campañas Gaming — Resultados Reales</h1>
       <CasesSection cases={cases} />
     </main>
   );

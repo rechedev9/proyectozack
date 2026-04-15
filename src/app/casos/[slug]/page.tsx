@@ -6,6 +6,7 @@ import { getCaseSlugs, getCaseBySlug } from '@/lib/queries/cases';
 import { SectionTag } from '@/components/ui/SectionTag';
 import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbs';
 import { absoluteUrl } from '@/lib/site-url';
+import { truncateMetaDescription } from '@/lib/text';
 
 export const revalidate = 3600;
 
@@ -24,12 +25,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!caseStudy) return {};
 
   const description =
-    caseStudy.excerpt || caseStudy.body[0]?.paragraph || caseStudy.title;
-  const title = `${caseStudy.brandName} × SocialPro | Caso de Éxito`;
+    truncateMetaDescription(caseStudy.excerpt || caseStudy.body[0]?.paragraph) ?? caseStudy.title;
+  const title = `${caseStudy.brandName} × SocialPro — Caso de Éxito`;
   const hasImage = !!caseStudy.heroImageUrl;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: {
       canonical: `/casos/${slug}`,

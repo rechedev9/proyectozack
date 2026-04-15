@@ -19,6 +19,7 @@ export default async function NosotrosPage() {
 
   return (
     <main>
+      <h1 className="sr-only">Agencia Gaming España desde 2012</h1>
       <AboutSection />
       <TeamGrid team={team} />
     </main>
