@@ -185,7 +185,7 @@ export function Hero() {
               href="/casos"
               whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
               whileTap={{ scale: 0.95 }}
-              className="px-10 py-4 rounded-full font-bold text-white text-sm tracking-widest uppercase border border-white/10 backdrop-blur-sm transition-all"
+              className="px-10 py-4 rounded-full font-bold text-white text-sm tracking-widest uppercase border border-white/10 backdrop-blur-sm transition-colors"
             >
               Ver Casos de Éxito
             </m.a>
