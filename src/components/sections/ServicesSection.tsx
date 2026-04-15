@@ -146,15 +146,7 @@ export function ServicesSection() {
             {PROCESS_STEPS.map(({ num, label }, i) => (
               <div key={num} className="flex items-center">
                 <div className="flex flex-col items-center px-6 py-4">
-                  <span
-                    className="font-display text-2xl font-black"
-                    style={{
-                      background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
+                  <span className="font-display text-2xl font-black gradient-text">
                     {num}
                   </span>
                   <span className="text-xs font-bold text-sp-dark uppercase tracking-widest mt-1">{label}</span>
@@ -179,8 +171,7 @@ export function ServicesSection() {
               <div className="group relative rounded-2xl border border-sp-border bg-sp-off p-6 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:bg-white hover:border-sp-orange/40 hover:shadow-[0_8px_32px_rgba(245,99,42,0.12)]">
                 {/* Gradient left accent bar */}
                 <div
-                  className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ background: 'linear-gradient(180deg,#f5632a 0%,#e03070 50%,#8b3aad 100%)' }}
+                  className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[linear-gradient(180deg,#f5632a_0%,#e03070_50%,#8b3aad_100%)]"
                 />
                 <h5 className="font-display text-base font-black uppercase mb-2 text-sp-dark group-hover:text-sp-orange transition-colors duration-300">
                   {title}

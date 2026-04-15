@@ -36,50 +36,19 @@ export function Hero() {
   return (
     <section className="relative bg-sp-black text-white overflow-hidden min-h-dvh flex flex-col pt-16">
 
-      <div className="absolute inset-0 pointer-events-none" style={{ contain: 'paint' }}>
+      {/* Aura layer — paint-contained so blurs never trigger outside repaints */}
+      <div className="absolute inset-0 pointer-events-none [contain:paint]">
         <m.div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            marginLeft: '-500px',
-            marginTop: '-500px',
-            willChange: 'transform',
-            x: pinkX,
-            y: pinkY,
-          }}
+          className="absolute top-1/2 left-1/2 -ml-[500px] -mt-[500px] will-change-transform"
+          style={{ x: pinkX, y: pinkY }}
         >
-          <div
-            className="hero-aura-pink"
-            style={{
-              width: '1000px',
-              height: '1000px',
-              borderRadius: '9999px',
-              background: 'radial-gradient(circle, #e03070 0%, transparent 60%)',
-              filter: 'blur(80px)',
-            }}
-          />
+          <div className="hero-aura-pink hero-aura-pink-bg w-[1000px] h-[1000px] rounded-full blur-[80px]" />
         </m.div>
         <m.div
-          style={{
-            position: 'absolute',
-            top: '-10%',
-            right: '-10%',
-            willChange: 'transform',
-            x: orangeX,
-            y: orangeY,
-          }}
+          className="absolute top-[-10%] right-[-10%] will-change-transform"
+          style={{ x: orangeX, y: orangeY }}
         >
-          <div
-            className="hero-aura-orange"
-            style={{
-              width: '800px',
-              height: '800px',
-              borderRadius: '9999px',
-              background: 'radial-gradient(circle, #f5632a 0%, transparent 70%)',
-              filter: 'blur(100px)',
-            }}
-          />
+          <div className="hero-aura-orange hero-aura-orange-bg w-[800px] h-[800px] rounded-full blur-[100px]" />
         </m.div>
       </div>
 
@@ -91,11 +60,8 @@ export function Hero() {
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className="relative mb-8"
         >
-          <m.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            className="relative z-10"
-          >
+          {/* CSS-driven float — no JS rAF */}
+          <div className="relative z-10 hero-logo-float">
             <Image
               src="/images/logos/2.png"
               alt="SocialPro Mark"
@@ -104,7 +70,7 @@ export function Hero() {
               priority
               className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-[0_0_25px_rgba(224,48,112,0.4)]"
             />
-          </m.div>
+          </div>
           <div className="absolute inset-0 bg-sp-pink/20 blur-2xl rounded-full" />
         </m.div>
 
@@ -130,14 +96,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.45 }}
-            className="block"
-            style={{
-              background: 'linear-gradient(90deg, #f5632a 0%, #e03070 50%, #8b3aad 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              filter: 'drop-shadow(0 0 20px rgba(245,99,42,0.2))',
-            }}
+            className="block hero-headline-gradient"
           >
             CREADORES
           </m.span>

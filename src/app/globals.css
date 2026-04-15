@@ -209,6 +209,26 @@
   will-change: transform, opacity;
 }
 
+/* Aura radial backgrounds (extracted from inline styles) */
+.hero-aura-pink-bg  { background: radial-gradient(circle, #e03070 0%, transparent 60%); }
+.hero-aura-orange-bg { background: radial-gradient(circle, #f5632a 0%, transparent 70%); }
+
+/* Hero logo float — CSS-driven, no JS rAF */
+@keyframes hero-logo-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+.hero-logo-float { animation: hero-logo-float 4s ease-in-out infinite; }
+
+/* Hero headline gradient (90deg + drop-shadow — differs from .gradient-text) */
+.hero-headline-gradient {
+  background: linear-gradient(90deg, #f5632a 0%, #e03070 50%, #8b3aad 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px rgba(245,99,42,0.2));
+}
+
 /* ── Gradient text utility ───────────────────────────────────────────────── */
 .gradient-text {
   background: var(--background-image-sp-grad);

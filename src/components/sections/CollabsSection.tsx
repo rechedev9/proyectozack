@@ -68,14 +68,7 @@ export function CollabsSection({ collaborators }: CollabsSectionProps) {
 
                   {/* Platform badge + link indicator */}
                   <div className="flex items-center gap-1.5">
-                    <p className="text-xs font-semibold uppercase tracking-widest"
-                      style={{
-                        background: 'linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
-                      }}
-                    >
+                    <p className="text-xs font-semibold uppercase tracking-widest gradient-text">
                       {c.badge}
                     </p>
                     {c.profileUrl && (

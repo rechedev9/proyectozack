@@ -79,8 +79,7 @@ function FaqAccordionItem({ item, isOpen, onToggle }: { item: FaqItem; isOpen: b
             animate={{ scaleY: 1, opacity: 1 }}
             exit={{ scaleY: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
-            style={{ transformOrigin: 'top' }}
-            className="overflow-hidden"
+            className="overflow-hidden [transform-origin:top]"
           >
             <p className="text-sm text-sp-muted leading-relaxed pb-5">{item.answer}</p>
           </m.div>

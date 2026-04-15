@@ -40,8 +40,7 @@ export function CaseCard({ caseStudy }: CaseCardProps) {
                 alt={caseStudy.brandName}
                 width={110}
                 height={36}
-                className="object-contain max-h-9"
-                style={{ mixBlendMode: 'screen' }}
+                className="object-contain max-h-9 mix-blend-screen"
               />
             ) : (
               <span className="font-display text-xl font-black text-white tracking-tight">
@@ -76,15 +75,7 @@ export function CaseCard({ caseStudy }: CaseCardProps) {
             <div className="flex gap-4 border-t border-sp-border pt-4 mb-4">
               {metrics.slice(0, 3).map((met) => (
                 <div key={met.label}>
-                  <div
-                    className="font-display text-xl font-black leading-none"
-                    style={{
-                      background: 'linear-gradient(135deg,#f5632a 0%,#e03070 60%,#8b3aad 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
+                  <div className="font-display text-xl font-black leading-none gradient-text">
                     {met.value}
                   </div>
                   <div className="text-[9px] font-semibold uppercase tracking-wider text-sp-muted mt-0.5">

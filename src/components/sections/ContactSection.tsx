@@ -223,8 +223,7 @@ export function ContactSection() {
                         animate={{ scaleY: 1, opacity: 1 }}
                         exit={{ scaleY: 0, opacity: 0 }}
                         transition={{ duration: 0.25, ease: 'easeInOut' }}
-                        style={{ transformOrigin: 'top' }}
-                        className="overflow-hidden"
+                        className="overflow-hidden [transform-origin:top]"
                       >
                         <fieldset className="space-y-4 border-0 p-0 m-0">
                           <legend className={labelClasses}>Datos de campaña</legend>
@@ -274,8 +273,7 @@ export function ContactSection() {
                         animate={{ scaleY: 1, opacity: 1 }}
                         exit={{ scaleY: 0, opacity: 0 }}
                         transition={{ duration: 0.25, ease: 'easeInOut' }}
-                        style={{ transformOrigin: 'top' }}
-                        className="overflow-hidden"
+                        className="overflow-hidden [transform-origin:top]"
                       >
                         <fieldset className="space-y-4 border-0 p-0 m-0">
                           <legend className={labelClasses}>Tu canal</legend>
