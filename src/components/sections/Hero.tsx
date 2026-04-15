@@ -5,6 +5,12 @@ import * as m from 'motion/react-client';
 import { useMotionValue, useSpring, useTransform } from 'motion/react';
 import Image from 'next/image';
 
+const HERO_STATS = [
+  { value: '13+', label: 'AÑOS' },
+  { value: '15M', label: 'VIEWS/MES' },
+  { value: '+340', label: 'FTDS' },
+] as const;
+
 export function Hero() {
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
@@ -12,11 +18,9 @@ export function Hero() {
   const smoothX = useSpring(mouseX, { stiffness: 40, damping: 25 });
   const smoothY = useSpring(mouseY, { stiffness: 40, damping: 25 });
 
-  // Pink center aura: se mueve suavemente CON el ratón
+  // Inverted direction on orange creates depth parallax between the two auras
   const pinkX = useTransform(smoothX, [0, 1], [-50, 50]);
   const pinkY = useTransform(smoothY, [0, 1], [-50, 50]);
-
-  // Orange top-right aura: sentido contrario (efecto profundidad)
   const orangeX = useTransform(smoothX, [0, 1], [25, -25]);
   const orangeY = useTransform(smoothY, [0, 1], [20, -20]);
 
@@ -32,9 +36,7 @@ export function Hero() {
   return (
     <section className="relative bg-sp-black text-white overflow-hidden min-h-dvh flex flex-col pt-16">
 
-      {/* Auras: breathing animation + mouse parallax */}
       <div className="absolute inset-0 pointer-events-none" style={{ contain: 'paint' }}>
-        {/* Pink aura: outer motion div handles mouse parallax, inner CSS div handles breathing */}
         <m.div
           style={{
             position: 'absolute',
@@ -58,7 +60,6 @@ export function Hero() {
             }}
           />
         </m.div>
-        {/* Orange aura: same pattern */}
         <m.div
           style={{
             position: 'absolute',
@@ -82,10 +83,8 @@ export function Hero() {
         </m.div>
       </div>
 
-      {/* Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col items-center justify-center text-center pb-20">
 
-        {/* Logo mark */}
         <m.div
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -109,7 +108,6 @@ export function Hero() {
           <div className="absolute inset-0 bg-sp-pink/20 blur-2xl rounded-full" />
         </m.div>
 
-        {/* Geo label */}
         <m.span
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -119,7 +117,6 @@ export function Hero() {
           Gaming &amp; Esports · Europa · LatAm · Turquía
         </m.span>
 
-        {/* Headline */}
         <h1 className="font-display text-[4rem] sm:text-[6.5rem] md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tight mb-10">
           <m.span
             initial={{ opacity: 0, y: 40 }}
@@ -154,7 +151,6 @@ export function Hero() {
           </m.span>
         </h1>
 
-        {/* Sub-content */}
         <div className="flex flex-col items-center max-w-2xl mx-auto">
           <m.p
             initial={{ opacity: 0, y: 20 }}
@@ -209,11 +205,7 @@ export function Hero() {
           transition={{ duration: 1, delay: 1.5 }}
           className="mt-20 flex gap-12 sm:gap-24 opacity-70 hover:opacity-100 transition-opacity duration-500"
         >
-          {[
-            { value: '13+', label: 'AÑOS' },
-            { value: '15M', label: 'VIEWS/MES' },
-            { value: '+340', label: 'FTDS' },
-          ].map(({ value, label }) => (
+          {HERO_STATS.map(({ value, label }) => (
             <div key={label} className="text-center">
               <div className="font-display text-4xl font-black text-white leading-none">{value}</div>
               <div className="text-[10px] font-bold text-sp-muted2 tracking-widest mt-2">{label}</div>
