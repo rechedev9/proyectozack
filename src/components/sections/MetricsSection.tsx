@@ -1,8 +1,9 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useCountUp } from 'react-countup';
 import * as m from 'motion/react-client';
+import { useInView } from 'motion/react';
 import { SectionTag } from '@/components/ui/SectionTag';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { GradientText } from '@/components/ui/GradientText';
@@ -25,10 +26,10 @@ const METRICS: Metric[] = [
   { end: 8.4, prefix: '',  suffix: '%', decimals: 1, label: 'CTR' },
 ];
 
-function AnimatedMetric({ metric, index }: { metric: Metric; index: number }) {
+function AnimatedMetric({ metric, index, started }: { metric: Metric; index: number; started: boolean }) {
   const countRef = useRef<HTMLElement>(null);
 
-  useCountUp({
+  const { start } = useCountUp({
     ref: countRef as React.RefObject<HTMLElement>,
     start: 0,
     end: metric.end,
@@ -36,13 +37,16 @@ function AnimatedMetric({ metric, index }: { metric: Metric; index: number }) {
     decimals: metric.decimals,
     prefix: metric.prefix,
     suffix: metric.suffix,
-    enableScrollSpy: true,
-    scrollSpyOnce: true,
+    startOnMount: false,
     easingFn: (t, b, c, d) => {
       // ease-out expo
       return t === d ? b + c : c * (-Math.pow(2, -10 * t / d) + 1) + b;
     },
   });
+
+  useEffect(() => {
+    if (started) start();
+  }, [started, start]);
 
   return (
     <m.div
@@ -66,6 +70,9 @@ function AnimatedMetric({ metric, index }: { metric: Metric; index: number }) {
 }
 
 export function MetricsSection() {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const started = useInView(gridRef, { once: true, amount: 0.2 });
+
   return (
     <section className="py-20 bg-sp-off">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -77,9 +84,9 @@ export function MetricsSection() {
             </SectionHeading>
           </div>
         </FadeInOnScroll>
-        <div className="grid grid-cols-3 md:grid-cols-6 divide-x divide-sp-border">
+        <div ref={gridRef} className="grid grid-cols-3 md:grid-cols-6 divide-x divide-sp-border">
           {METRICS.map((metric, i) => (
-            <AnimatedMetric key={metric.label} metric={metric} index={i} />
+            <AnimatedMetric key={metric.label} metric={metric} index={i} started={started} />
           ))}
         </div>
       </div>
