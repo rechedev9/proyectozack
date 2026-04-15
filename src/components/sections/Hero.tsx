@@ -34,40 +34,52 @@ export function Hero() {
 
       {/* Auras: breathing animation + mouse parallax */}
       <div className="absolute inset-0 pointer-events-none" style={{ contain: 'paint' }}>
+        {/* Pink aura: outer motion div handles mouse parallax, inner CSS div handles breathing */}
         <m.div
-          animate={{ scale: [1, 1.12, 1], opacity: [0.18, 0.3, 0.18] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
           style={{
             position: 'absolute',
             top: '50%',
             left: '50%',
             marginLeft: '-500px',
             marginTop: '-500px',
-            width: '1000px',
-            height: '1000px',
-            borderRadius: '9999px',
-            background: 'radial-gradient(circle, #e03070 0%, transparent 60%)',
-            filter: 'blur(80px)',
+            willChange: 'transform',
             x: pinkX,
             y: pinkY,
           }}
-        />
+        >
+          <div
+            className="hero-aura-pink"
+            style={{
+              width: '1000px',
+              height: '1000px',
+              borderRadius: '9999px',
+              background: 'radial-gradient(circle, #e03070 0%, transparent 60%)',
+              filter: 'blur(80px)',
+            }}
+          />
+        </m.div>
+        {/* Orange aura: same pattern */}
         <m.div
-          animate={{ scale: [1.1, 1, 1.1], opacity: [0.1, 0.22, 0.1] }}
-          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
           style={{
             position: 'absolute',
             top: '-10%',
             right: '-10%',
-            width: '800px',
-            height: '800px',
-            borderRadius: '9999px',
-            background: 'radial-gradient(circle, #f5632a 0%, transparent 70%)',
-            filter: 'blur(100px)',
+            willChange: 'transform',
             x: orangeX,
             y: orangeY,
           }}
-        />
+        >
+          <div
+            className="hero-aura-orange"
+            style={{
+              width: '800px',
+              height: '800px',
+              borderRadius: '9999px',
+              background: 'radial-gradient(circle, #f5632a 0%, transparent 70%)',
+              filter: 'blur(100px)',
+            }}
+          />
+        </m.div>
       </div>
 
       {/* Content */}
@@ -94,7 +106,7 @@ export function Hero() {
               className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-[0_0_25px_rgba(224,48,112,0.4)]"
             />
           </m.div>
-          <div className="absolute inset-0 bg-sp-pink/20 blur-2xl rounded-full animate-pulse" />
+          <div className="absolute inset-0 bg-sp-pink/20 blur-2xl rounded-full" />
         </m.div>
 
         {/* Geo label */}

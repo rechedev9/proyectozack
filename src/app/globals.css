@@ -192,8 +192,8 @@
 
 /* ── Hero aura animations (CSS-driven, no JS rAF) ────────────────────────── */
 @keyframes hero-aura-pink {
-  0%, 100% { transform: translate(-50%, -50%) scale(1);   opacity: 0.15; }
-  50%       { transform: translate(-50%, -50%) scale(1.1); opacity: 0.25; }
+  0%, 100% { transform: scale(1);   opacity: 0.15; }
+  50%       { transform: scale(1.1); opacity: 0.25; }
 }
 @keyframes hero-aura-orange {
   0%, 100% { transform: scale(1.1); opacity: 0.1; }
