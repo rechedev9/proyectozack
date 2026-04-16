@@ -119,6 +119,18 @@ export function StarIcon() {
   );
 }
 
+export function StatsIcon() {
+  return (
+    <svg {...s}>
+      <polyline points="3 17 8 12 12 15 17 8" />
+      <line x1="3" y1="17" x2="17" y2="17" />
+      <circle cx="8" cy="12" r="1" />
+      <circle cx="12" cy="15" r="1" />
+      <circle cx="17" cy="8" r="1" />
+    </svg>
+  );
+}
+
 export function TargetsIcon() {
   return (
     <svg {...s}>

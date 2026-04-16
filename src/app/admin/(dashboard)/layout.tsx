@@ -7,6 +7,7 @@ import {
   GiveawayIcon,
   TeamIcon,
   TargetsIcon,
+  StatsIcon,
 } from '@/components/admin/SidebarIcons';
 import type { ReactNode } from 'react';
 
@@ -30,6 +31,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           { href: '/admin/equipo', label: 'Equipo', icon: <TeamIcon /> },
           { href: '/admin/targets', label: 'Targets', icon: <TargetsIcon />, prefetch: false },
           { href: '/admin/giveaways', label: 'Giveaways', icon: <GiveawayIcon />, prefetch: false },
+          { href: '/admin/stats', label: 'Stats', icon: <StatsIcon />, prefetch: false },
         ]}
         userEmail={session.user.email}
         logoutHref="/api/auth/sign-out"

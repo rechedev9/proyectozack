@@ -12,3 +12,4 @@ export * from './giveaways';
 export * from './creatorCodes';
 export * from './giveawayWinners';
 export * from './targets';
+export * from './statsShares';
