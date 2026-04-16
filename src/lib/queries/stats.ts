@@ -3,11 +3,6 @@ import { db } from '@/lib/db';
 import { talents, talentSocials, statsShares } from '@/db/schema';
 import { parseFollowers, formatCompact } from '@/lib/format';
 
-export type StatsGeoEntry = {
-  readonly country: string;
-  readonly pct: number;
-};
-
 export type StatsRow = {
   readonly id: number;
   readonly slug: string;
@@ -25,9 +20,7 @@ export type StatsRow = {
   readonly totalFormatted: string;
   readonly avgViewers: number | null;
   readonly avgViewersFormatted: string;
-  readonly topGeos: StatsGeoEntry[] | null;
   readonly audienceLanguage: string | null;
-  readonly creatorCountry: string | null;
 };
 
 export type StatsRollup = {
@@ -36,13 +29,13 @@ export type StatsRollup = {
   readonly channelCount: number;
   readonly avgReachPerChannel: number;
   readonly avgReachFormatted: string;
-  readonly topGeoAggregate: ReadonlyArray<{ country: string; weight: number }>;
   readonly rows: StatsRow[];
 };
 
 function buildRollup(
   rows: Array<typeof talents.$inferSelect & { socials: Array<typeof talentSocials.$inferSelect> }>,
 ): StatsRollup {
+  let totalReach = 0;
   const statsRows: StatsRow[] = rows
     .map((t) => {
       const totalFollowers = t.socials.reduce(
@@ -58,6 +51,7 @@ function buildRollup(
         avgViewersValues.length > 0
           ? avgViewersValues.reduce((sum, v) => sum + v, 0)
           : null;
+      totalReach += totalFollowers;
       return {
         id: t.id,
         slug: t.slug,
@@ -76,9 +70,7 @@ function buildRollup(
         avgViewers,
         avgViewersFormatted:
           avgViewers !== null && avgViewers > 0 ? formatCompact(avgViewers) : '-',
-        topGeos: t.topGeos ?? null,
         audienceLanguage: t.audienceLanguage ?? null,
-        creatorCountry: t.creatorCountry ?? null,
       } satisfies StatsRow;
     })
     .sort((a, b) => {
@@ -89,26 +81,8 @@ function buildRollup(
       return b.totalFollowers - a.totalFollowers;
     });
 
-  let totalReach = 0;
-  const geoWeights = new Map<string, number>();
-  for (const row of statsRows) {
-    totalReach += row.totalFollowers;
-    if (row.topGeos) {
-      for (const g of row.topGeos) {
-        // followers × share = reach-weighted contribution per country
-        const weight = (row.totalFollowers * g.pct) / 100;
-        geoWeights.set(g.country, (geoWeights.get(g.country) ?? 0) + weight);
-      }
-    }
-  }
-
   const channelCount = statsRows.length;
   const avgReachPerChannel = channelCount > 0 ? Math.round(totalReach / channelCount) : 0;
-
-  const topGeoAggregate = [...geoWeights.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 8)
-    .map(([country, weight]) => ({ country, weight }));
 
   return {
     totalReach,
@@ -116,7 +90,6 @@ function buildRollup(
     channelCount,
     avgReachPerChannel,
     avgReachFormatted: avgReachPerChannel > 0 ? formatCompact(avgReachPerChannel) : '0',
-    topGeoAggregate,
     rows: statsRows,
   };
 }

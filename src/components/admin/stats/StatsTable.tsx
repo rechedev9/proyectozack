@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState, type ReactElement } from 'react';
-import { GeoEditor } from './GeoEditor';
 import { StatsTableRow } from '@/components/stats/StatsTableRow';
 import type { StatsRow } from '@/lib/queries/stats';
 
@@ -49,7 +48,7 @@ export function StatsTable({ rows }: Props): ReactElement {
   return (
     <div className="rounded-xl bg-sp-admin-card border border-sp-admin-border overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm min-w-[920px]">
+        <table className="w-full text-left text-sm min-w-[720px]">
           <thead>
             <tr className="border-b border-sp-admin-border bg-sp-admin-bg/50">
               <th
@@ -59,7 +58,6 @@ export function StatsTable({ rows }: Props): ReactElement {
                 # <SortIndicator col="rank" sortKey={sortKey} sortDir={sortDir} />
               </th>
               <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted">Canal</th>
-              <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted">Top GEO</th>
               <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-24">Idioma</th>
               <th
                 className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted text-right w-28 cursor-pointer select-none"
@@ -74,24 +72,11 @@ export function StatsTable({ rows }: Props): ReactElement {
                 Avg CCV
               </th>
               <th aria-label="Video" className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-24" />
-              <th aria-label="Editar geo" className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-24" />
             </tr>
           </thead>
           <tbody className="divide-y divide-sp-admin-border/60">
             {sorted.map((row, i) => (
-              <StatsTableRow
-                key={row.id}
-                row={row}
-                index={i}
-                actions={
-                  <GeoEditor
-                    talentId={row.id}
-                    talentName={row.name}
-                    topGeos={row.topGeos ? [...row.topGeos] : null}
-                    audienceLanguage={row.audienceLanguage}
-                  />
-                }
-              />
+              <StatsTableRow key={row.id} row={row} index={i} />
             ))}
           </tbody>
         </table>

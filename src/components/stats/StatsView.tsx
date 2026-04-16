@@ -20,12 +20,11 @@ export function StatsView({ data, title = 'Stats' }: Props): ReactElement {
 
       <div className="rounded-xl bg-sp-admin-card border border-sp-admin-border overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm min-w-[820px]">
+          <table className="w-full text-left text-sm min-w-[640px]">
             <thead>
               <tr className="border-b border-sp-admin-border bg-sp-admin-bg/50">
                 <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-10">#</th>
                 <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted">Canal</th>
-                <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted">Top GEO</th>
                 <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-24">Idioma</th>
                 <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted text-right w-28">Reach</th>
                 <th

@@ -27,7 +27,7 @@ export default async function AdminStatsPage(): Promise<ReactElement> {
         <p className="text-sm text-sp-admin-muted mt-1">{rollup.channelCount} canales en el roster</p>
       </div>
 
-      <KpiCards data={rollup} emptyGeoHint="edita cada creador" />
+      <KpiCards data={rollup} />
 
       <ShareLinkPanel shares={shareRows} siteUrl={env.NEXT_PUBLIC_SITE_URL} />
 

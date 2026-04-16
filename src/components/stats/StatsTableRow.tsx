@@ -1,5 +1,5 @@
 import { formatSocialDisplayUrl } from '@/lib/format';
-import type { StatsGeoEntry, StatsRow } from '@/lib/queries/stats';
+import type { StatsRow } from '@/lib/queries/stats';
 import type { ReactElement, ReactNode } from 'react';
 
 type Props = {
@@ -8,18 +8,10 @@ type Props = {
   readonly actions?: ReactNode;
 };
 
-const fmtGeo = (g: StatsGeoEntry): string => `${g.country} ${g.pct}%`;
-
 export function StatsTableRow({ row, index, actions }: Props): ReactElement {
   const profileUrl = row.socials[0]?.profileUrl ?? null;
   const channelDisplay =
     formatSocialDisplayUrl(profileUrl) ?? row.socials[0]?.handle ?? row.name;
-
-  const [first, second, third] = row.topGeos ?? [];
-  const lineOne = [first, second]
-    .filter((g): g is StatsGeoEntry => g !== undefined)
-    .map(fmtGeo)
-    .join(' / ');
 
   return (
     <tr className="hover:bg-sp-admin-hover transition-colors">
@@ -27,16 +19,6 @@ export function StatsTableRow({ row, index, actions }: Props): ReactElement {
       <td className="px-4 py-3">
         <span className="font-semibold text-sp-admin-text text-[13px]">{channelDisplay}</span>
         <span className="block text-[10px] text-sp-admin-muted mt-0.5">{row.name}</span>
-      </td>
-      <td className="px-4 py-3 text-xs text-sp-admin-muted">
-        {!lineOne && !third ? (
-          <span className="text-sp-admin-muted/30">—</span>
-        ) : (
-          <>
-            {lineOne && <div>{lineOne}</div>}
-            {third && <div>{fmtGeo(third)}</div>}
-          </>
-        )}
       </td>
       <td className="px-4 py-3 text-xs text-sp-admin-text">
         {row.audienceLanguage ?? <span className="text-sp-admin-muted/30">—</span>}
