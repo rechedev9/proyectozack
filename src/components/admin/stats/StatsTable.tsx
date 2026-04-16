@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, type ReactElement } from 'react';
+import { GeoEditor } from './GeoEditor';
 import { StatsTableRow } from '@/components/stats/StatsTableRow';
 import type { StatsRow } from '@/lib/queries/stats';
 
@@ -72,11 +73,24 @@ export function StatsTable({ rows }: Props): ReactElement {
                 Avg CCV
               </th>
               <th aria-label="Video" className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-24" />
+              <th aria-label="Editar geo" className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-24" />
             </tr>
           </thead>
           <tbody className="divide-y divide-sp-admin-border/60">
             {sorted.map((row, i) => (
-              <StatsTableRow key={row.id} row={row} index={i} />
+              <StatsTableRow
+                key={row.id}
+                row={row}
+                index={i}
+                actions={
+                  <GeoEditor
+                    talentId={row.id}
+                    talentName={row.name}
+                    topGeos={row.topGeos ? [...row.topGeos] : null}
+                    audienceLanguage={row.audienceLanguage}
+                  />
+                }
+              />
             ))}
           </tbody>
         </table>

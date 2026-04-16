@@ -3,6 +3,11 @@ import { db } from '@/lib/db';
 import { talents, talentSocials, statsShares } from '@/db/schema';
 import { parseFollowers, formatCompact } from '@/lib/format';
 
+export type StatsGeoEntry = {
+  readonly country: string;
+  readonly pct: number;
+};
+
 export type StatsRow = {
   readonly id: number;
   readonly slug: string;
@@ -20,6 +25,7 @@ export type StatsRow = {
   readonly totalFormatted: string;
   readonly avgViewers: number | null;
   readonly avgViewersFormatted: string;
+  readonly topGeos: StatsGeoEntry[] | null;
   readonly audienceLanguage: string | null;
 };
 
@@ -70,6 +76,7 @@ function buildRollup(
         avgViewers,
         avgViewersFormatted:
           avgViewers !== null && avgViewers > 0 ? formatCompact(avgViewers) : '-',
+        topGeos: t.topGeos ?? null,
         audienceLanguage: t.audienceLanguage ?? null,
       } satisfies StatsRow;
     })
