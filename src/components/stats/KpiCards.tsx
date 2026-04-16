@@ -11,12 +11,12 @@ export function KpiCards({ data, emptyGeoHint }: Props): ReactElement {
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div className="rounded-xl bg-sp-admin-card border border-sp-admin-border px-5 py-4">
         <p className="text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted mb-2">
-          Total Reach (seguidores)
+          Audiencia total
         </p>
         <p className="font-display text-4xl font-black text-sp-admin-text tabular-nums">
           {data.totalReachFormatted}
         </p>
-        <p className="text-xs text-sp-admin-muted mt-1">seguidores totales en todos los canales</p>
+        <p className="text-xs text-sp-admin-muted mt-1">seguidores sumados de todos los canales</p>
       </div>
 
       <div className="rounded-xl bg-sp-admin-card border border-sp-admin-border px-5 py-4">

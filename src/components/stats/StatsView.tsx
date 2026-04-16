@@ -20,7 +20,7 @@ export function StatsView({ data, title = 'Stats' }: Props): ReactElement {
 
       <div className="rounded-xl bg-sp-admin-card border border-sp-admin-border overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm min-w-[700px]">
+          <table className="w-full text-left text-sm min-w-[820px]">
             <thead>
               <tr className="border-b border-sp-admin-border bg-sp-admin-bg/50">
                 <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-10">#</th>
@@ -28,6 +28,13 @@ export function StatsView({ data, title = 'Stats' }: Props): ReactElement {
                 <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted">Top GEO</th>
                 <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-24">Idioma</th>
                 <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted text-right w-28">Reach</th>
+                <th
+                  className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted text-right w-24"
+                  title="Avg concurrent viewers (Twitch, last 30d)"
+                >
+                  Avg CCV
+                </th>
+                <th aria-label="Video" className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-24" />
               </tr>
             </thead>
             <tbody className="divide-y divide-sp-admin-border/60">

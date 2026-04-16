@@ -76,6 +76,22 @@ type YouTubeChannelsAPIResponse = {
   }>;
 }
 
+type YouTubeSnippetOnlyResponse = {
+  items?: Array<{
+    id: string;
+    snippet: {
+      defaultLanguage?: string;
+      country?: string;
+    };
+  }>;
+}
+
+export type YouTubeChannelSnippet = {
+  readonly channelId: string;
+  readonly defaultLanguage: string | null;
+  readonly country: string | null;
+}
+
 export type YouTubeChannelPreview = {
   readonly channelId: string;
   readonly handle: string | null;
@@ -119,6 +135,43 @@ export async function fetchYouTubeSubscriberCounts(
           subscriberCount: parseInt(item.statistics.subscriberCount, 10) || 0,
         });
       }
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Fetch snippet-only fields (defaultLanguage, country) for multiple channel IDs.
+ * Batches up to 50 IDs per request (YouTube API limit).
+ */
+export async function fetchYouTubeChannelSnippets(
+  channelIds: string[],
+): Promise<YouTubeChannelSnippet[]> {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) throw new Error('YOUTUBE_API_KEY is not set');
+
+  const results: YouTubeChannelSnippet[] = [];
+  const batchSize = 50;
+
+  for (let i = 0; i < channelIds.length; i += batchSize) {
+    const batch = channelIds.slice(i, i + batchSize);
+    const ids = batch.join(',');
+    const url = `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${ids}&key=${apiKey}`;
+
+    const res = await fetch(url);
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`YouTube snippets API error (${res.status}): ${text}`);
+    }
+
+    const data: YouTubeSnippetOnlyResponse = await res.json();
+    for (const item of data.items ?? []) {
+      results.push({
+        channelId: item.id,
+        defaultLanguage: item.snippet.defaultLanguage ?? null,
+        country: item.snippet.country ?? null,
+      });
     }
   }
 

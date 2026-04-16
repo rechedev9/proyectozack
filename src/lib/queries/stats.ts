@@ -19,11 +19,15 @@ export type StatsRow = {
     readonly handle: string;
     readonly followersDisplay: string;
     readonly profileUrl: string | null;
+    readonly avgViewers: number | null;
   }>;
   readonly totalFollowers: number;
   readonly totalFormatted: string;
+  readonly avgViewers: number | null;
+  readonly avgViewersFormatted: string;
   readonly topGeos: StatsGeoEntry[] | null;
   readonly audienceLanguage: string | null;
+  readonly creatorCountry: string | null;
 };
 
 export type StatsRollup = {
@@ -45,6 +49,15 @@ function buildRollup(
         (sum, s) => sum + parseFollowers(s.followersDisplay),
         0,
       );
+      // Sum avgViewers across all socials that have a value (Twitch live CCV).
+      // null means "no scraped data"; 0 stays 0 (real channel with no current viewers).
+      const avgViewersValues = t.socials
+        .map((s) => s.avgViewers)
+        .filter((v): v is number => v !== null);
+      const avgViewers =
+        avgViewersValues.length > 0
+          ? avgViewersValues.reduce((sum, v) => sum + v, 0)
+          : null;
       return {
         id: t.id,
         slug: t.slug,
@@ -56,11 +69,16 @@ function buildRollup(
           handle: s.handle,
           followersDisplay: s.followersDisplay,
           profileUrl: s.profileUrl,
+          avgViewers: s.avgViewers ?? null,
         })),
         totalFollowers,
         totalFormatted: totalFollowers > 0 ? formatCompact(totalFollowers) : '-',
+        avgViewers,
+        avgViewersFormatted:
+          avgViewers !== null && avgViewers > 0 ? formatCompact(avgViewers) : '-',
         topGeos: t.topGeos ?? null,
         audienceLanguage: t.audienceLanguage ?? null,
+        creatorCountry: t.creatorCountry ?? null,
       } satisfies StatsRow;
     })
     .sort((a, b) => {

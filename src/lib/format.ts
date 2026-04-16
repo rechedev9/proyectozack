@@ -24,6 +24,16 @@ export function parseFollowers(display: string): number {
   return num;
 }
 
+export function formatSocialDisplayUrl(url: string | null): string | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    return `${u.hostname.replace(/^www\./, '')}${u.pathname.replace(/\/$/, '')}`;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Sum followers for a creator's socials, optionally restricted to specific platforms.
  * If platforms is empty or omitted, sums all socials.

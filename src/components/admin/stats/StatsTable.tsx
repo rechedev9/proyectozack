@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactElement } from 'react';
+import { useMemo, useState, type ReactElement } from 'react';
 import { GeoEditor } from './GeoEditor';
 import { StatsTableRow } from '@/components/stats/StatsTableRow';
 import type { StatsRow } from '@/lib/queries/stats';
@@ -30,26 +30,26 @@ export function StatsTable({ rows }: Props): ReactElement {
     }
   }
 
-  // Pre-build index map so rank sort is O(n log n) instead of O(n²)
-  const rowIndexMap = new Map(rows.map((r, i) => [r.id, i]));
+  const rowIndexMap = useMemo(() => new Map(rows.map((r, i) => [r.id, i])), [rows]);
 
-  const sorted = [...rows].sort((a, b) => {
-    if (sortKey === 'reach') {
-      if (a.totalFollowers === 0 && b.totalFollowers === 0) return 0;
-      if (a.totalFollowers === 0) return 1;
-      if (b.totalFollowers === 0) return -1;
-      const diff = b.totalFollowers - a.totalFollowers;
+  const sorted = useMemo(() => {
+    return [...rows].sort((a, b) => {
+      if (sortKey === 'reach') {
+        if (a.totalFollowers === 0 && b.totalFollowers === 0) return 0;
+        if (a.totalFollowers === 0) return 1;
+        if (b.totalFollowers === 0) return -1;
+        const diff = b.totalFollowers - a.totalFollowers;
+        return sortDir === 'desc' ? diff : -diff;
+      }
+      const diff = (rowIndexMap.get(a.id) ?? 0) - (rowIndexMap.get(b.id) ?? 0);
       return sortDir === 'desc' ? diff : -diff;
-    }
-    // 'rank' = original order from query (sortOrder column)
-    const diff = (rowIndexMap.get(a.id) ?? 0) - (rowIndexMap.get(b.id) ?? 0);
-    return sortDir === 'desc' ? diff : -diff;
-  });
+    });
+  }, [rows, sortKey, sortDir, rowIndexMap]);
 
   return (
     <div className="rounded-xl bg-sp-admin-card border border-sp-admin-border overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm min-w-[800px]">
+        <table className="w-full text-left text-sm min-w-[920px]">
           <thead>
             <tr className="border-b border-sp-admin-border bg-sp-admin-bg/50">
               <th
@@ -67,7 +67,14 @@ export function StatsTable({ rows }: Props): ReactElement {
               >
                 Reach <SortIndicator col="reach" sortKey={sortKey} sortDir={sortDir} />
               </th>
-              <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-24" />
+              <th
+                className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted text-right w-24"
+                title="Avg concurrent viewers (Twitch, last 30d)"
+              >
+                Avg CCV
+              </th>
+              <th aria-label="Video" className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-24" />
+              <th aria-label="Editar geo" className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted w-24" />
             </tr>
           </thead>
           <tbody className="divide-y divide-sp-admin-border/60">

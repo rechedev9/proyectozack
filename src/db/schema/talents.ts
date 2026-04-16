@@ -25,6 +25,7 @@ export const talents = pgTable('talents', {
   visibility: visibilityEnum('visibility').notNull().default('public'),
   topGeos: jsonb('top_geos').$type<Array<{ country: string; pct: number }>>(),
   audienceLanguage: text('audience_language'),
+  creatorCountry: varchar('creator_country', { length: 2 }),
 }, (t) => [
   index('talents_slug_idx').on(t.slug),
   index('talents_platform_idx').on(t.platform),
@@ -60,6 +61,7 @@ export const talentSocials = pgTable('talent_socials', {
   hexColor: varchar('hex_color', { length: 7 }).notNull(),
   platformId: varchar('platform_id', { length: 200 }),
   sortOrder: integer('sort_order').notNull().default(0),
+  avgViewers: integer('avg_viewers'),
 }, (t) => [
   index('talent_socials_talent_id_idx').on(t.talentId),
 ]);
