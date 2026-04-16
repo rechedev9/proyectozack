@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { requireRole } from '@/lib/auth-guard';
 import { db } from '@/lib/db';
-import { talents, statsShares } from '@/db/schema';
+import { talents, statsShares, user } from '@/db/schema';
 
 const geoEntrySchema = z.object({
   country: z.string().min(1).max(60),
@@ -57,6 +57,22 @@ export async function createStatsShareLink(): Promise<{ id: number; token: strin
   const session = await requireRole('admin', '/admin/login');
 
   const token = randomBytes(16).toString('base64url');
+
+  if (process.env.NODE_ENV === 'development' && session.user.id === 'dev') {
+    const now = new Date();
+    await db
+      .insert(user)
+      .values({
+        id: 'dev',
+        name: session.user.name,
+        email: session.user.email,
+        emailVerified: true,
+        role: session.user.role,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .onConflictDoNothing({ target: user.id });
+  }
 
   const [row] = await db
     .insert(statsShares)
