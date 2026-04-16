@@ -59,7 +59,6 @@ export function GeoEditor({ talentId, talentName, topGeos, audienceLanguage }: P
               </button>
             </div>
 
-            {/* Language */}
             <div>
               <label className="block text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted mb-1">
                 Idioma de audiencia
@@ -74,7 +73,6 @@ export function GeoEditor({ talentId, talentName, topGeos, audienceLanguage }: P
               />
             </div>
 
-            {/* Top GEOs (up to 3) */}
             <div>
               <label className="block text-[10px] font-semibold uppercase tracking-widest text-sp-admin-muted mb-1">
                 Top GEOs (máx 3)
@@ -118,7 +116,6 @@ export function GeoEditor({ talentId, talentName, topGeos, audienceLanguage }: P
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex gap-2 pt-1">
               <button
                 onClick={handleSave}

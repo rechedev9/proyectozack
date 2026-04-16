@@ -2,6 +2,7 @@
 
 import { useState, type ReactElement } from 'react';
 import { GeoEditor } from './GeoEditor';
+import { StatsTableRow } from '@/components/stats/StatsTableRow';
 import type { StatsRow } from '@/lib/queries/stats';
 
 type SortKey = 'rank' | 'reach';
@@ -29,6 +30,9 @@ export function StatsTable({ rows }: Props): ReactElement {
     }
   }
 
+  // Pre-build index map so rank sort is O(n log n) instead of O(n²)
+  const rowIndexMap = new Map(rows.map((r, i) => [r.id, i]));
+
   const sorted = [...rows].sort((a, b) => {
     if (sortKey === 'reach') {
       if (a.totalFollowers === 0 && b.totalFollowers === 0) return 0;
@@ -37,8 +41,9 @@ export function StatsTable({ rows }: Props): ReactElement {
       const diff = b.totalFollowers - a.totalFollowers;
       return sortDir === 'desc' ? diff : -diff;
     }
-    // 'rank' = original sort order from query (by sortOrder)
-    return sortDir === 'desc' ? rows.indexOf(a) - rows.indexOf(b) : rows.indexOf(b) - rows.indexOf(a);
+    // 'rank' = original order from query (sortOrder column)
+    const diff = (rowIndexMap.get(a.id) ?? 0) - (rowIndexMap.get(b.id) ?? 0);
+    return sortDir === 'desc' ? diff : -diff;
   });
 
   return (
@@ -66,51 +71,21 @@ export function StatsTable({ rows }: Props): ReactElement {
             </tr>
           </thead>
           <tbody className="divide-y divide-sp-admin-border/60">
-            {sorted.map((row, i) => {
-              const primarySocial = row.socials[0];
-              const profileUrl = primarySocial?.profileUrl ?? null;
-              return (
-                <tr key={row.id} className="hover:bg-sp-admin-hover transition-colors">
-                  <td className="px-4 py-3 text-xs text-sp-admin-muted tabular-nums">{i + 1}</td>
-                  <td className="px-4 py-3">
-                    {profileUrl ? (
-                      <a
-                        href={profileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-semibold text-sp-admin-text hover:text-sp-admin-accent transition-colors text-[13px]"
-                      >
-                        {row.name}
-                      </a>
-                    ) : (
-                      <span className="font-semibold text-sp-admin-text text-[13px]">{row.name}</span>
-                    )}
-                    <span className="ml-2 text-[10px] text-sp-admin-muted uppercase">{row.platform}</span>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-sp-admin-muted">
-                    {row.topGeos && row.topGeos.length > 0 ? (
-                      row.topGeos.map((g) => `${g.country} ${g.pct}%`).join(' / ')
-                    ) : (
-                      <span className="text-sp-admin-muted/30">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-sp-admin-text">
-                    {row.audienceLanguage ?? <span className="text-sp-admin-muted/30">—</span>}
-                  </td>
-                  <td className="px-4 py-3 text-right font-display text-sm font-bold text-sp-admin-text tabular-nums">
-                    {row.totalFollowers > 0 ? row.totalFormatted : <span className="text-sp-admin-muted/30">—</span>}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <GeoEditor
-                      talentId={row.id}
-                      talentName={row.name}
-                      topGeos={row.topGeos ? [...row.topGeos] : null}
-                      audienceLanguage={row.audienceLanguage}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
+            {sorted.map((row, i) => (
+              <StatsTableRow
+                key={row.id}
+                row={row}
+                index={i}
+                actions={
+                  <GeoEditor
+                    talentId={row.id}
+                    talentName={row.name}
+                    topGeos={row.topGeos ? [...row.topGeos] : null}
+                    audienceLanguage={row.audienceLanguage}
+                  />
+                }
+              />
+            ))}
           </tbody>
         </table>
       </div>

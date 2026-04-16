@@ -71,19 +71,22 @@ function buildRollup(
       return b.totalFollowers - a.totalFollowers;
     });
 
-  const totalReach = statsRows.reduce((sum, r) => sum + r.totalFollowers, 0);
+  let totalReach = 0;
+  const geoWeights = new Map<string, number>();
+  for (const row of statsRows) {
+    totalReach += row.totalFollowers;
+    if (row.topGeos) {
+      for (const g of row.topGeos) {
+        // followers × share = reach-weighted contribution per country
+        const weight = (row.totalFollowers * g.pct) / 100;
+        geoWeights.set(g.country, (geoWeights.get(g.country) ?? 0) + weight);
+      }
+    }
+  }
+
   const channelCount = statsRows.length;
   const avgReachPerChannel = channelCount > 0 ? Math.round(totalReach / channelCount) : 0;
 
-  // Build reach-weighted geo aggregate (top 8)
-  const geoWeights = new Map<string, number>();
-  for (const row of statsRows) {
-    if (!row.topGeos) continue;
-    for (const g of row.topGeos) {
-      const weight = (row.totalFollowers * g.pct) / 100;
-      geoWeights.set(g.country, (geoWeights.get(g.country) ?? 0) + weight);
-    }
-  }
   const topGeoAggregate = [...geoWeights.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
