@@ -29,6 +29,11 @@ import type { SortField, SortState, StatusFilter, StatusValue, PlatformValue } f
 import { Th } from './ThSortable';
 import { exportTargetsCSV } from './export-csv';
 
+const BATCH_LABELS: Record<string, string> = {
+  'firecrawl-2026-04': 'Gaming',
+  'firecrawl-cs2-2026-04': 'CS2',
+};
+
 export function TargetsSpreadsheet({
   targets,
   brands = [],
@@ -44,6 +49,7 @@ export function TargetsSpreadsheet({
   const [openStatusMenu, setOpenStatusMenu] = useState<number | null>(null);
   const [editingNotes, setEditingNotes] = useState<number | null>(null);
   const [notesValue, setNotesValue] = useState('');
+  const [batchFilter, setBatchFilter] = useState<Set<string>>(new Set());
   const [brandUserId, setBrandUserId] = useState('');
   const [isPending, startTransition] = useTransition();
   const [importResult, setImportResult] = useState<{ inserted: number; updated: number; errors: number } | null>(null);
@@ -65,6 +71,21 @@ export function TargetsSpreadsheet({
     () => PLATFORMS.filter((p) => (platformCounts[p] ?? 0) > 0),
     [platformCounts],
   );
+
+  const activeBatches = useMemo(() => {
+    const seen = new Set<string>();
+    for (const t of targets) if (t.importBatchId) seen.add(t.importBatchId);
+    return [...seen].sort();
+  }, [targets]);
+
+  const toggleBatch = (b: string): void => {
+    setBatchFilter((prev) => {
+      const next = new Set(prev);
+      if (next.has(b)) next.delete(b);
+      else next.add(b);
+      return next;
+    });
+  };
 
   const handleImportCSV = (): void => {
     const file = csvInputRef.current?.files?.[0];
@@ -95,13 +116,18 @@ export function TargetsSpreadsheet({
       list = list.filter((t) => platformFilter.has(t.platform as PlatformValue));
     }
 
+    if (batchFilter.size > 0) {
+      list = list.filter((t) => t.importBatchId != null && batchFilter.has(t.importBatchId));
+    }
+
     if (search.trim()) {
       const q = search.toLowerCase().trim();
       list = list.filter(
         (t) =>
           t.username.toLowerCase().includes(q) ||
           (t.fullName?.toLowerCase().includes(q) ?? false) ||
-          (t.bio?.toLowerCase().includes(q) ?? false),
+          (t.bio?.toLowerCase().includes(q) ?? false) ||
+          (t.importBatchId?.toLowerCase().includes(q) ?? false),
       );
     }
 
@@ -115,7 +141,7 @@ export function TargetsSpreadsheet({
         cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       return dir === 'desc' ? -cmp : cmp;
     });
-  }, [targets, statusFilter, platformFilter, search, sort]);
+  }, [targets, statusFilter, platformFilter, batchFilter, search, sort]);
 
   const allSelected = filtered.length > 0 && filtered.every((t) => selected.has(t.id));
   const selectedIds = useMemo(() => [...selected], [selected]);
@@ -304,6 +330,29 @@ export function TargetsSpreadsheet({
           </div>
         )}
 
+        {activeBatches.length > 1 && (
+          <div className="flex items-center gap-1.5">
+            {activeBatches.map((b) => {
+              const isActive = batchFilter.has(b);
+              const label = BATCH_LABELS[b] ?? b;
+              return (
+                <button
+                  key={b}
+                  type="button"
+                  onClick={() => toggleBatch(b)}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all border ${
+                    isActive
+                      ? 'border-sp-admin-accent text-sp-admin-accent opacity-100'
+                      : 'border-sp-admin-border text-sp-admin-muted hover:text-sp-admin-text opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         <div className="flex items-center gap-2 ml-auto">
           <span className="text-xs text-sp-admin-muted tabular-nums mr-1">
             <span className="font-bold text-sp-admin-text">{filtered.length}</span>
@@ -425,6 +474,7 @@ export function TargetsSpreadsheet({
                 Audiencia
               </Th>
               <Th className="max-w-[240px]">Descripci&oacute;n</Th>
+              <Th className="w-20">Fuente</Th>
               <Th sortable field="status" sort={sort} onSort={toggleSort} arrow={sortArrow} className="w-28">
                 Estado
               </Th>
@@ -435,7 +485,7 @@ export function TargetsSpreadsheet({
           <tbody className="divide-y divide-sp-admin-border/60">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-5 py-16 text-center text-sp-admin-muted text-sm">
+                <td colSpan={9} className="px-5 py-16 text-center text-sp-admin-muted text-sm">
                   {search || statusFilter !== 'todos' || platformFilter.size > 0
                     ? 'Sin resultados para los filtros aplicados'
                     : 'Sin targets'}
@@ -506,6 +556,19 @@ export function TargetsSpreadsheet({
                         <p className="text-[11px] text-sp-admin-muted line-clamp-2 leading-relaxed">
                           {target.bio}
                         </p>
+                      ) : (
+                        <span className="text-sp-admin-muted/25 text-[11px]">&mdash;</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2.5">
+                      {target.importBatchId ? (
+                        <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${
+                          target.importBatchId.includes('cs2')
+                            ? 'bg-orange-900/30 text-orange-400'
+                            : 'bg-blue-900/20 text-blue-400'
+                        }`}>
+                          {BATCH_LABELS[target.importBatchId] ?? target.importBatchId}
+                        </span>
                       ) : (
                         <span className="text-sp-admin-muted/25 text-[11px]">&mdash;</span>
                       )}
