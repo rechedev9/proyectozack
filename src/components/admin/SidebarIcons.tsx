@@ -131,6 +131,28 @@ export function StatsIcon() {
   );
 }
 
+export function TasksIcon() {
+  return (
+    <svg {...s}>
+      <rect x="3" y="4" width="14" height="13" rx="2" />
+      <path d="M7 9l2 2 4-4" />
+      <line x1="7" y1="14" x2="13" y2="14" />
+    </svg>
+  );
+}
+
+export function MyWeekIcon() {
+  return (
+    <svg {...s}>
+      <rect x="3" y="5" width="14" height="12" rx="2" />
+      <line x1="3" y1="9" x2="17" y2="9" />
+      <line x1="7" y1="3" x2="7" y2="6" />
+      <line x1="13" y1="3" x2="13" y2="6" />
+      <circle cx="10" cy="13" r="1.5" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function TargetsIcon() {
   return (
     <svg {...s}>

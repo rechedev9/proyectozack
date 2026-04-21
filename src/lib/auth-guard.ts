@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 
-type Role = 'admin' | 'brand';
+type Role = 'admin' | 'brand' | 'staff';
 
 /** Only these paths are valid redirect targets — prevents open redirect. */
 const ALLOWED_LOGIN_PATHS = new Set(['/admin/login', '/marcas/login']);
@@ -16,6 +16,37 @@ type SessionWithRole = {
   };
 }
 
+function homeForRole(role: string | null | undefined): string | null {
+  if (role === 'admin') return '/admin';
+  if (role === 'brand') return '/marcas';
+  if (role === 'staff') return '/admin/mi-semana';
+  return null;
+}
+
+async function loadSession(loginPath: string): Promise<SessionWithRole> {
+  const safePath = ALLOWED_LOGIN_PATHS.has(loginPath) ? loginPath : '/';
+
+  if (process.env.NODE_ENV === 'development') {
+    // Dev bypass: the caller decides which role to mock via requireRole/requireAnyRole.
+    // When multiple roles are allowed we prefer 'admin' as the highest-privilege default.
+    return { user: { id: 'dev', email: 'dev@localhost', name: 'Dev', role: 'admin' } };
+  }
+
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect(safePath);
+
+  const userRole = (session.user as { role?: string | null }).role ?? null;
+
+  return {
+    user: {
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+      role: userRole,
+    },
+  };
+}
+
 export async function requireRole(role: Role, loginPath: string): Promise<SessionWithRole> {
   const safePath = ALLOWED_LOGIN_PATHS.has(loginPath) ? loginPath : '/';
 
@@ -24,17 +55,13 @@ export async function requireRole(role: Role, loginPath: string): Promise<Sessio
   }
 
   const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect(safePath);
 
-  if (!session) {
-    redirect(safePath);
-  }
+  const userRole = (session.user as { role?: string | null }).role ?? null;
 
-  const userRole = (session.user as { role?: string | null }).role;
-
-  if (!userRole || userRole !== role) {
-    // Wrong role or null role — redirect to their correct portal or login
-    if (userRole === 'admin') redirect('/admin');
-    if (userRole === 'brand') redirect('/marcas');
+  if (userRole !== role) {
+    const home = homeForRole(userRole);
+    if (home) redirect(home);
     redirect(safePath);
   }
 
@@ -46,4 +73,27 @@ export async function requireRole(role: Role, loginPath: string): Promise<Sessio
       role: userRole,
     },
   };
+}
+
+export async function requireAnyRole(
+  roles: readonly Role[],
+  loginPath: string,
+): Promise<SessionWithRole> {
+  const safePath = ALLOWED_LOGIN_PATHS.has(loginPath) ? loginPath : '/';
+
+  if (process.env.NODE_ENV === 'development') {
+    const mockRole = roles[0] ?? 'admin';
+    return { user: { id: 'dev', email: 'dev@localhost', name: 'Dev', role: mockRole } };
+  }
+
+  const session = await loadSession(safePath);
+  const userRole = session.user.role;
+
+  if (!userRole || !(roles as readonly string[]).includes(userRole)) {
+    const home = homeForRole(userRole);
+    if (home) redirect(home);
+    redirect(safePath);
+  }
+
+  return session;
 }

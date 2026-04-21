@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react';
 import Image from 'next/image';
-import { uploadTeamPhotoAction } from '@/app/admin/(dashboard)/equipo/actions';
+import { uploadTeamPhotoAction } from '@/app/admin/(dashboard)/equipo/fotos/actions';
 
 type Member = {
   id: number;

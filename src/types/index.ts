@@ -6,3 +6,4 @@ export type * from './giveaway';
 export type * from './content';
 export type * from './analytics';
 export type * from './target';
+export type * from './crmTask';

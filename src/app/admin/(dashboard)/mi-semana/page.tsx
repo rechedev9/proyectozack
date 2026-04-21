@@ -1,0 +1,44 @@
+import type { ReactElement } from 'react';
+import { requireAnyRole } from '@/lib/auth-guard';
+import {
+  getMyTasks,
+  getRolledOverCount,
+  getUsedCategories,
+} from '@/lib/queries/crmTasks';
+import { getAllStaffUsers } from '@/lib/queries/staffUsers';
+import { getIsoWeekLabel } from '@/lib/week';
+import { RolledOverBanner } from '@/components/admin/tasks/RolledOverBanner';
+import { TaskList } from '@/components/admin/tasks/TaskList';
+
+export const metadata = { title: 'Mi Semana | Admin' };
+
+export default async function MiSemanaPage(): Promise<ReactElement> {
+  const session = await requireAnyRole(['admin', 'staff'], '/admin/login');
+  const weekLabel = getIsoWeekLabel(new Date());
+
+  const [tasks, users, suggestedCategories, rolledCount] = await Promise.all([
+    getMyTasks(session.user.id, weekLabel),
+    getAllStaffUsers(),
+    getUsedCategories(),
+    getRolledOverCount(session.user.id, weekLabel),
+  ]);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="font-display text-4xl font-black uppercase text-sp-admin-text">Mi semana</h1>
+        <p className="text-sm text-sp-admin-muted mt-1">Tus tareas para {weekLabel}</p>
+      </div>
+
+      <RolledOverBanner count={rolledCount} />
+
+      <TaskList
+        tasks={tasks}
+        users={users.map((u) => ({ id: u.id, name: u.name }))}
+        currentUserId={session.user.id}
+        suggestedCategories={suggestedCategories}
+        weekLabel={weekLabel}
+      />
+    </div>
+  );
+}
