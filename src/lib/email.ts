@@ -45,6 +45,44 @@ export async function sendContactEmail(payload: ContactEmailPayload): Promise<vo
   });
 }
 
+export async function sendStaffInviteEmail(payload: {
+  staffEmail: string;
+  staffName: string;
+  loginUrl: string;
+}): Promise<void> {
+  const staffName = escapeHtml(payload.staffName);
+  let loginUrl = '#';
+  try {
+    const parsed = new URL(payload.loginUrl);
+    const siteUrl = new URL(SITE_URL);
+    if (parsed.hostname === siteUrl.hostname) loginUrl = payload.loginUrl;
+  } catch {
+    // Malformed URL — fall through to '#'
+  }
+
+  await resend.emails.send({
+    from: 'SocialPro <noreply@socialpro.es>',
+    to: payload.staffEmail,
+    subject: 'Acceso al Panel — SocialPro',
+    html: `
+      <div style="font-family: Inter, sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase;">
+          Panel de administración
+        </h2>
+        <p>Hola <strong>${staffName}</strong>,</p>
+        <p>Has sido añadido al equipo de SocialPro. Accede al panel con este enlace y establece tu contraseña usando la opción «¿Olvidaste tu contraseña?».</p>
+        <p>
+          <a href="${loginUrl}" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#f5632a 0%,#e03070 35%,#c42880 62%,#8b3aad 100%);color:#fff;text-decoration:none;border-radius:9999px;font-weight:bold;">
+            Acceder al panel
+          </a>
+        </p>
+        <p style="color: #6b6864; font-size: 13px;">Tu email: ${escapeHtml(payload.staffEmail)}</p>
+        <p style="color: #6b6864; font-size: 13px;">Si no esperabas este email, puedes ignorarlo.</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendBrandInviteEmail(payload: {
   brandEmail: string;
   brandName: string;

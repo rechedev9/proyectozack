@@ -1,29 +1,52 @@
 'use server';
 
-import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { put } from '@vercel/blob';
 import { db } from '@/lib/db';
-import { teamMembers } from '@/db/schema';
+import { user as userTable } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { sendStaffInviteEmail } from '@/lib/email';
+import { absoluteUrl } from '@/lib/site-url';
+import { auth } from '@/lib/auth';
 import { requireRole } from '@/lib/auth-guard';
 
-export async function uploadTeamPhotoAction(formData: FormData): Promise<{ error?: string }> {
+type InviteState = {
+  error?: string;
+  success?: boolean;
+}
+
+export async function inviteStaffAction(_prev: InviteState, formData: FormData): Promise<InviteState> {
   await requireRole('admin', '/admin/login');
 
-  const id = Number(formData.get('id'));
-  const file = formData.get('photo') as File | null;
+  const name = formData.get('name') as string;
+  const email = formData.get('email') as string;
 
-  if (!id || !file || file.size === 0) return { error: 'Datos incompletos' };
-  if (!file.type.startsWith('image/')) return { error: 'Solo se permiten imágenes' };
-  if (file.size > 5 * 1024 * 1024) return { error: 'La imagen no puede superar 5 MB' };
+  if (!name || !email) return { error: 'Nombre y email son obligatorios' };
 
-  const ext = file.name.split('.').pop() ?? 'jpg';
-  const blob = await put(`team/${id}-${Date.now()}.${ext}`, file, { access: 'public' });
+  const existing = await db.select({ id: userTable.id }).from(userTable).where(eq(userTable.email, email));
+  if (existing.length > 0) return { error: 'Este email ya está registrado' };
 
-  await db.update(teamMembers).set({ photoUrl: blob.url }).where(eq(teamMembers.id, id));
+  const tempPassword = crypto.randomUUID();
+
+  try {
+    await auth.api.signUpEmail({
+      body: { name, email, password: tempPassword },
+    });
+
+    await db.update(userTable).set({ role: 'staff' }).where(eq(userTable.email, email));
+
+    const loginUrl = absoluteUrl('/admin/login');
+    try {
+      await sendStaffInviteEmail({ staffEmail: email, staffName: name, loginUrl });
+    } catch (err) {
+      const emailMsg = err instanceof Error ? err.message : 'unknown';
+      console.error('[admin] Staff invite email error:', emailMsg);
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'unknown';
+    console.error('[admin] Staff creation error:', msg);
+    return { error: 'Error al crear la cuenta' };
+  }
 
   revalidatePath('/admin/equipo');
-  revalidatePath('/nosotros');
-  revalidatePath('/');
-  return {};
+  return { success: true };
 }

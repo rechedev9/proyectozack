@@ -4,6 +4,7 @@ import { requireAnyRole } from '@/lib/auth-guard';
 import { getTeamTasksSummary } from '@/lib/queries/crmTasks';
 import { getIsoWeekLabel } from '@/lib/week';
 import { Avatar } from '@/components/admin/Avatar';
+import { InviteStaffForm } from '@/components/admin/equipo/InviteStaffForm';
 
 export const metadata = { title: 'Equipo | Admin' };
 
@@ -64,6 +65,8 @@ export default async function EquipoAdminPage(): Promise<ReactElement> {
           No hay usuarios con rol admin o staff. Asigna roles en la DB para ver el resumen.
         </p>
       )}
+
+      {session.user.role === 'admin' && <InviteStaffForm />}
     </div>
   );
 }
