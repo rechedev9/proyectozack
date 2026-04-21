@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useState, useTransition } from 'react';
+import { useEffect, useId, useRef, useState, useTransition } from 'react';
 import type { CrmTask, CrmTaskPriority, CrmTaskStatus } from '@/types';
 import { createTaskAction, updateTaskAction, type TaskFormInput } from '@/app/admin/(dashboard)/tareas/actions';
 
@@ -10,7 +10,7 @@ type UserOption = {
 };
 
 type Props = {
-  readonly onClose: () => void;
+  readonly onCloseAction: () => void;
   readonly task: CrmTask | null;
   readonly users: readonly UserOption[];
   readonly suggestedCategories: readonly string[];
@@ -20,8 +20,9 @@ type Props = {
 const PRIORITIES: readonly CrmTaskPriority[] = ['alta', 'media', 'baja'];
 const STATUSES: readonly CrmTaskStatus[] = ['pendiente', 'en_progreso', 'completada'];
 
-export function TaskModal({ onClose, task, users, suggestedCategories, defaultOwnerId }: Props): React.ReactElement {
+export function TaskModal({ onCloseAction, task, users, suggestedCategories, defaultOwnerId }: Props): React.ReactElement {
   const titleId = useId();
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [title, setTitle] = useState(task?.title ?? '');
   const [description, setDescription] = useState(task?.description ?? '');
   const [ownerId, setOwnerId] = useState(task?.ownerId ?? defaultOwnerId);
@@ -31,6 +32,49 @@ export function TaskModal({ onClose, task, users, suggestedCategories, defaultOw
   const [category, setCategory] = useState(task?.category ?? '');
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  // Restaurar foco al desmontar. Si antes del mount el activeElement era body
+  // (deep-link sin trigger), no guardamos nada y el foco se queda donde esté.
+  useEffect(() => {
+    const active = document.activeElement;
+    const prev =
+      active instanceof HTMLElement && active !== document.body ? active : null;
+    return () => {
+      if (prev && document.body.contains(prev)) {
+        prev.focus();
+      }
+    };
+  }, []);
+
+  // ESC para cerrar + focus trap (Tab/Shift+Tab cicla dentro del dialog).
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onCloseAction();
+        return;
+      }
+      if (e.key !== 'Tab' || !dialogRef.current) return;
+
+      const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [onCloseAction]);
 
   const submit = (): void => {
     if (!title.trim()) {
@@ -59,19 +103,19 @@ export function TaskModal({ onClose, task, users, suggestedCategories, defaultOw
       if (result?.error) {
         setError(result.error);
       } else {
-        onClose();
+        onCloseAction();
       }
     });
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
-      <div className="w-full max-w-lg rounded-2xl border border-sp-admin-border bg-sp-admin-card p-6 shadow-2xl">
+      <div ref={dialogRef} className="w-full max-w-lg rounded-2xl border border-sp-admin-border bg-sp-admin-card p-6 shadow-2xl">
         <div className="mb-5 flex items-center justify-between">
           <h2 id={titleId} className="font-display text-xl font-black uppercase text-sp-admin-text">
             {task ? 'Editar tarea' : 'Nueva tarea'}
           </h2>
-          <button type="button" onClick={onClose} className="text-sp-admin-muted hover:text-sp-admin-text" aria-label="Cerrar">
+          <button type="button" onClick={onCloseAction} className="text-sp-admin-muted hover:text-sp-admin-text" aria-label="Cerrar">
             ✕
           </button>
         </div>
@@ -156,7 +200,7 @@ export function TaskModal({ onClose, task, users, suggestedCategories, defaultOw
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={onCloseAction}
               className="rounded-xl border border-sp-admin-border px-4 py-2 text-sm text-sp-admin-muted hover:text-sp-admin-text"
             >
               Cancelar

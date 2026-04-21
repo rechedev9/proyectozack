@@ -3,7 +3,7 @@ import { db } from '@/lib/db';
 import { crmTasks, user } from '@/db/schema';
 import type { CrmTask, NewCrmTask, CrmTaskStatus, TeamTasksSummary } from '@/types';
 
-type UpdatableFields = Pick<CrmTask, 'title' | 'description' | 'dueDate' | 'priority' | 'status' | 'category'>;
+type UpdatableFields = Pick<CrmTask, 'title' | 'description' | 'dueDate' | 'priority' | 'status' | 'category' | 'ownerId'>;
 
 const PRIORITY_ORDER = sql`CASE ${crmTasks.priority}
   WHEN 'alta' THEN 0
@@ -71,26 +71,46 @@ export async function createTask(
   input: Omit<NewCrmTask, 'id' | 'createdAt' | 'updatedAt' | 'completedAt' | 'rolledOver' | 'rolledFromWeek'>,
 ): Promise<CrmTask> {
   const [row] = await db.insert(crmTasks).values(input).returning();
-  return row!;
+  if (!row) throw new Error('Failed to insert crm task');
+  return row;
 }
 
-export async function updateTask(id: number, patch: Partial<UpdatableFields>): Promise<CrmTask> {
-  const completedAt = patch.status === 'completada' ? { completedAt: new Date() } : {};
+export async function updateTask(
+  id: number,
+  patch: Partial<UpdatableFields>,
+): Promise<CrmTask | null> {
+  const completedAtPatch =
+    patch.status === 'completada'
+      ? { completedAt: sql`COALESCE(${crmTasks.completedAt}, NOW())` }
+      : patch.status !== undefined
+        ? { completedAt: null }
+        : {};
+
   const [row] = await db
     .update(crmTasks)
-    .set({ ...patch, ...completedAt, updatedAt: new Date() })
+    .set({ ...patch, ...completedAtPatch, updatedAt: new Date() })
     .where(eq(crmTasks.id, id))
     .returning();
-  return row!;
+  return row ?? null;
 }
 
-export async function completeTask(id: number): Promise<CrmTask> {
+export async function completeTask(id: number): Promise<CrmTask | null> {
   const [row] = await db
     .update(crmTasks)
     .set({ status: 'completada', completedAt: new Date(), updatedAt: new Date() })
     .where(eq(crmTasks.id, id))
     .returning();
-  return row!;
+  return row ?? null;
+}
+
+export async function isStaffUser(userId: string): Promise<boolean> {
+  const [row] = await db
+    .select({ role: user.role })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1);
+  if (!row) return false;
+  return row.role === 'admin' || row.role === 'staff';
 }
 
 export async function deleteTask(id: number): Promise<void> {

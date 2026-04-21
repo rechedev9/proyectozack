@@ -11,9 +11,10 @@ import {
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { user } from './auth';
+import { CRM_TASK_PRIORITIES, CRM_TASK_STATUSES } from '@/lib/schemas/task';
 
-export const crmTaskPriorityEnum = pgEnum('crm_task_priority', ['alta', 'media', 'baja']);
-export const crmTaskStatusEnum = pgEnum('crm_task_status', ['pendiente', 'en_progreso', 'completada']);
+export const crmTaskPriorityEnum = pgEnum('crm_task_priority', CRM_TASK_PRIORITIES);
+export const crmTaskStatusEnum = pgEnum('crm_task_status', CRM_TASK_STATUSES);
 
 export const crmTasks = pgTable(
   'crm_tasks',
