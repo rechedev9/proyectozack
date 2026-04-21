@@ -90,7 +90,7 @@ export function PortalSidebar({
         transition-transform duration-200 ease-out
         ${open ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
         ${dark
-          ? 'bg-sp-admin-sidebar border-r border-sp-admin-border'
+          ? 'bg-sp-admin-sidebar'
           : 'bg-white border-r border-sp-border'
         }
       `}>
