@@ -147,7 +147,7 @@ export function PortalSidebar({
                 : 'text-sp-muted hover:text-sp-dark'
             }`}
           >
-            Cerrar sesion
+            Cerrar sesión
           </Link>
         </div>
       </nav>
