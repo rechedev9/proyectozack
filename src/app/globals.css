@@ -4,6 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer base {
+  button, [role="button"], select { cursor: pointer; }
+}
+
 /* ── SocialPro brand tokens ──────────────────────────────────────────────── */
 @theme {
   /* Brand palette */
