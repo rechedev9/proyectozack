@@ -14,6 +14,7 @@ import {
   updateTaskPartialAction,
 } from '@/app/admin/(dashboard)/tareas/actions';
 import { CRM_TASK_PRIORITIES, CRM_TASK_STATUSES } from '@/lib/schemas/task';
+import type { RelatedOptions } from './RelatedSelector';
 
 type UserOption = {
   readonly id: string;
@@ -26,6 +27,7 @@ type Props = {
   readonly currentUserId: string;
   readonly suggestedCategories: readonly string[];
   readonly weekLabel: string;
+  readonly relatedOptions: RelatedOptions;
 };
 
 type StatusFilter = 'todos' | CrmTaskStatus;
@@ -84,6 +86,7 @@ export function TaskList({
   currentUserId,
   suggestedCategories,
   weekLabel,
+  relatedOptions,
 }: Props): React.ReactElement {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -486,6 +489,7 @@ export function TaskList({
           users={users}
           suggestedCategories={suggestedCategories}
           defaultOwnerId={currentUserId}
+          relatedOptions={relatedOptions}
         />
       )}
     </>

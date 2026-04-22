@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useId, useRef, useState, useTransition } from 'react';
-import type { CrmTask, CrmTaskPriority, CrmTaskStatus } from '@/types';
+import { useEffect, useId, useMemo, useRef, useState, useTransition } from 'react';
+import type { CrmTask, CrmTaskPriority, CrmTaskStatus, CrmTaskRelatedType } from '@/types';
 import { createTaskAction, updateTaskAction, type TaskFormInput } from '@/app/admin/(dashboard)/tareas/actions';
+import type { RelatedOptions } from './RelatedSelector';
 
 type UserOption = {
   readonly id: string;
@@ -15,12 +16,19 @@ type Props = {
   readonly users: readonly UserOption[];
   readonly suggestedCategories: readonly string[];
   readonly defaultOwnerId: string;
+  readonly relatedOptions: RelatedOptions;
+};
+
+const RELATED_TYPE_LABELS: Record<CrmTaskRelatedType, string> = {
+  brand: 'Marca',
+  talent: 'Talent',
+  invoice: 'Factura',
 };
 
 const PRIORITIES: readonly CrmTaskPriority[] = ['alta', 'media', 'baja'];
 const STATUSES: readonly CrmTaskStatus[] = ['pendiente', 'en_progreso', 'completada'];
 
-export function TaskModal({ onCloseAction, task, users, suggestedCategories, defaultOwnerId }: Props): React.ReactElement {
+export function TaskModal({ onCloseAction, task, users, suggestedCategories, defaultOwnerId, relatedOptions }: Props): React.ReactElement {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const [title, setTitle] = useState(task?.title ?? '');
@@ -30,8 +38,19 @@ export function TaskModal({ onCloseAction, task, users, suggestedCategories, def
   const [priority, setPriority] = useState<CrmTaskPriority>(task?.priority ?? 'media');
   const [status, setStatus] = useState<CrmTaskStatus>(task?.status ?? 'pendiente');
   const [category, setCategory] = useState(task?.category ?? '');
+  const [relatedType, setRelatedType] = useState<CrmTaskRelatedType | ''>(task?.relatedType ?? '');
+  const [relatedId, setRelatedId] = useState<number | ''>(task?.relatedId ?? '');
+  const [relatedSearch, setRelatedSearch] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const relatedList = useMemo(() => {
+    if (!relatedType) return [] as readonly { id: number; label: string }[];
+    const list = relatedOptions[relatedType];
+    const q = relatedSearch.toLowerCase().trim();
+    if (!q) return list;
+    return list.filter((o) => o.label.toLowerCase().includes(q));
+  }, [relatedType, relatedOptions, relatedSearch]);
 
   // Restaurar foco al desmontar. Si antes del mount el activeElement era body
   // (deep-link sin trigger), no guardamos nada y el foco se queda donde esté.
@@ -85,6 +104,10 @@ export function TaskModal({ onCloseAction, task, users, suggestedCategories, def
       setError('La categoría es obligatoria');
       return;
     }
+    if (relatedType && relatedId === '') {
+      setError('Selecciona la entidad relacionada o quita el tipo');
+      return;
+    }
 
     const input: TaskFormInput = {
       title: title.trim(),
@@ -94,6 +117,9 @@ export function TaskModal({ onCloseAction, task, users, suggestedCategories, def
       priority,
       status,
       category: category.trim(),
+      ...(relatedType
+        ? { relatedType, relatedId: typeof relatedId === 'number' ? relatedId : Number(relatedId) }
+        : {}),
     };
 
     startTransition(async () => {
@@ -191,6 +217,62 @@ export function TaskModal({ onCloseAction, task, users, suggestedCategories, def
                 <datalist id="task-categories">
                   {suggestedCategories.map((c) => <option key={c} value={c} />)}
                 </datalist>
+              </Field>
+            </div>
+
+            <div className="col-span-2">
+              <Field label="Relacionado con">
+                <div className="space-y-2">
+                  <div className="grid grid-cols-4 gap-1">
+                    <button
+                      type="button"
+                      onClick={() => { setRelatedType(''); setRelatedId(''); setRelatedSearch(''); }}
+                      className={`px-2 py-1.5 rounded-lg border text-[11px] font-semibold transition-colors cursor-pointer ${relatedType === '' ? 'bg-sp-admin-accent/10 border-sp-admin-accent text-sp-admin-accent' : 'border-sp-admin-border text-sp-admin-muted hover:text-sp-admin-text'}`}
+                    >
+                      Ninguna
+                    </button>
+                    {(['brand', 'talent', 'invoice'] as const).map((k) => (
+                      <button
+                        key={k}
+                        type="button"
+                        onClick={() => { setRelatedType(k); setRelatedId(''); setRelatedSearch(''); }}
+                        className={`px-2 py-1.5 rounded-lg border text-[11px] font-semibold transition-colors cursor-pointer ${relatedType === k ? 'bg-sp-admin-accent/10 border-sp-admin-accent text-sp-admin-accent' : 'border-sp-admin-border text-sp-admin-muted hover:text-sp-admin-text'}`}
+                      >
+                        {RELATED_TYPE_LABELS[k]}
+                      </button>
+                    ))}
+                  </div>
+                  {relatedType && (
+                    <>
+                      <input
+                        type="search"
+                        value={relatedSearch}
+                        onChange={(e) => setRelatedSearch(e.target.value)}
+                        placeholder={`Buscar ${RELATED_TYPE_LABELS[relatedType].toLowerCase()}...`}
+                        className={inputCls}
+                      />
+                      <div className="max-h-32 overflow-y-auto rounded-lg border border-sp-admin-border bg-sp-admin-bg">
+                        {relatedList.length === 0 ? (
+                          <p className="px-3 py-2 text-xs italic text-sp-admin-muted">Sin resultados.</p>
+                        ) : (
+                          relatedList.map((o) => {
+                            const isSel = relatedId === o.id;
+                            return (
+                              <button
+                                key={o.id}
+                                type="button"
+                                onClick={() => setRelatedId(o.id)}
+                                className={`w-full text-left px-3 py-1.5 text-xs cursor-pointer ${isSel ? 'bg-sp-admin-accent/15 text-sp-admin-accent font-semibold' : 'text-sp-admin-text hover:bg-sp-admin-hover'}`}
+                              >
+                                {o.label}
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
               </Field>
             </div>
           </div>

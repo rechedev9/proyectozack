@@ -1,9 +1,9 @@
 import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { db } from '@/lib/db';
-import { crmTasks, user } from '@/db/schema';
+import { crmTasks, crmBrands, talents, invoices, user } from '@/db/schema';
 import type { CrmTask, NewCrmTask, CrmTaskStatus, TeamTasksSummary } from '@/types';
 
-type UpdatableFields = Pick<CrmTask, 'title' | 'description' | 'dueDate' | 'priority' | 'status' | 'category' | 'ownerId'>;
+type UpdatableFields = Pick<CrmTask, 'title' | 'description' | 'dueDate' | 'priority' | 'status' | 'category' | 'ownerId' | 'relatedType' | 'relatedId'>;
 
 const PRIORITY_ORDER = sql`CASE ${crmTasks.priority}
   WHEN 'alta' THEN 0
@@ -143,6 +143,70 @@ export async function rollOverPendingTasks(
     .returning({ id: crmTasks.id });
 
   return { rolled: rolled.length };
+}
+
+export type RelatedOptionList = {
+  readonly brand: ReadonlyArray<{ readonly id: number; readonly label: string }>;
+  readonly talent: ReadonlyArray<{ readonly id: number; readonly label: string }>;
+  readonly invoice: ReadonlyArray<{ readonly id: number; readonly label: string }>;
+};
+
+export async function getTaskRelatedOptions(): Promise<RelatedOptionList> {
+  const [brandRows, talentRows, invoiceRows] = await Promise.all([
+    db.select({ id: crmBrands.id, name: crmBrands.name }).from(crmBrands).orderBy(asc(crmBrands.name)),
+    db.select({ id: talents.id, name: talents.name }).from(talents).orderBy(asc(talents.name)),
+    db
+      .select({ id: invoices.id, number: invoices.number, concept: invoices.concept })
+      .from(invoices)
+      .orderBy(desc(invoices.issueDate))
+      .limit(200),
+  ]);
+
+  return {
+    brand: brandRows.map((r) => ({ id: r.id, label: r.name })),
+    talent: talentRows.map((r) => ({ id: r.id, label: r.name })),
+    invoice: invoiceRows.map((r) => ({ id: r.id, label: r.number ? `${r.number} — ${r.concept}` : r.concept })),
+  };
+}
+
+export type RelatedLabel = {
+  readonly type: 'brand' | 'talent' | 'invoice';
+  readonly id: number;
+  readonly label: string;
+};
+
+export async function resolveRelatedLabels(
+  tasks: readonly CrmTask[],
+): Promise<ReadonlyMap<string, RelatedLabel>> {
+  const brandIds = new Set<number>();
+  const talentIds = new Set<number>();
+  const invoiceIds = new Set<number>();
+  for (const t of tasks) {
+    if (t.relatedType === 'brand' && t.relatedId) brandIds.add(t.relatedId);
+    else if (t.relatedType === 'talent' && t.relatedId) talentIds.add(t.relatedId);
+    else if (t.relatedType === 'invoice' && t.relatedId) invoiceIds.add(t.relatedId);
+  }
+
+  const map = new Map<string, RelatedLabel>();
+
+  if (brandIds.size > 0) {
+    const rows = await db.select({ id: crmBrands.id, name: crmBrands.name }).from(crmBrands).where(inArray(crmBrands.id, [...brandIds]));
+    for (const r of rows) map.set(`brand:${r.id}`, { type: 'brand', id: r.id, label: r.name });
+  }
+  if (talentIds.size > 0) {
+    const rows = await db.select({ id: talents.id, name: talents.name }).from(talents).where(inArray(talents.id, [...talentIds]));
+    for (const r of rows) map.set(`talent:${r.id}`, { type: 'talent', id: r.id, label: r.name });
+  }
+  if (invoiceIds.size > 0) {
+    const rows = await db.select({
+      id: invoices.id,
+      number: invoices.number,
+      concept: invoices.concept,
+    }).from(invoices).where(inArray(invoices.id, [...invoiceIds]));
+    for (const r of rows) map.set(`invoice:${r.id}`, { type: 'invoice', id: r.id, label: r.number ? `${r.number} — ${r.concept}` : r.concept });
+  }
+
+  return map;
 }
 
 export async function getRolledOverCount(ownerId: string, weekLabel: string): Promise<number> {

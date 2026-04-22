@@ -68,6 +68,8 @@ export async function createTaskAction(input: unknown): Promise<ActionResult> {
     status: data.status,
     category: data.category,
     weekLabel: weekLabelForDueDate(data.dueDate),
+    relatedType: data.relatedType ?? null,
+    relatedId: data.relatedId ?? null,
   });
 
   revalidateAll();
@@ -83,7 +85,11 @@ export async function updateTaskAction(id: number, input: unknown): Promise<Acti
   const ownerErr = await assertStaffOwner(parsed.data.ownerId);
   if (ownerErr) return { error: ownerErr };
 
-  await updateTask(id, parsed.data);
+  await updateTask(id, {
+    ...parsed.data,
+    relatedType: parsed.data.relatedType ?? null,
+    relatedId: parsed.data.relatedId ?? null,
+  });
   revalidateAll();
   return {};
 }

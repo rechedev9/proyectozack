@@ -4,6 +4,7 @@ import {
   getMyTasks,
   getRolledOverCount,
   getUsedCategories,
+  getTaskRelatedOptions,
 } from '@/lib/queries/crmTasks';
 import { getAllStaffUsers } from '@/lib/queries/staffUsers';
 import { getIsoWeekLabel } from '@/lib/week';
@@ -16,11 +17,12 @@ export default async function MiSemanaPage(): Promise<ReactElement> {
   const session = await requireAnyRole(['admin', 'staff'], '/admin/login');
   const weekLabel = getIsoWeekLabel(new Date());
 
-  const [tasks, users, suggestedCategories, rolledCount] = await Promise.all([
+  const [tasks, users, suggestedCategories, rolledCount, relatedOptions] = await Promise.all([
     getMyTasks(session.user.id, weekLabel),
     getAllStaffUsers(),
     getUsedCategories(),
     getRolledOverCount(session.user.id, weekLabel),
+    getTaskRelatedOptions(),
   ]);
 
   return (
@@ -38,6 +40,7 @@ export default async function MiSemanaPage(): Promise<ReactElement> {
         currentUserId={session.user.id}
         suggestedCategories={suggestedCategories}
         weekLabel={weekLabel}
+        relatedOptions={relatedOptions}
       />
     </div>
   );
