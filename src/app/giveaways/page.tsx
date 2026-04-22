@@ -39,7 +39,7 @@ export default async function GiveawaysPage() {
   ]);
 
   const allGiveaways = [...active, ...finished];
-  const brands = extractUniqueBrands(allGiveaways);
+  const brands = extractUniqueBrands(allGiveaways, codes);
   const totalValue = computeTotalValue(allGiveaways);
 
   // Build creators list with giveaway counts
@@ -66,10 +66,16 @@ export default async function GiveawaysPage() {
             {Array.from({ length: 4 }).map((_, i) => (
               <span key={i} className="inline-flex items-center gap-6 px-6">
                 {active.map((g) => (
-                  <span key={`${i}-${g.id}`} className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-white/90">
+                  <a
+                    key={`${i}-${g.id}`}
+                    href={g.redirectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-white/90 hover:text-white transition-colors"
+                  >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/40 animate-pulse" />
-                    {g.title} — {g.value}
-                  </span>
+                    {g.title}{g.value ? ` — ${g.value}` : ''}
+                  </a>
                 ))}
                 <span className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-white/60">
                   LIVE GIVEAWAYS

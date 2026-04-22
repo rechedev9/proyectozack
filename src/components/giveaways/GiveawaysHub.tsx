@@ -6,163 +6,203 @@ import { CreatorsSidebar } from './CreatorsSidebar';
 import { BrandsSidebar } from './BrandsSidebar';
 import { TopWinners } from './TopWinners';
 import { RecentWinners } from './RecentWinners';
+import { GiveawayCarousel } from './GiveawayCarousel';
 import { GiveawayHubCard } from './GiveawayHubCard';
 import { CodeCard } from './CodeCard';
+import type { BrandOption } from '@/lib/queries/giveawaysHub';
 import type { GiveawayWithTalent, CreatorCodeWithTalent, GiveawayWinnerWithGiveaway, Talent } from '@/types';
 
 type GiveawaysHubProps = {
-  active: GiveawayWithTalent[];
-  finished: GiveawayWithTalent[];
-  codes: CreatorCodeWithTalent[];
-  creators: (Talent & { giveawayCount: number })[];
-  brands: { name: string; logo: string | null }[];
-  topWinners: { winnerName: string; winnerAvatar: string | null; wins: number }[];
-  recentWinners: GiveawayWinnerWithGiveaway[];
+  readonly active: readonly GiveawayWithTalent[];
+  readonly finished: readonly GiveawayWithTalent[];
+  readonly codes: readonly CreatorCodeWithTalent[];
+  readonly creators: readonly (Talent & { giveawayCount: number })[];
+  readonly brands: readonly BrandOption[];
+  readonly topWinners: readonly { winnerName: string; winnerAvatar: string | null; wins: number }[];
+  readonly recentWinners: readonly GiveawayWinnerWithGiveaway[];
 };
 
 const gridContainer: Variants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.06 } },
+  show: { transition: { staggerChildren: 0.05 } },
 };
 
 const gridItem: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
 };
 
-export function GiveawaysHub({ active, finished, codes, creators, brands, topWinners, recentWinners }: GiveawaysHubProps) {
+export function GiveawaysHub({
+  active,
+  finished,
+  codes,
+  creators,
+  brands,
+  topWinners,
+  recentWinners,
+}: GiveawaysHubProps): React.JSX.Element {
   const [selectedCreator, setSelectedCreator] = useState<number | null>(null);
-  const [tab, setTab] = useState<'codes' | 'giveaways'>('codes');
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
   const filteredActive = useMemo(
-    () => selectedCreator ? active.filter((g) => g.talentId === selectedCreator) : active,
-    [active, selectedCreator],
+    () =>
+      active.filter(
+        (g) =>
+          (selectedCreator === null || g.talentId === selectedCreator) &&
+          (selectedBrand === null || g.brandName === selectedBrand),
+      ),
+    [active, selectedCreator, selectedBrand],
   );
   const filteredFinished = useMemo(
-    () => selectedCreator ? finished.filter((g) => g.talentId === selectedCreator) : finished,
-    [finished, selectedCreator],
+    () =>
+      finished.filter(
+        (g) =>
+          (selectedCreator === null || g.talentId === selectedCreator) &&
+          (selectedBrand === null || g.brandName === selectedBrand),
+      ),
+    [finished, selectedCreator, selectedBrand],
   );
   const filteredCodes = useMemo(
-    () => selectedCreator ? codes.filter((c) => c.talentId === selectedCreator) : codes,
-    [codes, selectedCreator],
+    () =>
+      codes.filter(
+        (c) =>
+          (selectedCreator === null || c.talentId === selectedCreator) &&
+          (selectedBrand === null || c.brandName === selectedBrand),
+      ),
+    [codes, selectedCreator, selectedBrand],
   );
+
+  const hasAnyResults = filteredActive.length + filteredFinished.length + filteredCodes.length > 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-6 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left sidebar */}
-        <CreatorsSidebar creators={creators} selected={selectedCreator} onSelect={setSelectedCreator} />
+        <CreatorsSidebar creators={[...creators]} selected={selectedCreator} onSelectAction={setSelectedCreator} />
 
         {/* Center */}
         <div className="flex-1 min-w-0">
-          {/* Tabs */}
-          <div className="flex gap-1 mb-6 p-1 rounded-xl bg-white/[0.03] border border-white/[0.04] w-fit">
-            <button
-              onClick={() => setTab('codes')}
-              className={`px-5 py-2 rounded-lg text-[12px] font-black uppercase tracking-[0.15em] transition-all ${
-                tab === 'codes' ? 'bg-sp-grad text-white' : 'text-white/40 hover:text-white/70'
-              }`}
-            >
-              Códigos
-            </button>
-            <button
-              onClick={() => setTab('giveaways')}
-              className={`px-5 py-2 rounded-lg text-[12px] font-black uppercase tracking-[0.15em] transition-all ${
-                tab === 'giveaways' ? 'bg-sp-grad text-white' : 'text-white/40 hover:text-white/70'
-              }`}
-            >
-              Sorteos
-            </button>
+          {/* Mobile-only brand filter chips */}
+          <div className="lg:hidden mb-6">
+            <BrandsSidebar
+              brands={brands}
+              selected={selectedBrand}
+              onSelectAction={setSelectedBrand}
+              variant="chips"
+            />
           </div>
 
-          {/* Giveaways tab */}
-          {tab === 'giveaways' && (
-            <>
-              {filteredActive.length > 0 && (
-                <section className="mb-10">
-                  <h2 className="text-lg font-black uppercase tracking-[0.2em] text-white/60 gw-section-title mb-5">
-                    Sorteos Activos
-                  </h2>
-                  <motion.div
-                    variants={gridContainer}
-                    initial="hidden"
-                    animate="show"
-                    key={`active-${selectedCreator}`}
-                    className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
-                  >
-                    {filteredActive.map((g) => (
-                      <motion.div key={g.id} variants={gridItem}>
-                        <GiveawayHubCard giveaway={g} />
-                      </motion.div>
-                    ))}
-                  </motion.div>
-                </section>
-              )}
+          <GiveawayCarousel
+            giveaways={filteredActive}
+            title="Sorteos activos"
+            subtitle={`${filteredActive.length} en directo${selectedBrand ? ` · ${selectedBrand}` : ''}`}
+          />
 
-              {filteredFinished.length > 0 && (
-                <section>
-                  <h2 className="text-lg font-black uppercase tracking-[0.2em] text-white/60 gw-section-title mb-5">
-                    Finalizados
-                  </h2>
-                  <motion.div
-                    variants={gridContainer}
-                    initial="hidden"
-                    animate="show"
-                    key={`finished-${selectedCreator}`}
-                    className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
-                  >
-                    {filteredFinished.map((g) => (
-                      <motion.div key={g.id} variants={gridItem}>
-                        <GiveawayHubCard giveaway={g} />
-                      </motion.div>
-                    ))}
+          {/* Codes — núcleo principal */}
+          <section className="mb-12">
+            <div className="flex items-end justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-black uppercase tracking-[0.2em] text-white/80 gw-section-title">
+                  Códigos de descuento
+                </h2>
+                <p className="text-[11px] text-white/30 mt-1">
+                  {filteredCodes.length} {filteredCodes.length === 1 ? 'código' : 'códigos'}
+                  {selectedBrand ? ` · ${selectedBrand}` : ''}
+                </p>
+              </div>
+            </div>
+            {filteredCodes.length > 0 ? (
+              <motion.div
+                variants={gridContainer}
+                initial="hidden"
+                animate="show"
+                key={`codes-${selectedCreator}-${selectedBrand}`}
+                className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"
+              >
+                {filteredCodes.map((c) => (
+                  <motion.div key={c.id} variants={gridItem}>
+                    <CodeCard code={c} />
                   </motion.div>
-                </section>
-              )}
+                ))}
+              </motion.div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-white/10 py-14 text-center">
+                <p className="text-sm font-bold uppercase tracking-wider text-white/30">
+                  No hay códigos con los filtros actuales
+                </p>
+                {(selectedCreator !== null || selectedBrand !== null) && (
+                  <button
+                    type="button"
+                    onClick={() => { setSelectedCreator(null); setSelectedBrand(null); }}
+                    className="mt-4 text-[11px] font-bold uppercase tracking-wider text-sp-orange hover:underline"
+                  >
+                    Quitar filtros
+                  </button>
+                )}
+              </div>
+            )}
+          </section>
 
-              {filteredActive.length === 0 && filteredFinished.length === 0 && (
-                <div className="text-center py-20">
-                  <p className="text-lg font-bold uppercase tracking-wider text-white/20">
-                    No hay sorteos {selectedCreator ? 'para este creador' : ''}
+          {/* Finalizados — colapsado al fondo */}
+          {filteredFinished.length > 0 && (
+            <details className="group border-t border-white/[0.06] pt-6">
+              <summary className="cursor-pointer flex items-center justify-between list-none">
+                <div>
+                  <h2 className="text-lg font-black uppercase tracking-[0.2em] text-white/50 gw-section-title">
+                    Sorteos finalizados
+                  </h2>
+                  <p className="text-[11px] text-white/25 mt-1">
+                    {filteredFinished.length} {filteredFinished.length === 1 ? 'sorteo terminado' : 'sorteos terminados'}
                   </p>
                 </div>
-              )}
-            </>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white/30 group-open:hidden">
+                  Mostrar
+                </span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white/30 hidden group-open:inline">
+                  Ocultar
+                </span>
+              </summary>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+              >
+                {filteredFinished.map((g) => (
+                  <GiveawayHubCard key={g.id} giveaway={g} />
+                ))}
+              </motion.div>
+            </details>
           )}
 
-          {/* Codes tab */}
-          {tab === 'codes' && (
-            <>
-              {filteredCodes.length > 0 ? (
-                <motion.div
-                  variants={gridContainer}
-                  initial="hidden"
-                  animate="show"
-                  key={`codes-${selectedCreator}`}
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          {!hasAnyResults && (
+            <div className="text-center py-20">
+              <p className="text-lg font-bold uppercase tracking-wider text-white/20">
+                No hay nada con los filtros actuales
+              </p>
+              {(selectedCreator !== null || selectedBrand !== null) && (
+                <button
+                  type="button"
+                  onClick={() => { setSelectedCreator(null); setSelectedBrand(null); }}
+                  className="mt-4 text-[11px] font-bold uppercase tracking-wider text-sp-orange hover:underline"
                 >
-                  {filteredCodes.map((c) => (
-                    <motion.div key={c.id} variants={gridItem}>
-                      <CodeCard code={c} />
-                    </motion.div>
-                  ))}
-                </motion.div>
-              ) : (
-                <div className="text-center py-20">
-                  <p className="text-lg font-bold uppercase tracking-wider text-white/20">
-                    No hay códigos {selectedCreator ? 'para este creador' : ''}
-                  </p>
-                </div>
+                  Quitar filtros
+                </button>
               )}
-            </>
+            </div>
           )}
         </div>
 
-        {/* Right sidebar */}
-        <div className="w-full lg:w-48 shrink-0 space-y-0">
-          <BrandsSidebar brands={brands} />
-          <TopWinners winners={topWinners} />
-          <RecentWinners winners={recentWinners} />
+        {/* Right sidebar — desktop only */}
+        <div className="hidden lg:block w-56 shrink-0 space-y-6">
+          <BrandsSidebar
+            brands={brands}
+            selected={selectedBrand}
+            onSelectAction={setSelectedBrand}
+            variant="column"
+          />
+          <TopWinners winners={[...topWinners]} />
+          <RecentWinners winners={[...recentWinners]} />
         </div>
       </div>
     </div>

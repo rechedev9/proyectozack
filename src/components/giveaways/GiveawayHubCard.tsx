@@ -7,10 +7,10 @@ import { CountdownTimer } from '@/components/creadores/CountdownTimer';
 import type { GiveawayWithTalent } from '@/types';
 
 type GiveawayHubCardProps = {
-  giveaway: GiveawayWithTalent;
-}
+  readonly giveaway: GiveawayWithTalent;
+};
 
-export function GiveawayHubCard({ giveaway }: GiveawayHubCardProps) {
+export function GiveawayHubCard({ giveaway }: GiveawayHubCardProps): React.JSX.Element {
   const [expired, setExpired] = useState(false);
   const isFinished = expired || new Date(giveaway.endsAt) <= new Date();
   const handleExpired = useCallback(() => setExpired(true), []);
@@ -25,34 +25,41 @@ export function GiveawayHubCard({ giveaway }: GiveawayHubCardProps) {
       href={isFinished ? '#' : giveaway.redirectUrl}
       target={isFinished ? '_self' : '_blank'}
       rel="noopener noreferrer"
-      className={`gw-sp-card group block rounded-xl border overflow-hidden transition-all duration-300 ${
+      className={`gw-sp-card group relative block rounded-2xl border overflow-hidden transition-all duration-300 ${
         isFinished
           ? 'border-white/[0.03] bg-[#0e0e0e]/80 grayscale-[0.8] opacity-50 pointer-events-none'
-          : 'border-white/[0.06] bg-[#0e0e0e]/90 hover:border-sp-orange/30 hover:shadow-[0_0_30px_rgba(245,99,42,0.06)]'
+          : 'border-white/[0.06] bg-[#0e0e0e]/95 hover:border-sp-orange/30 hover:shadow-[0_0_30px_rgba(245,99,42,0.08)]'
       }`}
       whileHover={{ y: isFinished ? 0 : -6, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
     >
-      {/* Brand + Creator bar */}
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.02] border-b border-white/[0.04]">
-        {giveaway.talent.photoUrl && (
-          <Image src={giveaway.talent.photoUrl} alt={giveaway.talent.name} width={18} height={18} className="rounded-full object-cover" />
+      {/* Brand bar — logo protagonista */}
+      <div className="flex items-center gap-2.5 px-4 py-3 bg-white/[0.03] border-b border-white/[0.04]">
+        {giveaway.brandLogo ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={giveaway.brandLogo}
+            alt={giveaway.brandName}
+            className="h-6 w-6 rounded-md object-contain bg-white/5 p-0.5 shrink-0"
+          />
+        ) : (
+          <div className="h-6 w-6 rounded-md bg-sp-orange/20 flex items-center justify-center text-[10px] font-black text-sp-orange shrink-0">
+            {giveaway.brandName.charAt(0)}
+          </div>
         )}
-        <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-white/50 truncate">
-          {giveaway.talent.name}
+        <span className="text-[11px] font-black uppercase tracking-[0.15em] text-white/80 truncate">
+          {giveaway.brandName}
         </span>
-        <span className="text-white/20 text-[10px]">·</span>
-        <span className="text-[10px] text-white/30 uppercase tracking-wider truncate">{giveaway.brandName}</span>
         {!isFinished && (
           <span className="ml-auto flex items-center gap-1.5 shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-sp-orange animate-pulse" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-sp-orange/60">Live</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-sp-orange/70">Live</span>
           </span>
         )}
       </div>
 
       {/* HOT badge */}
       {isHot && (
-        <div className="absolute top-12 right-3 z-20 gw-hot-badge">
+        <div className="absolute top-14 right-3 z-20 gw-hot-badge">
           <div className="px-2 py-1 rounded-md bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-black uppercase tracking-wider shadow-[0_0_12px_rgba(239,68,68,0.4)]">
             HOT
           </div>
@@ -77,7 +84,9 @@ export function GiveawayHubCard({ giveaway }: GiveawayHubCardProps) {
       {/* Info */}
       <div className="p-4 pt-3 space-y-3">
         <div>
-          <h3 className="font-black text-[13px] uppercase tracking-wide text-white/90 leading-tight">{giveaway.title}</h3>
+          <h3 className="font-black text-[13px] uppercase tracking-wide text-white/90 leading-tight line-clamp-2">
+            {giveaway.title}
+          </h3>
           {giveaway.value && (
             <p className="text-xl font-black mt-1.5 gw-sp-value">{giveaway.value}</p>
           )}
@@ -100,6 +109,36 @@ export function GiveawayHubCard({ giveaway }: GiveawayHubCardProps) {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Creator footer */}
+      <div className="flex items-center gap-2.5 px-4 py-3 bg-white/[0.02] border-t border-white/[0.04]">
+        {giveaway.talent.photoUrl ? (
+          <Image
+            src={giveaway.talent.photoUrl}
+            alt={giveaway.talent.name}
+            width={24}
+            height={24}
+            className="rounded-full object-cover border border-white/10"
+          />
+        ) : (
+          <div
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black text-white/80 shrink-0"
+            style={{
+              background: `linear-gradient(135deg, ${giveaway.talent.gradientC1}, ${giveaway.talent.gradientC2})`,
+            }}
+          >
+            {giveaway.talent.initials}
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="text-[9px] font-black uppercase tracking-[0.15em] text-white/35 leading-none">
+            Sorteo de
+          </p>
+          <p className="text-[11px] font-bold text-white/80 truncate leading-tight mt-0.5">
+            {giveaway.talent.name}
+          </p>
+        </div>
       </div>
     </motion.a>
   );
