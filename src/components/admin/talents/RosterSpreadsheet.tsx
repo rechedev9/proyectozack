@@ -1,7 +1,10 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useMemo } from 'react';
 import type { AdminRosterRow, GrowthData } from '@/lib/queries/talents';
+import type { TalentVertical } from '@/types';
+import { TALENT_VERTICAL_LABELS } from '@/lib/schemas/talentBusiness';
 import { parseFollowers, formatCompact, totalFollowersForCreator } from '@/lib/format';
 import { platformMatchesKey, SOCIAL_PLATFORMS } from '@/lib/platform';
 
@@ -15,9 +18,15 @@ type SortState = { field: SortField; dir: SortDir };
 
 // ── Component ────────────────────────────────────────────────────────
 
-export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }): React.ReactElement {
+type RosterSpreadsheetProps = {
+  creators: AdminRosterRow[];
+  verticalsByTalent?: Readonly<Record<number, readonly TalentVertical[]>>;
+};
+
+export function RosterSpreadsheet({ creators, verticalsByTalent = {} }: RosterSpreadsheetProps): React.ReactElement {
   const [search, setSearch] = useState('');
   const [activePlatforms, setActivePlatforms] = useState<Set<string>>(new Set());
+  const [verticalFilter, setVerticalFilter] = useState<TalentVertical | ''>('');
   const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'public' | 'internal'>('all');
   const [gameFilter, setGameFilter] = useState<string>('');
   const [sort, setSort] = useState<SortState>({ field: 'total', dir: 'desc' });
@@ -40,13 +49,14 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
     return { public: pub, internal: int };
   }, [creators]);
 
-  const hasFilters = search || activePlatforms.size > 0 || visibilityFilter !== 'all' || gameFilter;
+  const hasFilters = search || activePlatforms.size > 0 || visibilityFilter !== 'all' || gameFilter || verticalFilter;
 
   const clearAll = (): void => {
     setSearch('');
     setActivePlatforms(new Set());
     setVisibilityFilter('all');
     setGameFilter('');
+    setVerticalFilter('');
   };
 
   const togglePlatform = (key: string): void => {
@@ -73,6 +83,10 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
 
     // Game
     if (gameFilter) result = result.filter((c) => c.game === gameFilter);
+
+    // Vertical: creator must have the selected vertical
+    if (verticalFilter)
+      result = result.filter((c) => (verticalsByTalent[c.id] ?? []).includes(verticalFilter));
 
     // Multi-platform: creator must have ALL selected platforms
     if (activePlatforms.size > 0)
@@ -125,7 +139,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
     });
 
     return result;
-  }, [creators, search, activePlatforms, visibilityFilter, gameFilter, sort]);
+  }, [creators, search, activePlatforms, visibilityFilter, gameFilter, verticalFilter, verticalsByTalent, sort]);
 
   // ── Sort toggle handler ────────────────────────────────────────────
 
@@ -184,6 +198,18 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
               ))}
             </select>
           )}
+
+          {/* Vertical filter */}
+          <select
+            value={verticalFilter}
+            onChange={(e) => setVerticalFilter(e.target.value as TalentVertical | '')}
+            className="rounded-lg bg-sp-admin-bg border-0 px-3 py-2 text-xs font-semibold text-sp-admin-text focus:outline-none focus:ring-1 focus:ring-sp-admin-accent/40"
+          >
+            <option value="">Todas las verticales</option>
+            {Object.entries(TALENT_VERTICAL_LABELS).map(([k, label]) => (
+              <option key={k} value={k}>{label}</option>
+            ))}
+          </select>
 
           {/* Visibility pills */}
           <div className="flex items-center gap-1 border-l border-sp-admin-border pl-3">
@@ -320,6 +346,7 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
                   </Th>
                 </>
               )}
+              <Th className="w-40">Negocio</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-sp-admin-border/60">
@@ -402,6 +429,30 @@ export function RosterSpreadsheet({ creators }: { creators: AdminRosterRow[] }):
                         <GrowthCell growth={creator.growth} platform="twitch" />
                       </>
                     )}
+                    <td className="px-3 py-2.5">
+                      <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap gap-1 min-w-0">
+                          {(verticalsByTalent[creator.id] ?? []).slice(0, 3).map((v) => (
+                            <span
+                              key={v}
+                              className="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-sp-admin-bg text-sp-admin-muted border border-sp-admin-border"
+                              title={TALENT_VERTICAL_LABELS[v]}
+                            >
+                              {TALENT_VERTICAL_LABELS[v]}
+                            </span>
+                          ))}
+                          {(verticalsByTalent[creator.id]?.length ?? 0) > 3 && (
+                            <span className="text-[9px] text-sp-admin-muted">+{(verticalsByTalent[creator.id]?.length ?? 0) - 3}</span>
+                          )}
+                        </div>
+                        <Link
+                          href={`/admin/talents/${creator.id}/negocio`}
+                          className="ml-auto shrink-0 px-2 py-0.5 rounded text-[10px] font-semibold text-sp-admin-accent hover:bg-sp-admin-accent/10 transition-colors"
+                        >
+                          Editar
+                        </Link>
+                      </div>
+                    </td>
                   </tr>
                 );
               })
