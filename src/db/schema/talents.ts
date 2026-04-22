@@ -3,8 +3,8 @@ import { relations } from 'drizzle-orm';
 
 // platform: real values from source data are 'twitch' | 'youtube' only
 export const platformEnum = pgEnum('platform', ['twitch', 'youtube']);
-// status: real values from source data are 'active' | 'available' only
-export const statusEnum = pgEnum('status', ['active', 'available']);
+// status: active (working) | available (open for hire) | inactive (retired/paused)
+export const statusEnum = pgEnum('status', ['active', 'available', 'inactive']);
 // visibility: controls whether talent appears on public site
 export const visibilityEnum = pgEnum('visibility', ['public', 'internal']);
 
@@ -62,6 +62,7 @@ export const talentSocials = pgTable('talent_socials', {
   platformId: varchar('platform_id', { length: 200 }),
   sortOrder: integer('sort_order').notNull().default(0),
   avgViewers: integer('avg_viewers'),
+  topGeos: jsonb('top_geos').$type<Array<{ country: string; pct: number }>>(),
 }, (t) => [
   index('talent_socials_talent_id_idx').on(t.talentId),
 ]);

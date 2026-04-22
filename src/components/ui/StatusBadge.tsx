@@ -1,8 +1,9 @@
-type Status = 'active' | 'available';
+type Status = 'active' | 'available' | 'inactive';
 
 const LABELS: Record<Status, string> = {
   active: 'Activo',
   available: 'Disponible',
+  inactive: 'Inactivo',
 };
 
 type StatusBadgeProps = {

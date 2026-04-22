@@ -1,6 +1,9 @@
 import { getAdminRosterWithGrowth } from '@/lib/queries/talents';
 import { listAllVerticals } from '@/lib/queries/talentBusiness';
 import { RosterSpreadsheet } from '@/components/admin/talents/RosterSpreadsheet';
+import { InfluencerCardsView } from '@/components/admin/talents/InfluencerCardsView';
+import { InfluencerImport } from '@/components/admin/talents/InfluencerImport';
+import { BrandsTabs } from '@/components/admin/brands/BrandsTabs';
 import type { TalentVertical } from '@/types';
 
 export default async function AdminTalentsPage(): Promise<React.ReactElement> {
@@ -22,7 +25,6 @@ export default async function AdminTalentsPage(): Promise<React.ReactElement> {
 
   return (
     <div>
-      {/* Compact header */}
       <div className="flex items-baseline gap-4 mb-6">
         <h1 className="font-display text-3xl font-black uppercase text-sp-admin-text">Roster</h1>
         <span className="text-xs text-sp-admin-muted tabular-nums">
@@ -30,7 +32,33 @@ export default async function AdminTalentsPage(): Promise<React.ReactElement> {
         </span>
       </div>
 
-      <RosterSpreadsheet creators={creators} verticalsByTalent={verticalsByTalent} />
+      <BrandsTabs
+        defaultKey="cards"
+        tabs={[
+          {
+            key: 'cards',
+            label: 'Tarjetas',
+            content: (
+              <InfluencerCardsView
+                creators={creators}
+                verticalsByTalent={verticalsByTalent}
+              />
+            ),
+          },
+          {
+            key: 'table',
+            label: 'Tabla',
+            content: (
+              <RosterSpreadsheet creators={creators} verticalsByTalent={verticalsByTalent} />
+            ),
+          },
+          {
+            key: 'import',
+            label: 'Importar CSV',
+            content: <InfluencerImport />,
+          },
+        ]}
+      />
     </div>
   );
 }
