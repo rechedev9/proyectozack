@@ -22,28 +22,28 @@ type AdminLayoutProps = {
 }
 
 const ADMIN_PRIMARY_NAV = [
-  { href: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
-  { href: '/admin/brands', label: 'Brands', icon: <BrandIcon /> },
-  { href: '/admin/talents', label: 'Influencers', icon: <TalentIcon />, prefetch: false },
-  { href: '/admin/targets', label: 'Campaigns', icon: <TargetsIcon />, prefetch: false },
-  { href: '/admin/tareas', label: 'Tasks', icon: <TasksIcon /> },
-  { href: '/admin/facturacion', label: 'Billing', icon: <InvoiceIcon />, prefetch: false },
-  { href: '/admin/stats', label: 'Stats', icon: <StatsIcon />, prefetch: false },
-  { href: '/admin/equipo', label: 'Team', icon: <TeamIcon /> },
+  { href: '/admin', label: 'Panel', icon: <DashboardIcon /> },
+  { href: '/admin/brands', label: 'Marcas', icon: <BrandIcon /> },
+  { href: '/admin/talents', label: 'Talentos', icon: <TalentIcon />, prefetch: false },
+  { href: '/admin/targets', label: 'Campañas', icon: <TargetsIcon />, prefetch: false },
+  { href: '/admin/tareas', label: 'Tareas', icon: <TasksIcon /> },
+  { href: '/admin/facturacion', label: 'Facturación', icon: <InvoiceIcon />, prefetch: false },
+  { href: '/admin/stats', label: 'Estadísticas', icon: <StatsIcon />, prefetch: false },
+  { href: '/admin/equipo', label: 'Equipo', icon: <TeamIcon /> },
 ] as const;
 
 const ADMIN_MORE_NAV = [
-  { href: '/admin/mi-semana', label: 'Mi Semana', icon: <MyWeekIcon /> },
-  { href: '/admin/giveaways', label: 'Giveaways', icon: <GiveawayIcon />, prefetch: false },
-  { href: '/admin/analytics', label: 'Analytics', icon: <AnalyticsIcon />, prefetch: false },
-  { href: '/admin/cases', label: 'Cases', icon: <CaseIcon />, prefetch: false },
+  { href: '/admin/mi-semana', label: 'Mi semana', icon: <MyWeekIcon /> },
+  { href: '/admin/giveaways', label: 'Sorteos', icon: <GiveawayIcon />, prefetch: false },
+  { href: '/admin/analytics', label: 'Analítica', icon: <AnalyticsIcon />, prefetch: false },
+  { href: '/admin/cases', label: 'Casos', icon: <CaseIcon />, prefetch: false },
 ] as const;
 
 const STAFF_PRIMARY_NAV = [
-  { href: '/admin/mi-semana', label: 'Mi Semana', icon: <MyWeekIcon /> },
-  { href: '/admin/tareas', label: 'Tasks', icon: <TasksIcon /> },
-  { href: '/admin/targets', label: 'Campaigns', icon: <TargetsIcon />, prefetch: false },
-  { href: '/admin/equipo', label: 'Team', icon: <TeamIcon /> },
+  { href: '/admin/mi-semana', label: 'Mi semana', icon: <MyWeekIcon /> },
+  { href: '/admin/tareas', label: 'Tareas', icon: <TasksIcon /> },
+  { href: '/admin/targets', label: 'Campañas', icon: <TargetsIcon />, prefetch: false },
+  { href: '/admin/equipo', label: 'Equipo', icon: <TeamIcon /> },
 ] as const;
 
 export default async function AdminLayout({ children }: AdminLayoutProps): Promise<React.ReactElement> {

@@ -99,7 +99,7 @@ export function AdminSidebar({
             </span>
             <span className="flex flex-col leading-tight">
               <span className="font-display text-[13px] font-black uppercase tracking-wide text-sp-admin-text">SocialPro CRM</span>
-              <span className="text-[9px] uppercase tracking-[0.15em] text-sp-admin-muted">Admin Panel</span>
+              <span className="text-[9px] uppercase tracking-[0.15em] text-sp-admin-muted">Panel admin</span>
             </span>
           </Link>
         </div>
@@ -129,7 +129,7 @@ export function AdminSidebar({
                 ].join(' ')}
               >
                 <span className="w-5 h-5 shrink-0"><MoreIcon /></span>
-                <span className="flex-1 text-left text-[11px] font-semibold uppercase tracking-[0.15em]">More</span>
+                <span className="flex-1 text-left text-[11px] font-semibold uppercase tracking-[0.15em]">Más</span>
                 <span className={`w-4 h-4 transition-transform ${expanded ? 'rotate-180' : ''}`}>
                   <ChevronDownIcon />
                 </span>
