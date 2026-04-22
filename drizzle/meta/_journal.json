@@ -155,6 +155,20 @@
       "when": 1776757179273,
       "tag": "0021_thick_jetstream",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1776854486277,
+      "tag": "0022_flimsy_the_renegades",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1776856567044,
+      "tag": "0023_damp_silhouette",
+      "breakpoints": true
     }
   ]
 }

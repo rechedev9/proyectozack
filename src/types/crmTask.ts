@@ -6,6 +6,7 @@ export type NewCrmTask = InferInsertModel<typeof crmTasks>;
 
 export type CrmTaskPriority = CrmTask['priority'];
 export type CrmTaskStatus = CrmTask['status'];
+export type CrmTaskRelatedType = NonNullable<CrmTask['relatedType']>;
 
 export type TeamTasksSummary = {
   readonly userId: string;

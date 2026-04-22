@@ -7,3 +7,6 @@ export type * from './content';
 export type * from './analytics';
 export type * from './target';
 export type * from './crmTask';
+export type * from './crmBrand';
+export type * from './invoice';
+export type * from './talentBusiness';

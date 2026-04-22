@@ -1,6 +1,7 @@
 import {
   pgTable,
   serial,
+  integer,
   text,
   varchar,
   boolean,
@@ -15,6 +16,7 @@ import { CRM_TASK_PRIORITIES, CRM_TASK_STATUSES } from '@/lib/schemas/task';
 
 export const crmTaskPriorityEnum = pgEnum('crm_task_priority', CRM_TASK_PRIORITIES);
 export const crmTaskStatusEnum = pgEnum('crm_task_status', CRM_TASK_STATUSES);
+export const crmTaskRelatedTypeEnum = pgEnum('crm_task_related_type', ['brand', 'talent', 'invoice']);
 
 export const crmTasks = pgTable(
   'crm_tasks',
@@ -36,6 +38,9 @@ export const crmTasks = pgTable(
     rolledOver: boolean('rolled_over').notNull().default(false),
     rolledFromWeek: varchar('rolled_from_week', { length: 8 }),
 
+    relatedType: crmTaskRelatedTypeEnum('related_type'),
+    relatedId: integer('related_id'),
+
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
     completedAt: timestamp('completed_at', { withTimezone: true }),
@@ -46,6 +51,7 @@ export const crmTasks = pgTable(
     index('crm_tasks_status_idx').on(t.status),
     index('crm_tasks_week_owner_idx').on(t.weekLabel, t.ownerId),
     index('crm_tasks_week_status_idx').on(t.weekLabel, t.status),
+    index('crm_tasks_related_idx').on(t.relatedType, t.relatedId),
   ],
 );
 
