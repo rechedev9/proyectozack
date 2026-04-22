@@ -9,4 +9,5 @@ export type * from './target';
 export type * from './crmTask';
 export type * from './crmBrand';
 export type * from './invoice';
+export type * from './invoiceImport';
 export type * from './talentBusiness';

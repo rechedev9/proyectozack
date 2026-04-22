@@ -45,9 +45,11 @@ export const invoices = pgTable(
 
     netAmount: numeric('net_amount', { precision: 12, scale: 2 }).notNull(),
     vatPct: numeric('vat_pct', { precision: 5, scale: 2 }).notNull().default('21.00'),
+    withholdingPct: numeric('withholding_pct', { precision: 5, scale: 2 }).notNull().default('0.00'),
     totalAmount: numeric('total_amount', { precision: 12, scale: 2 }).notNull(),
     currency: varchar('currency', { length: 3 }).notNull().default('EUR'),
 
+    series: varchar('series', { length: 20 }).notNull().default('A'),
     status: invoiceStatusEnum('status').notNull().default('borrador'),
 
     fileUrl: text('file_url'),
@@ -68,6 +70,7 @@ export const invoices = pgTable(
     index('invoices_issue_date_idx').on(t.issueDate),
     index('invoices_due_date_idx').on(t.dueDate),
     index('invoices_category_idx').on(t.category),
+    index('invoices_series_idx').on(t.series),
   ],
 );
 

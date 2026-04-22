@@ -34,8 +34,10 @@ const invoiceFields = z.object({
   category: optStr(80),
   netAmount: moneyStr,
   vatPct: moneyStr.default('21.00'),
+  withholdingPct: moneyStr.default('0.00'),
   totalAmount: moneyStr,
   currency: z.string().length(3).default('EUR'),
+  series: z.string().min(1).max(20).default('A'),
   status: z.enum(INVOICE_STATUSES).default('borrador'),
   notes: z.string().optional(),
 });

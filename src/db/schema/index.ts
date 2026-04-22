@@ -17,3 +17,6 @@ export * from './crmTasks';
 export * from './crmBrands';
 export * from './talentBusiness';
 export * from './invoices';
+export * from './invoiceImports';
+export * from './invoiceImportTemplates';
+export * from './invoiceParserTemplates';

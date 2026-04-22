@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useActionState, useMemo, useState, useTransition } from 'react';
 import {
   createInvoiceAction,
@@ -106,9 +107,23 @@ export function InvoicesManager({ invoices, brands, talents, categories }: Invoi
             ))}
           </select>
         </div>
-        <button type="button" onClick={() => setShowCreate((v) => !v)} className={BTN_PRIMARY}>
-          {showCreate ? 'Cancelar' : '+ Nueva factura'}
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/facturacion/exports"
+            className="px-3 py-1.5 rounded-full text-xs font-semibold text-sp-admin-text border border-sp-admin-border hover:bg-sp-admin-hover transition-colors"
+          >
+            Exports fiscales
+          </Link>
+          <Link
+            href="/admin/facturacion/import"
+            className="px-3 py-1.5 rounded-full text-xs font-semibold text-sp-admin-text border border-sp-admin-border hover:bg-sp-admin-hover transition-colors"
+          >
+            Importar archivo
+          </Link>
+          <button type="button" onClick={() => setShowCreate((v) => !v)} className={BTN_PRIMARY}>
+            {showCreate ? 'Cancelar' : '+ Nueva factura'}
+          </button>
+        </div>
       </div>
 
       {showCreate && (
@@ -275,13 +290,15 @@ function InvoiceForm({ mode, invoice, brands, talents, categories, onDone }: Inv
 
   const [net, setNet] = useState(invoice?.netAmount ?? '0.00');
   const [vat, setVat] = useState(invoice?.vatPct ?? '21.00');
+  const [withholding, setWithholding] = useState(invoice?.withholdingPct ?? '0.00');
 
   const total = useMemo(() => {
     const n = Number(net);
     const v = Number(vat);
-    if (Number.isNaN(n) || Number.isNaN(v)) return '0.00';
-    return (n * (1 + v / 100)).toFixed(2);
-  }, [net, vat]);
+    const w = Number(withholding);
+    if (Number.isNaN(n) || Number.isNaN(v) || Number.isNaN(w)) return '0.00';
+    return (n * (1 + (v - w) / 100)).toFixed(2);
+  }, [net, vat, withholding]);
 
   if (state.success && !isPending) {
     setTimeout(onDone, 0);
@@ -369,6 +386,10 @@ function InvoiceForm({ mode, invoice, brands, talents, categories, onDone }: Inv
           <input name="vatPct" type="number" step="0.01" min="0" value={vat} onChange={(e) => setVat(e.target.value)} className={INPUT} />
         </div>
         <div>
+          <label className={LABEL}>Retención IRPF %</label>
+          <input name="withholdingPct" type="number" step="0.01" min="0" value={withholding} onChange={(e) => setWithholding(e.target.value)} className={INPUT} />
+        </div>
+        <div>
           <label className={LABEL}>Total</label>
           <input name="totalAmount" type="number" step="0.01" min="0" value={total} readOnly className={`${INPUT} bg-sp-admin-card`} />
         </div>
@@ -379,6 +400,10 @@ function InvoiceForm({ mode, invoice, brands, talents, categories, onDone }: Inv
             <option value="USD">USD</option>
             <option value="GBP">GBP</option>
           </select>
+        </div>
+        <div>
+          <label className={LABEL}>Serie</label>
+          <input name="series" defaultValue={invoice?.series ?? 'A'} maxLength={20} className={INPUT} />
         </div>
 
         <div className="md:col-span-4">
