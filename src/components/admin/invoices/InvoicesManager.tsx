@@ -290,7 +290,7 @@ function InvoiceForm({ mode, invoice, brands, talents, categories, onDone }: Inv
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <form action={formAction} className="rounded-2xl bg-sp-admin-card border border-sp-admin-border p-5 space-y-4" encType="multipart/form-data">
+    <form action={formAction} className="rounded-2xl bg-sp-admin-card border border-sp-admin-border p-5 space-y-4">
       <h3 className="font-bold text-sp-admin-text text-sm">
         {mode === 'create' ? 'Nueva factura' : `Editar factura ${invoice.number ?? `#${invoice.id}`}`}
       </h3>
