@@ -6,7 +6,7 @@ import Lenis from 'lenis';
 import { WhatsAppWidget } from './WhatsAppWidget';
 import type { ReactNode } from 'react';
 
-const PORTAL_PREFIXES = ['/admin', '/marcas', '/creadores', '/giveaways'];
+const PORTAL_PREFIXES = ['/admin', '/marcas', '/creadores', '/giveaways', '/c/'];
 const LOGIN_SUFFIXES = ['/login'];
 
 function isPortalRoute(pathname: string): boolean {

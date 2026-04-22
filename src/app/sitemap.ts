@@ -27,6 +27,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
+  const creatorHubEntries: MetadataRoute.Sitemap = talentSlugs.map((t) => ({
+    url: absoluteUrl(`/c/${t.slug}`),
+    lastModified: now,
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }));
+
   return [
     {
       url: SITE_URL,
@@ -88,8 +95,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.7,
     },
+    {
+      url: absoluteUrl('/giveaways'),
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
     ...caseEntries,
     ...talentEntries,
+    ...creatorHubEntries,
     ...postSlugs.map((p) => ({
       url: absoluteUrl(`/blog/${p.slug}`),
       lastModified: now,
