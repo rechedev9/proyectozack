@@ -10,6 +10,7 @@ import {
   StatsIcon,
   TasksIcon,
   MyWeekIcon,
+  InvoiceIcon,
 } from '@/components/admin/SidebarIcons';
 import type { ReactNode } from 'react';
 
@@ -24,6 +25,7 @@ const ADMIN_NAV = [
   { href: '/admin/equipo', label: 'Equipo', icon: <TeamIcon /> },
   { href: '/admin/talents', label: 'Roster', icon: <TalentIcon />, prefetch: false },
   { href: '/admin/brands', label: 'Marcas', icon: <BrandIcon /> },
+  { href: '/admin/facturacion', label: 'Facturación', icon: <InvoiceIcon />, prefetch: false },
   { href: '/admin/targets', label: 'Targets', icon: <TargetsIcon />, prefetch: false },
   { href: '/admin/giveaways', label: 'Giveaways', icon: <GiveawayIcon />, prefetch: false },
   { href: '/admin/stats', label: 'Stats', icon: <StatsIcon />, prefetch: false },

@@ -165,3 +165,14 @@ export function TargetsIcon() {
     </svg>
   );
 }
+
+export function InvoiceIcon() {
+  return (
+    <svg {...s}>
+      <path d="M5 2h8l3 3v13l-2-1.5L12 18l-2-1.5L8 18l-2-1.5L4 18V2z" />
+      <line x1="7" y1="7" x2="14" y2="7" />
+      <line x1="7" y1="10" x2="14" y2="10" />
+      <line x1="7" y1="13" x2="11" y2="13" />
+    </svg>
+  );
+}
