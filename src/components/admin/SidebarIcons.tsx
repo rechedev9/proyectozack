@@ -176,3 +176,58 @@ export function InvoiceIcon() {
     </svg>
   );
 }
+
+export function BellIcon() {
+  return (
+    <svg {...s}>
+      <path d="M10 3a4 4 0 0 0-4 4v3.5L4.5 14h11L14 10.5V7a4 4 0 0 0-4-4z" />
+      <path d="M8.5 17a1.5 1.5 0 0 0 3 0" />
+    </svg>
+  );
+}
+
+export function SettingsIcon() {
+  return (
+    <svg {...s}>
+      <circle cx="10" cy="10" r="2.5" />
+      <path d="M10 1.5v2.5M10 16v2.5M3.5 3.5l1.8 1.8M14.7 14.7l1.8 1.8M1.5 10h2.5M16 10h2.5M3.5 16.5l1.8-1.8M14.7 5.3l1.8-1.8" />
+    </svg>
+  );
+}
+
+export function SearchIcon() {
+  return (
+    <svg {...s}>
+      <circle cx="9" cy="9" r="5.5" />
+      <line x1="17" y1="17" x2="13" y2="13" />
+    </svg>
+  );
+}
+
+export function ChevronDownIcon() {
+  return (
+    <svg {...s}>
+      <polyline points="5 8 10 13 15 8" />
+    </svg>
+  );
+}
+
+export function MoreIcon() {
+  return (
+    <svg {...s}>
+      <circle cx="5" cy="10" r="1.3" fill="currentColor" stroke="none" />
+      <circle cx="10" cy="10" r="1.3" fill="currentColor" stroke="none" />
+      <circle cx="15" cy="10" r="1.3" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function LogoutIcon() {
+  return (
+    <svg {...s}>
+      <path d="M8 4H4v12h4" />
+      <path d="M14 6l3 4-3 4" />
+      <line x1="17" y1="10" x2="8" y2="10" />
+    </svg>
+  );
+}

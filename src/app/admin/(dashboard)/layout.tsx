@@ -1,5 +1,6 @@
 import { requireAnyRole } from '@/lib/auth-guard';
-import { PortalSidebar } from '@/components/layout/PortalSidebar';
+import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { AdminHeader } from '@/components/admin/AdminHeader';
 import {
   DashboardIcon,
   TalentIcon,
@@ -11,6 +12,8 @@ import {
   TasksIcon,
   MyWeekIcon,
   InvoiceIcon,
+  AnalyticsIcon,
+  CaseIcon,
 } from '@/components/admin/SidebarIcons';
 import type { ReactNode } from 'react';
 
@@ -18,43 +21,52 @@ type AdminLayoutProps = {
   children: ReactNode;
 }
 
-const ADMIN_NAV = [
+const ADMIN_PRIMARY_NAV = [
   { href: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
-  { href: '/admin/mi-semana', label: 'Mi Semana', icon: <MyWeekIcon /> },
-  { href: '/admin/tareas', label: 'Tareas', icon: <TasksIcon /> },
-  { href: '/admin/equipo', label: 'Equipo', icon: <TeamIcon /> },
-  { href: '/admin/talents', label: 'Roster', icon: <TalentIcon />, prefetch: false },
-  { href: '/admin/brands', label: 'Marcas', icon: <BrandIcon /> },
-  { href: '/admin/facturacion', label: 'Facturación', icon: <InvoiceIcon />, prefetch: false },
-  { href: '/admin/targets', label: 'Targets', icon: <TargetsIcon />, prefetch: false },
-  { href: '/admin/giveaways', label: 'Giveaways', icon: <GiveawayIcon />, prefetch: false },
+  { href: '/admin/brands', label: 'Brands', icon: <BrandIcon /> },
+  { href: '/admin/talents', label: 'Influencers', icon: <TalentIcon />, prefetch: false },
+  { href: '/admin/targets', label: 'Campaigns', icon: <TargetsIcon />, prefetch: false },
+  { href: '/admin/tareas', label: 'Tasks', icon: <TasksIcon /> },
+  { href: '/admin/facturacion', label: 'Billing', icon: <InvoiceIcon />, prefetch: false },
   { href: '/admin/stats', label: 'Stats', icon: <StatsIcon />, prefetch: false },
+  { href: '/admin/equipo', label: 'Team', icon: <TeamIcon /> },
 ] as const;
 
-const STAFF_NAV = [
+const ADMIN_MORE_NAV = [
   { href: '/admin/mi-semana', label: 'Mi Semana', icon: <MyWeekIcon /> },
-  { href: '/admin/tareas', label: 'Tareas', icon: <TasksIcon /> },
-  { href: '/admin/equipo', label: 'Equipo', icon: <TeamIcon /> },
-  { href: '/admin/targets', label: 'Targets', icon: <TargetsIcon />, prefetch: false },
+  { href: '/admin/giveaways', label: 'Giveaways', icon: <GiveawayIcon />, prefetch: false },
+  { href: '/admin/analytics', label: 'Analytics', icon: <AnalyticsIcon />, prefetch: false },
+  { href: '/admin/cases', label: 'Cases', icon: <CaseIcon />, prefetch: false },
 ] as const;
 
-export default async function AdminLayout({ children }: AdminLayoutProps) {
+const STAFF_PRIMARY_NAV = [
+  { href: '/admin/mi-semana', label: 'Mi Semana', icon: <MyWeekIcon /> },
+  { href: '/admin/tareas', label: 'Tasks', icon: <TasksIcon /> },
+  { href: '/admin/targets', label: 'Campaigns', icon: <TargetsIcon />, prefetch: false },
+  { href: '/admin/equipo', label: 'Team', icon: <TeamIcon /> },
+] as const;
+
+export default async function AdminLayout({ children }: AdminLayoutProps): Promise<React.ReactElement> {
   const session = await requireAnyRole(['admin', 'staff'], '/admin/login');
-  const navItems = session.user.role === 'staff' ? STAFF_NAV : ADMIN_NAV;
+  const isStaff = session.user.role === 'staff';
+  const primaryNav = isStaff ? STAFF_PRIMARY_NAV : ADMIN_PRIMARY_NAV;
+  const moreNav = isStaff ? [] : ADMIN_MORE_NAV;
 
   return (
     <div className="min-h-screen bg-sp-admin-bg flex overflow-x-hidden">
-      <PortalSidebar
-        title="SocialPro"
-        subtitle="Admin Panel"
-        variant="dark"
-        navItems={[...navItems]}
+      <AdminSidebar
+        primaryNav={primaryNav}
+        moreNav={moreNav}
+        userName={session.user.name}
+        userRole={session.user.role ?? ''}
         userEmail={session.user.email}
         logoutHref="/api/auth/sign-out"
       />
 
-      {/* Main content */}
-      <main className="flex-1 p-4 pt-18 md:p-8 md:pt-8 overflow-auto">{children}</main>
+      <div className="flex-1 flex flex-col min-w-0 pt-14 md:pt-0">
+        <AdminHeader />
+        <main className="flex-1 p-4 md:p-8 overflow-auto">{children}</main>
+      </div>
     </div>
   );
 }
