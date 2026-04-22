@@ -19,6 +19,7 @@ export default async function BrandPortalLayout({ children }: BrandPortalLayoutP
           { href: '/marcas/targets', label: 'Targets' },
           { href: '/marcas/talentos', label: 'Talentos' },
           { href: '/marcas/propuestas', label: 'Propuestas' },
+          { href: '/marcas/facturas', label: 'Facturas' },
         ]}
         userEmail={session.user.email}
         logoutHref="/api/auth/sign-out"
