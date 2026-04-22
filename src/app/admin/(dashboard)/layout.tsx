@@ -42,6 +42,7 @@ const ADMIN_MORE_NAV = [
 const STAFF_PRIMARY_NAV = [
   { href: '/admin/mi-semana', label: 'Mi semana', icon: <MyWeekIcon /> },
   { href: '/admin/tareas', label: 'Tareas', icon: <TasksIcon /> },
+  { href: '/admin/brands', label: 'Marcas', icon: <BrandIcon /> },
   { href: '/admin/targets', label: 'Campañas', icon: <TargetsIcon />, prefetch: false },
   { href: '/admin/equipo', label: 'Equipo', icon: <TeamIcon /> },
 ] as const;

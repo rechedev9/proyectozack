@@ -1,16 +1,19 @@
-import { and, asc, desc, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, isNull, lte, or, sql } from 'drizzle-orm';
 import { db } from '@/lib/db';
-import { crmBrands, crmBrandContacts, user } from '@/db/schema';
+import { crmBrands, crmBrandContacts, crmBrandFollowups, user } from '@/db/schema';
 import type {
   CrmBrand,
   CrmBrandContact,
+  CrmBrandFollowup,
+  CrmBrandFollowupWithBrand,
   CrmBrandRow,
   CrmBrandWithContacts,
   NewCrmBrand,
   NewCrmBrandContact,
+  NewCrmBrandFollowup,
 } from '@/types';
 
-export async function listCrmBrands(): Promise<readonly CrmBrandRow[]> {
+export async function listCrmBrands(ownerUserId?: string): Promise<readonly CrmBrandRow[]> {
   const rows = await db
     .select({
       id: crmBrands.id,
@@ -18,6 +21,8 @@ export async function listCrmBrands(): Promise<readonly CrmBrandRow[]> {
       legalName: crmBrands.legalName,
       website: crmBrands.website,
       sector: crmBrands.sector,
+      tipo: crmBrands.tipo,
+      geo: crmBrands.geo,
       country: crmBrands.country,
       status: crmBrands.status,
       ownerUserId: crmBrands.ownerUserId,
@@ -30,6 +35,7 @@ export async function listCrmBrands(): Promise<readonly CrmBrandRow[]> {
     })
     .from(crmBrands)
     .leftJoin(user, eq(user.id, crmBrands.ownerUserId))
+    .where(ownerUserId ? eq(crmBrands.ownerUserId, ownerUserId) : undefined)
     .orderBy(desc(crmBrands.createdAt));
 
   if (rows.length === 0) return [];
@@ -128,4 +134,66 @@ export async function updateBrandContact(
 
 export async function deleteBrandContact(id: number): Promise<void> {
   await db.delete(crmBrandContacts).where(eq(crmBrandContacts.id, id));
+}
+
+export async function getCrmBrandOwner(brandId: number): Promise<string | null> {
+  const [row] = await db
+    .select({ ownerUserId: crmBrands.ownerUserId })
+    .from(crmBrands)
+    .where(eq(crmBrands.id, brandId))
+    .limit(1);
+  return row?.ownerUserId ?? null;
+}
+
+// --- Follow-ups ---
+
+export async function listBrandFollowups(brandId: number): Promise<readonly CrmBrandFollowup[]> {
+  return db
+    .select()
+    .from(crmBrandFollowups)
+    .where(eq(crmBrandFollowups.brandId, brandId))
+    .orderBy(asc(crmBrandFollowups.scheduledAt));
+}
+
+export async function listUpcomingFollowups(ownerUserId?: string): Promise<readonly CrmBrandFollowupWithBrand[]> {
+  const thirtyDaysOut = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const rows = await db
+    .select({
+      id: crmBrandFollowups.id,
+      brandId: crmBrandFollowups.brandId,
+      brandName: crmBrands.name,
+      createdByUserId: crmBrandFollowups.createdByUserId,
+      scheduledAt: crmBrandFollowups.scheduledAt,
+      note: crmBrandFollowups.note,
+      completedAt: crmBrandFollowups.completedAt,
+      createdAt: crmBrandFollowups.createdAt,
+    })
+    .from(crmBrandFollowups)
+    .innerJoin(crmBrands, eq(crmBrands.id, crmBrandFollowups.brandId))
+    .where(
+      and(
+        isNull(crmBrandFollowups.completedAt),
+        or(lte(crmBrandFollowups.scheduledAt, thirtyDaysOut), lte(crmBrandFollowups.scheduledAt, new Date())),
+        ownerUserId ? eq(crmBrands.ownerUserId, ownerUserId) : undefined,
+      ),
+    )
+    .orderBy(asc(crmBrandFollowups.scheduledAt));
+  return rows;
+}
+
+export async function createBrandFollowup(values: NewCrmBrandFollowup): Promise<CrmBrandFollowup> {
+  const [row] = await db.insert(crmBrandFollowups).values(values).returning();
+  if (!row) throw new Error('Failed to insert followup');
+  return row;
+}
+
+export async function completeBrandFollowup(id: number): Promise<void> {
+  await db
+    .update(crmBrandFollowups)
+    .set({ completedAt: new Date() })
+    .where(eq(crmBrandFollowups.id, id));
+}
+
+export async function deleteBrandFollowup(id: number): Promise<void> {
+  await db.delete(crmBrandFollowups).where(eq(crmBrandFollowups.id, id));
 }

@@ -1,45 +1,63 @@
 import { db } from '@/lib/db';
 import { user as userTable } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import { requireAnyRole } from '@/lib/auth-guard';
 import { InviteBrandForm } from '@/components/admin/brands/invite-form';
 import { BrandsCrmManager } from '@/components/admin/brands/BrandsCrmManager';
 import { BrandsTabs } from '@/components/admin/brands/BrandsTabs';
-import { listCrmBrands, getBrandContacts } from '@/lib/queries/crmBrands';
+import { listCrmBrands, getBrandContacts, listBrandFollowups, listUpcomingFollowups } from '@/lib/queries/crmBrands';
 
 export default async function AdminBrandsPage(): Promise<React.ReactElement> {
-  const [brandUsers, crmBrands] = await Promise.all([
-    db
-      .select({
-        id: userTable.id,
-        name: userTable.name,
-        email: userTable.email,
-        createdAt: userTable.createdAt,
-      })
-      .from(userTable)
-      .where(eq(userTable.role, 'brand'))
-      .orderBy(desc(userTable.createdAt)),
-    listCrmBrands(),
+  const session = await requireAnyRole(['admin', 'staff'], '/admin/login');
+  const isStaff = session.user.role === 'staff';
+  const filterUserId = isStaff ? session.user.id : undefined;
+
+  const [brandUsers, crmBrands, upcomingFollowups] = await Promise.all([
+    isStaff
+      ? Promise.resolve([])
+      : db
+          .select({
+            id: userTable.id,
+            name: userTable.name,
+            email: userTable.email,
+            createdAt: userTable.createdAt,
+          })
+          .from(userTable)
+          .where(eq(userTable.role, 'brand'))
+          .orderBy(desc(userTable.createdAt)),
+    listCrmBrands(filterUserId),
+    listUpcomingFollowups(filterUserId),
   ]);
 
   const contactsByBrand: Record<number, Awaited<ReturnType<typeof getBrandContacts>>> = {};
+  const followupsByBrand: Record<number, Awaited<ReturnType<typeof listBrandFollowups>>> = {};
+
   await Promise.all(
     crmBrands.map(async (b) => {
-      contactsByBrand[b.id] = await getBrandContacts(b.id);
+      const [contacts, followups] = await Promise.all([
+        getBrandContacts(b.id),
+        listBrandFollowups(b.id),
+      ]);
+      contactsByBrand[b.id] = contacts;
+      followupsByBrand[b.id] = followups;
     }),
   );
 
-  return (
-    <div>
-      <h1 className="font-display text-4xl font-black uppercase text-sp-admin-text mb-8">Marcas</h1>
-
-      <BrandsTabs
-        defaultKey="crm"
-        tabs={[
-          {
-            key: 'crm',
-            label: 'CRM',
-            content: <BrandsCrmManager brands={crmBrands} contactsByBrand={contactsByBrand} />,
-          },
+  const tabs = [
+    {
+      key: 'crm',
+      label: 'CRM',
+      content: (
+        <BrandsCrmManager
+          brands={crmBrands}
+          contactsByBrand={contactsByBrand}
+          followupsByBrand={followupsByBrand}
+          upcomingFollowups={upcomingFollowups}
+        />
+      ),
+    },
+    ...(!isStaff
+      ? [
           {
             key: 'portal',
             label: `Portal (${brandUsers.length})`,
@@ -73,8 +91,14 @@ export default async function AdminBrandsPage(): Promise<React.ReactElement> {
               </div>
             ),
           },
-        ]}
-      />
+        ]
+      : []),
+  ];
+
+  return (
+    <div>
+      <h1 className="font-display text-4xl font-black uppercase text-sp-admin-text mb-8">Marcas</h1>
+      <BrandsTabs defaultKey="crm" tabs={tabs} />
     </div>
   );
 }

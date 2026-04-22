@@ -82,7 +82,8 @@ export async function requireAnyRole(
   const safePath = ALLOWED_LOGIN_PATHS.has(loginPath) ? loginPath : '/';
 
   if (process.env.NODE_ENV === 'development') {
-    const mockRole = roles[0] ?? 'admin';
+    const override = process.env.DEV_ROLE_OVERRIDE as Role | undefined;
+    const mockRole = (override && (roles as readonly string[]).includes(override) ? override : roles[0]) ?? 'admin';
     return { user: { id: 'dev', email: 'dev@localhost', name: 'Dev', role: mockRole } };
   }
 

@@ -27,7 +27,9 @@ export const crmBrands = pgTable(
     name: varchar('name', { length: 200 }).notNull(),
     legalName: varchar('legal_name', { length: 250 }),
     website: text('website'),
+    tipo: varchar('tipo', { length: 20 }),
     sector: varchar('sector', { length: 80 }),
+    geo: varchar('geo', { length: 30 }),
     country: varchar('country', { length: 2 }),
 
     status: crmBrandStatusEnum('status').notNull().default('lead'),
@@ -59,6 +61,7 @@ export const crmBrandContacts = pgTable(
     email: varchar('email', { length: 180 }),
     phone: varchar('phone', { length: 40 }),
     telegram: varchar('telegram', { length: 80 }),
+    discord: varchar('discord', { length: 80 }),
     whatsapp: varchar('whatsapp', { length: 40 }),
     isPrimary: boolean('is_primary').notNull().default(false),
 
@@ -71,12 +74,36 @@ export const crmBrandContacts = pgTable(
   ],
 );
 
+export const crmBrandFollowups = pgTable(
+  'crm_brand_followups',
+  {
+    id: serial('id').primaryKey(),
+    brandId: integer('brand_id').notNull().references(() => crmBrands.id, { onDelete: 'cascade' }),
+    createdByUserId: text('created_by_user_id').references(() => user.id, { onDelete: 'set null' }),
+    scheduledAt: timestamp('scheduled_at', { withTimezone: true }).notNull(),
+    note: text('note').notNull(),
+    completedAt: timestamp('completed_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index('crm_brand_followups_brand_idx').on(t.brandId),
+    index('crm_brand_followups_scheduled_idx').on(t.scheduledAt),
+    index('crm_brand_followups_completed_idx').on(t.completedAt),
+  ],
+);
+
 export const crmBrandsRelations = relations(crmBrands, ({ one, many }) => ({
   owner: one(user, { fields: [crmBrands.ownerUserId], references: [user.id], relationName: 'crmBrandOwner' }),
   portalUser: one(user, { fields: [crmBrands.portalUserId], references: [user.id], relationName: 'crmBrandPortalUser' }),
   contacts: many(crmBrandContacts),
+  followups: many(crmBrandFollowups),
 }));
 
 export const crmBrandContactsRelations = relations(crmBrandContacts, ({ one }) => ({
   brand: one(crmBrands, { fields: [crmBrandContacts.brandId], references: [crmBrands.id] }),
+}));
+
+export const crmBrandFollowupsRelations = relations(crmBrandFollowups, ({ one }) => ({
+  brand: one(crmBrands, { fields: [crmBrandFollowups.brandId], references: [crmBrands.id] }),
+  createdBy: one(user, { fields: [crmBrandFollowups.createdByUserId], references: [user.id] }),
 }));
