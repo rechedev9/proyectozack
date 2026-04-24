@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "socialpro",
+			"path": ".."
+		},
+		{
+			"name": "carloscoach",
+			"path": "../../carloscoach"
+		}
+	],
+	"settings": {}
+}
