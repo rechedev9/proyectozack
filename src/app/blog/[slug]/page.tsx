@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { getPostSlugs, getPostBySlug } from '@/lib/queries/posts';
 import { SectionTag } from '@/components/ui/SectionTag';
+import { TalentMiniCard } from '@/components/blog/TalentMiniCard';
 import { buildBreadcrumbJsonLd } from '@/lib/breadcrumbs';
 import { absoluteUrl } from '@/lib/site-url';
 import { truncateMetaDescription, truncateMetaTitle } from '@/lib/text';
 
 export const revalidate = 3600;
 
-type PageProps = {
-  params: Promise<{ slug: string }>;
-}
+type PageProps = { params: Promise<{ slug: string }> }
 
 export async function generateStaticParams() {
   const slugs = await getPostSlugs();
@@ -22,39 +22,72 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return {};
-
   const description = truncateMetaDescription(post.excerpt || undefined);
   const title = truncateMetaTitle(post.title);
-
   return {
-    title,
-    description,
-    alternates: {
-      canonical: `/blog/${slug}`,
-    },
+    title, description,
+    alternates: { canonical: `/blog/${slug}` },
     openGraph: {
-      title,
-      description,
+      title, description,
       url: absoluteUrl(`/blog/${slug}`),
       type: 'article',
       publishedTime: post.publishedAt?.toISOString(),
-      images: post.coverUrl
-        ? [{ url: post.coverUrl, width: 1200, height: 630 }]
-        : undefined,
+      images: post.coverUrl ? [{ url: post.coverUrl, width: 1200, height: 630 }] : undefined,
     },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: post.coverUrl ? [post.coverUrl] : undefined,
-    },
+    twitter: { card: 'summary_large_image', title, description, images: post.coverUrl ? [post.coverUrl] : undefined },
   };
+}
+
+/** Render a single body paragraph — handles ## h2, ### h3, **bold**, bullet lists */
+function renderParagraph(text: string, key: number) {
+  if (text.startsWith('## ')) {
+    return (
+      <h2 key={key} className="font-display text-2xl md:text-3xl font-black uppercase text-sp-dark mt-12 mb-3 pb-2 border-b border-sp-border">
+        {text.slice(3)}
+      </h2>
+    );
+  }
+  if (text.startsWith('### ')) {
+    return (
+      <h3 key={key} className="font-display text-xl font-black uppercase text-sp-dark mt-8 mb-2">
+        {text.slice(4)}
+      </h3>
+    );
+  }
+  // Bullet list block
+  if (text.includes('\n- ') || text.startsWith('- ')) {
+    const items = text.split('\n').filter(l => l.startsWith('- ')).map(l => l.slice(2));
+    return (
+      <ul key={key} className="space-y-2 my-4 pl-1">
+        {items.map((item, i) => (
+          <li key={i} className="flex gap-2 text-sp-muted text-base leading-relaxed">
+            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-sp-orange flex-shrink-0" />
+            <span dangerouslySetInnerHTML={{ __html: renderInline(item) }} />
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  return (
+    <p key={key} className="text-base text-sp-muted leading-relaxed"
+       dangerouslySetInnerHTML={{ __html: renderInline(text) }} />
+  );
+}
+
+/** Convert **bold** and *italic* inline markdown to HTML */
+function renderInline(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-sp-dark">$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post || post.status !== 'published') notFound();
+
+  const paragraphs = post.bodyMd.split('\n\n').filter(Boolean);
+  const hasTalents = post.talentAvatars.length > 0;
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Blog', url: absoluteUrl('/blog') },
@@ -66,99 +99,84 @@ export default async function BlogPostPage({ params }: PageProps) {
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt,
-    author: {
-      '@type': 'Person',
-      name: post.author,
-      worksFor: { '@type': 'Organization', name: 'SocialPro' },
-    },
+    author: { '@type': 'Person', name: post.author, worksFor: { '@type': 'Organization', name: 'SocialPro' } },
     publisher: { '@type': 'Organization', name: 'SocialPro' },
     datePublished: post.publishedAt?.toISOString(),
     image: post.coverUrl || undefined,
   };
 
-  // Split markdown body into paragraphs for simple rendering
-  const paragraphs = post.bodyMd.split('\n\n').filter(Boolean);
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
-      {/* ── Hero (dark) ── */}
-      <section className="bg-sp-black pt-32 pb-16">
-        <div className="max-w-3xl mx-auto px-6">
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition-colors mb-8"
-          >
-            <span aria-hidden="true">&larr;</span> Volver al blog
+      {/* ── HERO ── */}
+      <section className="bg-sp-black pt-28 pb-0">
+        <div className="max-w-4xl mx-auto px-6 pt-6 pb-10">
+          <Link href="/blog" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white transition-colors mb-8">
+            <span aria-hidden="true">←</span> Volver al blog
           </Link>
-
           <SectionTag>{post.author}</SectionTag>
-
-          <h1 className="font-display text-3xl md:text-5xl font-black uppercase tracking-tight text-white leading-tight mb-4">
+          <h1 className="font-display text-3xl md:text-5xl font-black uppercase tracking-tight text-white leading-tight mt-3 mb-4">
             {post.title}
           </h1>
-
           {post.publishedAt && (
-            <time className="text-sm text-white/40">
-              {new Date(post.publishedAt).toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
+            <time className="text-sm text-white/35">
+              {new Date(post.publishedAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
             </time>
           )}
         </div>
+
+        {/* Cover image */}
+        {post.coverUrl && (
+          <div className="relative w-full h-64 md:h-80 overflow-hidden">
+            <Image src={post.coverUrl} alt={post.title} fill sizes="100vw" className="object-cover object-center" priority />
+            <div className="absolute inset-0 bg-gradient-to-t from-sp-black via-sp-black/20 to-transparent" />
+          </div>
+        )}
       </section>
 
-      {/* ── Body (light) ── */}
-      <section className="bg-white py-16 md:py-20">
-        <div className="max-w-3xl mx-auto px-6">
-          <p className="text-lg text-sp-dark font-medium leading-relaxed mb-8">
+      {/* ── BODY ── */}
+      <section className="bg-white">
+        <div className="max-w-3xl mx-auto px-6 py-12 md:py-16">
+
+          {/* Excerpt / lead */}
+          <p className="text-lg md:text-xl text-sp-dark font-medium leading-relaxed mb-10 pb-8 border-b border-sp-border">
             {post.excerpt}
           </p>
 
-          <div className="space-y-5 text-base text-sp-muted leading-relaxed">
-            {paragraphs.map((p, i) => {
-              // Simple heading detection (## Heading)
-              if (p.startsWith('## ')) {
-                return (
-                  <h2
-                    key={i}
-                    className="font-display text-2xl font-black uppercase text-sp-dark mt-10 mb-2"
-                  >
-                    {p.slice(3)}
-                  </h2>
-                );
-              }
-              if (p.startsWith('### ')) {
-                return (
-                  <h3
-                    key={i}
-                    className="font-display text-xl font-bold uppercase text-sp-dark mt-8 mb-2"
-                  >
-                    {p.slice(4)}
-                  </h3>
-                );
-              }
-              return <p key={i}>{p}</p>;
-            })}
+          {/* ── TALENT CARDS ── */}
+          {hasTalents && (
+            <div className="mb-12 rounded-2xl border border-sp-border bg-sp-off p-6">
+              <p className="text-xs font-bold uppercase tracking-widest text-sp-orange mb-5">
+                Creadores en esta campaña
+              </p>
+              <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
+                {post.talentAvatars.map((talent) => (
+                  <TalentMiniCard key={talent.slug} talent={talent} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Body */}
+          <div className="space-y-5">
+            {paragraphs.map((p, i) => renderParagraph(p, i))}
           </div>
 
-          {/* CTA */}
-          <div className="mt-16 text-center">
+          {/* ── CTA ── */}
+          <div className="mt-16 rounded-2xl bg-sp-black p-8 text-center">
+            <p className="font-display text-xl font-black uppercase text-white mb-2">
+              ¿Tu marca quiere resultados así?
+            </p>
+            <p className="text-sm text-white/50 mb-6">
+              Gestionamos campañas con creadores gaming e iGaming en España y Latinoamérica.
+            </p>
             <Link
               href="/#contacto"
               className="inline-block bg-sp-grad text-white font-display font-bold uppercase tracking-wider text-sm px-8 py-3 rounded-full hover:opacity-90 transition-opacity"
             >
-              Hablemos de tu campaña
+              Hablemos de tu campaña →
             </Link>
           </div>
         </div>

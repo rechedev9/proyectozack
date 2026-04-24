@@ -1,8 +1,11 @@
 import { cache } from 'react';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, inArray } from 'drizzle-orm';
 import { db } from '@/lib/db';
-import { posts } from '@/db/schema';
+import { posts, talents } from '@/db/schema';
 import type { Post } from '@/types';
+
+export type TalentAvatar = { slug: string; name: string; role: string; platform: string; photoUrl: string | null; initials: string; gradientC1: string; gradientC2: string };
+export type PostWithTalents = Post & { talentAvatars: TalentAvatar[] };
 
 export async function getPostSlugs(): Promise<{ slug: string }[]> {
   return db
@@ -11,16 +14,37 @@ export async function getPostSlugs(): Promise<{ slug: string }[]> {
     .where(eq(posts.status, 'published'));
 }
 
-export async function getPosts(): Promise<Post[]> {
-  return db.query.posts.findMany({
+async function attachTalents(rows: Post[]): Promise<PostWithTalents[]> {
+  const allSlugs = [...new Set(rows.flatMap((p) => (p.talentSlugs as string[] | null) ?? []))];
+  let avatarMap: Map<string, TalentAvatar> = new Map();
+
+  if (allSlugs.length > 0) {
+    const talentRows = await db
+      .select({ slug: talents.slug, name: talents.name, role: talents.role, platform: talents.platform, photoUrl: talents.photoUrl, initials: talents.initials, gradientC1: talents.gradientC1, gradientC2: talents.gradientC2 })
+      .from(talents)
+      .where(inArray(talents.slug, allSlugs));
+    for (const t of talentRows) avatarMap.set(t.slug, t);
+  }
+
+  return rows.map((p) => ({
+    ...p,
+    talentAvatars: ((p.talentSlugs as string[] | null) ?? [])
+      .map((s) => avatarMap.get(s))
+      .filter(Boolean) as TalentAvatar[],
+  }));
+}
+
+export async function getPosts(): Promise<PostWithTalents[]> {
+  const rows = await db.query.posts.findMany({
     where: eq(posts.status, 'published'),
     orderBy: [desc(posts.publishedAt)],
   });
+  return attachTalents(rows);
 }
 
-export const getPostBySlug = cache(async (slug: string): Promise<Post | undefined> => {
-  const row = await db.query.posts.findFirst({
-    where: eq(posts.slug, slug),
-  });
-  return row ?? undefined;
+export const getPostBySlug = cache(async (slug: string): Promise<PostWithTalents | undefined> => {
+  const row = await db.query.posts.findFirst({ where: eq(posts.slug, slug) });
+  if (!row) return undefined;
+  const [enriched] = await attachTalents([row]);
+  return enriched;
 });

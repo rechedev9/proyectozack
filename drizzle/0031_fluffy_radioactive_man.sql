@@ -1,0 +1,1 @@
+ALTER TABLE "posts" ADD COLUMN "talent_slugs" jsonb;

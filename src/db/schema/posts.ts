@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, serial, varchar, text, timestamp, integer, index } from 'drizzle-orm/pg-core';
+import { pgTable, pgEnum, serial, varchar, text, timestamp, integer, index, jsonb } from 'drizzle-orm/pg-core';
 
 export const postStatusEnum = pgEnum('post_status', ['draft', 'published']);
 
@@ -13,6 +13,7 @@ export const posts = pgTable('posts', {
   status: postStatusEnum('status').notNull().default('draft'),
   publishedAt: timestamp('published_at', { withTimezone: true }),
   sortOrder: integer('sort_order').notNull().default(0),
+  talentSlugs: jsonb('talent_slugs').$type<string[]>(),
 }, (t) => [
   index('posts_slug_idx').on(t.slug),
   index('posts_status_idx').on(t.status),

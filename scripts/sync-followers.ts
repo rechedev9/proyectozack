@@ -227,10 +227,15 @@ async function main() {
 
   console.log(`Found ${rows.length} rows to sync (${rows.filter(r => r.platform === 'yt').length} YT, ${rows.filter(r => r.platform === 'twitch').length} Twitch)\n`);
 
-  // Get Twitch token once
+  // Get Twitch token once — continue with YouTube-only if Twitch auth fails
   console.log('Getting Twitch token...');
-  const twitchToken = await getTwitchToken();
-  console.log('Twitch token OK\n');
+  let twitchToken: string | null = null;
+  try {
+    twitchToken = await getTwitchToken();
+    console.log('Twitch token OK\n');
+  } catch (err) {
+    console.warn(`⚠️  Twitch auth failed (${(err as Error).message}) — skipping Twitch rows, continuing YouTube sync\n`);
+  }
 
   let updated = 0;
   let skipped = 0;
@@ -245,6 +250,11 @@ async function main() {
     if (row.platform === 'yt') {
       count = await fetchYouTubeSubscribers(row.profile_url ?? '', row.handle);
     } else {
+      if (!twitchToken) {
+        console.log('SKIPPED (no Twitch token)');
+        skipped++;
+        continue;
+      }
       count = await fetchTwitchFollowers(twitchToken, row.profile_url, row.handle);
     }
 
