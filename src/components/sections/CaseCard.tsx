@@ -10,8 +10,9 @@ type CaseCardProps = {
 }
 
 const BRAND_LOGO_MAP: Record<string, string> = {
-  'RAZER': '/images/brands/razer.png',
-  '1WIN': '/images/brands/1win.png',
+  'RAZER':       '/images/brands/razer.png',
+  '1WIN':        '/images/brands/1win.png',
+  'SKINSMONKEY': '/images/brands/skinsmonkey.png',
 };
 
 export function CaseCard({ caseStudy }: CaseCardProps) {
@@ -38,9 +39,9 @@ export function CaseCard({ caseStudy }: CaseCardProps) {
               <Image
                 src={logoSrc}
                 alt={caseStudy.brandName}
-                width={110}
-                height={36}
-                className="object-contain max-h-9 mix-blend-screen"
+                width={160}
+                height={48}
+                className="object-contain max-h-12 brightness-0 invert"
               />
             ) : (
               <span className="font-display text-xl font-black text-white tracking-tight">

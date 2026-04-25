@@ -136,7 +136,7 @@ for (const post of posts) {
 
   await sharp(bg)
     .composite(composites)
-    .jpeg({ quality: 92 })
+    .jpeg({ quality: 95 })
     .toFile(post.out + '.tmp');
   await rename(post.out + '.tmp', post.out);
   console.log(`✓  ${post.out.split('/').pop()}`);
