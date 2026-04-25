@@ -18,7 +18,7 @@ export default async function BlogPage() {
 
   return (
     <section className="bg-white pt-32 pb-20">
-      <div className="max-w-5xl mx-auto px-6">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <h1 className="sr-only">Marketing Gaming — Insights y Tendencias</h1>
         <SectionTag>Blog</SectionTag>
         <SectionHeading>Insights &amp; Tendencias</SectionHeading>
@@ -29,7 +29,7 @@ export default async function BlogPage() {
         {posts.length === 0 ? (
           <p className="text-sp-muted text-center py-20">Próximamente nuevos artículos.</p>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
             {posts.map((post) => (
               <BlogCard key={post.id} post={post} />
             ))}

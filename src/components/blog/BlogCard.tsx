@@ -17,13 +17,13 @@ export function BlogCard({ post }: BlogCardProps) {
       className="group flex flex-col rounded-2xl border border-sp-border overflow-hidden bg-white hover:shadow-xl transition-all hover:-translate-y-0.5"
     >
       {/* Cover */}
-      <div className="relative h-48 bg-sp-black flex-shrink-0">
+      <div className="relative aspect-[16/10] bg-sp-black flex-shrink-0 sm:aspect-[16/9]">
         {post.coverUrl ? (
           <Image
             src={post.coverUrl}
             alt={post.title}
             fill
-            sizes="(max-width: 768px) 100vw, 400px"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
