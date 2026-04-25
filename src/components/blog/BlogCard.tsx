@@ -8,41 +8,42 @@ type BlogCardProps = {
 }
 
 export function BlogCard({ post }: BlogCardProps) {
-  const avatars = post.talentAvatars.slice(0, 5);
-  const extra = (post.talentAvatars.length ?? 0) - avatars.length;
+  const avatars = post.talentAvatars.slice(0, 4);
+  const extra   = (post.talentAvatars.length ?? 0) - avatars.length;
 
   return (
-    <Link
-      href={`/blog/${post.slug}`}
-      className="group flex flex-col rounded-2xl border border-sp-border overflow-hidden bg-white hover:shadow-xl transition-all hover:-translate-y-0.5"
-    >
-      {/* Cover */}
-      <div className="relative aspect-[16/10] bg-sp-black flex-shrink-0 sm:aspect-[16/9]">
+    <Link href={`/blog/${post.slug}`} className="group block">
+
+      {/* Imagen — sin borde exterior, con overflow para el zoom */}
+      <div className="relative aspect-[16/9] rounded-xl overflow-hidden bg-sp-black mb-4">
         {post.coverUrl ? (
           <Image
             src={post.coverUrl}
             alt={post.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-sp-dark to-sp-black" />
         )}
 
-        {/* Talent avatars — overlaid at bottom-left of cover */}
+        {/* Gradient overlay bottom para legibilidad de avatares */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+
+        {/* Avatares de talentos */}
         {avatars.length > 0 && (
           <div className="absolute bottom-3 left-3 flex items-center">
             {avatars.map((t, i) => (
               <div
                 key={t.slug}
-                className="relative w-8 h-8 rounded-full border-2 border-white overflow-hidden flex-shrink-0"
-                style={{ marginLeft: i === 0 ? 0 : -10, zIndex: avatars.length - i, background: gradientStyle(t.gradientC1, t.gradientC2) }}
+                className="relative w-7 h-7 rounded-full border-2 border-white/70 overflow-hidden flex-shrink-0"
+                style={{ marginLeft: i === 0 ? 0 : -8, zIndex: avatars.length - i, background: gradientStyle(t.gradientC1, t.gradientC2) }}
               >
                 {t.photoUrl ? (
-                  <Image src={t.photoUrl} alt={t.name} fill sizes="32px" className="object-cover object-top" />
+                  <Image src={t.photoUrl} alt={t.name} fill sizes="28px" className="object-cover object-top" />
                 ) : (
-                  <span className="absolute inset-0 flex items-center justify-center text-[9px] font-black text-white">
+                  <span className="absolute inset-0 flex items-center justify-center text-[8px] font-black text-white">
                     {t.initials}
                   </span>
                 )}
@@ -50,8 +51,8 @@ export function BlogCard({ post }: BlogCardProps) {
             ))}
             {extra > 0 && (
               <div
-                className="relative w-8 h-8 rounded-full border-2 border-white bg-sp-dark flex items-center justify-center flex-shrink-0 text-[9px] font-black text-white"
-                style={{ marginLeft: -10, zIndex: 0 }}
+                className="relative w-7 h-7 rounded-full border-2 border-white/70 bg-sp-dark flex items-center justify-center flex-shrink-0 text-[8px] font-black text-white"
+                style={{ marginLeft: -8, zIndex: 0 }}
               >
                 +{extra}
               </div>
@@ -60,22 +61,19 @@ export function BlogCard({ post }: BlogCardProps) {
         )}
       </div>
 
-      {/* Body */}
-      <div className="flex flex-col flex-1 p-5">
+      {/* Texto */}
+      <div className="px-1">
         {post.publishedAt && (
-          <time className="text-xs text-sp-muted">
+          <time className="text-xs text-sp-muted tracking-wide">
             {new Date(post.publishedAt).toLocaleDateString('es-ES', {
               year: 'numeric', month: 'long', day: 'numeric',
             })}
           </time>
         )}
-        <h2 className="font-display text-lg font-black uppercase text-sp-dark leading-snug mt-1 mb-2 line-clamp-2 group-hover:text-sp-orange transition-colors">
+        <h2 className="font-display text-xl font-black uppercase text-sp-dark leading-tight mt-1 mb-3 line-clamp-2 group-hover:text-sp-orange transition-colors duration-200">
           {post.title}
         </h2>
-        <p className="text-sm text-sp-muted leading-relaxed line-clamp-3 flex-1">
-          {post.excerpt}
-        </p>
-        <span className="inline-block mt-4 text-xs font-semibold text-sp-orange">
+        <span className="text-xs font-semibold text-sp-orange tracking-wide">
           Leer artículo →
         </span>
       </div>
